@@ -29,13 +29,13 @@ docker-compose --profile dev up -d --build
 ### Individual Docker Commands
 ```bash
 # Build production image
-docker build -t web-sdk-tutorial .
+docker build --target production -t web-sdk-tutorial .
 
 # Run production container
 docker run -p 44780:80 -p 48417:80 web-sdk-tutorial
 
 # Build development image
-docker build -f Dockerfile.dev -t web-sdk-tutorial-dev .
+docker build --target development -t web-sdk-tutorial-dev .
 
 # Run development container
 docker run -p 44780:3000 -p 48417:3000 -v $(pwd):/app -v /app/node_modules web-sdk-tutorial-dev
@@ -57,6 +57,7 @@ npm run preview
 ```
 
 ## GitHub Pages Deployment
-- Push to main/master branch to trigger automatic deployment
+- Push to main/master or axelv/npm+vanillajs branch to trigger automatic deployment
 - Site will be available at: https://tiro-health.github.io/web-sdk-tutorial/
 - GitHub Actions workflow handles build and deployment automatically
+- Current branch (axelv/npm+vanillajs) is enabled for testing deployment

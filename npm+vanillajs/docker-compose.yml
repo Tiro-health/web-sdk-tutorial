@@ -1,18 +1,18 @@
 version: '3.8'
 
 services:
+  # Production service
   web-sdk-tutorial:
     build:
       context: .
       dockerfile: Dockerfile
+      target: production
     ports:
       - "44780:80"
       - "48417:80"
     environment:
       - NODE_ENV=production
     restart: unless-stopped
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80"]
       interval: 30s
@@ -20,11 +20,12 @@ services:
       retries: 3
       start_period: 40s
 
-  # Development service for local development
+  # Development service
   dev:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
+      target: development
     ports:
       - "44780:3000"
       - "48417:3000"
@@ -33,6 +34,5 @@ services:
       - /app/node_modules
     environment:
       - NODE_ENV=development
-    command: npm run start
     profiles:
       - dev
