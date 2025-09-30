@@ -1,8 +1,8 @@
 # Run these commands:
 
-`gcloud artifacts print-settings npm --scope=@tiro.health --repository=npm-ext --location=europe >> .npmrc`
+`npm run generate-npmrc`
 
-`npx google-artifactregistry-auth --repo-config=./.npmrc --credential-config=./.npmrc`
+`npm run artifactregistry-login`
 
 `npm install @tiro-health/web-sdk@alpha`
 

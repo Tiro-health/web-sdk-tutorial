@@ -6,7 +6,9 @@
   "scripts": {
     "start": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "generate-npmrc": "gcloud artifacts print-settings npm --scope=@tiro-health --repository=npm-ext --location=europe > .npmrc",
+    "artifactregistry-login": "npx google-artifactregistry-auth --repo-config=./.npmrc --credential-config=./.npmrc"
   },
   "dependencies": {
     "@tiro-health/web-sdk": "^0.0.21",
