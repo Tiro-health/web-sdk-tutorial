@@ -36,6 +36,19 @@ jobs:
           cache: 'npm'
           cache-dependency-path: npm+vanillajs/package-lock.json
 
+      - name: Google Cloud Platform Auth
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: "${{ secrets.SERVICE_ACCOUNT_KEY }}"
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
+      - name: Configure npm for Artifact Registry
+        run: |
+          gcloud artifacts print-settings npm --scope=@tiro-health --repository=npm-ext --location=europe > .npmrc
+          npx google-artifactregistry-auth --repo-config=./.npmrc --credential-config=./.npmrc
+
       - name: Install dependencies
         run: npm ci
 
