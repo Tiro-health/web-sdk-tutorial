@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite';
-import { angular } from '@analogjs/vite-plugin-angular';
+import angular from '@analogjs/vite-plugin-angular';
 
 export default defineConfig({
   plugins: [
@@ -9,7 +9,7 @@ export default defineConfig({
   ],
   server: {
     host: '0.0.0.0',
-    port: 3000,
+    port: 3400,
     cors: true,
     headers: {
       'X-Frame-Options': 'ALLOWALL',
