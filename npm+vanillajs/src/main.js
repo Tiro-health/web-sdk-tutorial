@@ -42,7 +42,7 @@ async function initializeApp() {
     }
 }
 
-// Wait for DOM to be ready
+// Wait for DOM to be ready and initialize the application
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeApp);
 } else {
