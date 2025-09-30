@@ -1,0 +1,19 @@
+{
+  "name": "web-sdk-tutorial",
+  "version": "1.0.0",
+  "description": "Tiro Web SDK showcase without React",
+  "type": "module",
+  "scripts": {
+    "start": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tiro-health/web-sdk": "^0.0.21",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "vite": "7.1.5"
+  }
+}
