@@ -2,12 +2,12 @@
 
 This is the Angular version of the Tiro Web SDK tutorial, demonstrating how to integrate the Tiro Web SDK into an Angular application.
 
-## Features
+## What this tutorial shows
 
-- **Form Filler Component**: Interactive form filling using Tiro's AI-powered form filler
-- **Narrative Component**: AI-generated narrative based on form data
-- **Angular Integration**: Proper Angular component architecture with services
-- **TypeScript Support**: Full TypeScript support for better development experience
+- How to integrate the Tiro Web SDK into an Angular application
+- Setting up React globals for SDK compatibility
+- Mounting form filler and narrative components
+- Basic Angular component lifecycle management
 
 ## Project Structure
 
@@ -15,13 +15,9 @@ This is the Angular version of the Tiro Web SDK tutorial, demonstrating how to i
 npm+angular/
 ├── src/
 │   ├── app/
-│   │   ├── services/
-│   │   │   └── tiro-sdk.service.ts    # Service for Tiro SDK initialization
-│   │   ├── tiro-sdk/
-│   │   │   └── tiro-sdk.component.ts  # Main component for SDK integration
-│   │   └── app.component.ts           # Root component
+│   │   └── app.component.ts           # Main component with SDK integration
 │   ├── index.html                     # Main HTML file
-│   ├── main.ts                        # Application bootstrap
+│   ├── main.ts                        # Application bootstrap with React globals
 │   └── styles.css                     # Global styles
 ├── angular.json                       # Angular CLI configuration
 ├── package.json                       # Dependencies and scripts
@@ -78,39 +74,16 @@ npm run test
 
 ## Architecture
 
-### Components
-
-- **AppComponent**: The root component that provides the main layout
-- **TiroSdkComponent**: Handles the mounting and lifecycle of Tiro SDK components
-
-### Services
-
-- **TiroSdkService**: Manages the initialization and cleanup of the Tiro Web SDK
-
-### Key Features
+### Key Implementation Details
 
 1. **React Compatibility**: The Tiro Web SDK requires React, which is made available globally in `main.ts`
-2. **Lifecycle Management**: Proper cleanup of SDK components when Angular components are destroyed
-3. **Service Architecture**: Clean separation of concerns with Angular services
+2. **Component Integration**: The SDK components are mounted directly in the main AppComponent
+3. **Lifecycle Management**: Proper cleanup of SDK components when the Angular component is destroyed
 4. **TypeScript Integration**: Full TypeScript support for better development experience
-
-## Configuration
-
-The application is configured to work with:
-- Tiro Web SDK questionnaire template
-- Angular 17+ with standalone components
-- TypeScript with strict mode
-- Karma/Jasmine for testing
-
-## Deployment
-
-The project can be deployed using:
-- GitHub Pages (configured in the repository)
-- Docker (using the provided nginx.conf)
-- Any static hosting service
 
 ## Notes
 
 - The Tiro Web SDK requires authentication through Google Cloud
 - React and ReactDOM are included as dependencies for SDK compatibility
-- The project uses Angular's standalone components for a modern architecture
+- The project uses Angular's standalone components for simplicity
+- This is a minimal tutorial implementation - for production use, consider proper error handling and more robust architecture
