@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "description": "Tiro Web SDK showcase with Angular",
   "scripts": {
-    "ng": "ng",
-    "start": "ng serve --host 0.0.0.0 --port 3000",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "serve": "ng serve",
+    "start": "vite --host 0.0.0.0 --port 3000",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "serve": "vite --host 0.0.0.0 --port 3000",
     "generate-npmrc": "gcloud artifacts print-settings npm --scope=@tiro-health --repository=npm-ext --location=europe > .npmrc",
     "artifactregistry-login": "npx google-artifactregistry-auth --repo-config=./.npmrc --credential-config=./.npmrc"
   },
@@ -29,20 +29,11 @@
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^20.3.3",
-    "@angular/cli": "^20.3.3",
+    "@analogjs/vite-plugin-angular": "^1.8.0",
     "@angular/compiler-cli": "^20.3.2",
-    "@angular/forms": "^20.3.2",
-    "@angular/platform-browser-dynamic": "^20.3.2",
-    "@angular/router": "^20.3.2",
-    "@tiro-health/web-sdk": "^0.0.21",
     "@types/node": "^24.6.0",
     "@types/react-dom": "^19.1.9",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
-    "rxjs": "~7.8.2",
-    "tslib": "^2.8.1",
     "typescript": "~5.9.2",
-    "zone.js": "^0.15.1"
+    "vite": "^5.4.0"
   }
 }

@@ -15,7 +15,19 @@ import * as TiroWebSDK from "@tiro-health/web-sdk";
       </main>
     </div>
   `,
-  styles: []
+  styles: [`
+    .container {
+      padding: 0 1rem;
+    }
+    .title {
+      font-size: 1.125rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+    .main-content {
+      padding: 0.5rem 0;
+    }
+  `]
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('formFiller', { static: true }) formFillerElement!: ElementRef;
