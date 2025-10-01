@@ -1,6 +1,5 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { AppComponent } from './app/app.component';
-import 'zone.js';
 
 // Import React and ReactDOM to make them available globally for Tiro Web SDK
 import React from 'react';

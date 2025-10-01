@@ -13,16 +13,15 @@ This is the Angular version of the Tiro Web SDK tutorial, demonstrating how to i
 
 ```
 npm+angular/
-├── index.html                      # Root Vite entry (required so / serves content)
 ├── src/
 │   ├── app/
-│   │   └── app.component.ts        # Main component with SDK integration
-│   ├── index.html                  # (Legacy) original HTML kept for reference
-│   ├── main.ts                     # Application bootstrap with React globals
-│   └── styles.css                  # Global styles
-├── package.json                    # Dependencies and scripts
-├── tsconfig.json                   # TypeScript configuration
-└── vite.config.ts                  # Vite + Angular plugin config
+│   │   └── app.component.ts           # Main component with SDK integration
+│   ├── index.html                     # Main HTML file
+│   ├── main.ts                        # Application bootstrap with React globals
+│   └── styles.css                     # Global styles
+├── angular.json                       # Angular CLI configuration
+├── package.json                       # Dependencies and scripts
+└── tsconfig.json                      # TypeScript configuration
 ```
 
 ## Prerequisites
@@ -55,7 +54,7 @@ Start the development server:
 npm run start
 ```
 
-The application will be available at `http://localhost:3400`.
+The application will be available at `http://localhost:3000`.
 
 ## Building
 
@@ -82,17 +81,9 @@ npm run test
 3. **Lifecycle Management**: Proper cleanup of SDK components when the Angular component is destroyed
 4. **TypeScript Integration**: Full TypeScript support for better development experience
 
-## Troubleshooting
-
-### 404 on `http://localhost:3400/`
-If you saw a 404 earlier, it was because Vite serves the root `index.html` from the project root, not from `src/`. Adding a root-level `index.html` resolved this. The previous `src/index.html` is kept only as a reference and can be removed later.
-
-### Port Differences
-`npm run start` explicitly sets the port to 3400 in `vite.config.ts`. Use that URL instead of 3000.
-
 ## Notes
 
 - The Tiro Web SDK requires authentication through Google Cloud
 - React and ReactDOM are included as dependencies for SDK compatibility
-- Standalone Angular setup via Vite + `@analogjs/vite-plugin-angular`
+- The project uses Angular's standalone components for simplicity
 - This is a minimal tutorial implementation - for production use, consider proper error handling and more robust architecture
