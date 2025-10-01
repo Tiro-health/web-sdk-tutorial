@@ -22,11 +22,9 @@ export default defineConfig({
   },
   define: {
     'process.env': {},
-    global: 'globalThis',
   },
   optimizeDeps: {
     include: ['react', 'react-dom', '@tiro-health/web-sdk'],
-    exclude: ['zone.js'],
   },
   resolve: {
     alias: {
