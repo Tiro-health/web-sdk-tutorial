@@ -2,6 +2,9 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { AppComponent } from './app/app.component';
 import 'zone.js';
 
+// Import global styles so custom classes and Tiro SDK CSS (via @import) are applied
+import './styles.css';
+
 // Import React and ReactDOM to make them available globally for Tiro Web SDK
 import React from 'react';
 import ReactDOM from 'react-dom/client';
