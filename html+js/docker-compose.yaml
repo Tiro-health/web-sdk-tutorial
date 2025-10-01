@@ -1,5 +1,11 @@
-version: "3.8"
 services:
   sdc-service:
-    image: gcr.io/tiroapp-4cb17/sdc-service
+    image: gcr.io/tiroapp-4cb17/sdc-service:dev
     container_name: sdc-service
+    ports:
+      - "8000:8000"
+    environment:
+      - UVICORN_HOST=0.0.0.0
+      - UVICORN_PORT=8000
+      # - TIROHEALTH_CLIENTID=sdc-apikey
+      # - TIROHEALTH_CLIENTSECRET=7fbc6d502d1e71a7d1cca1d0601fa9c225034146fccdd952e8ff8da479b50a76

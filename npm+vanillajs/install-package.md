@@ -4,7 +4,7 @@
 
 `npm run artifactregistry-login`
 
-`npm install @tiro-health/web-sdk@alpha`
+`npm install @tiro-health/web-sdk@latests`
 
 ## Docker Commands
 
@@ -24,21 +24,6 @@ docker-compose --profile dev up --build
 
 # Or run in detached mode
 docker-compose --profile dev up -d --build
-```
-
-### Individual Docker Commands
-```bash
-# Build production image
-docker build --target production -t web-sdk-tutorial .
-
-# Run production container
-docker run -p 44780:80 -p 48417:80 web-sdk-tutorial
-
-# Build development image
-docker build --target development -t web-sdk-tutorial-dev .
-
-# Run development container
-docker run -p 44780:3000 -p 48417:3000 -v $(pwd):/app -v /app/node_modules web-sdk-tutorial-dev
 ```
 
 ## Local Development

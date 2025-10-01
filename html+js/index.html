@@ -10,7 +10,14 @@
         />
         <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     </head>
-    <body class="px-4">
+    <style>
+        .container {
+            padding: 0rem 20rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+    </style>
+    <body class="container">
         <h1 class="text-lg">Tiro Web SDK Test</h1>
         <main class="py-2">
             <div id="form-filler"></div>
@@ -28,7 +35,11 @@
             <script>
                 const filler = new TiroWebSDK.FormFiller({
                     questionnaire:
-                        "http://templates.tiro.health/templates/9fad72eee83e46179f8ff096dbd875d0",
+                        "http://templates.tiro.health/templates/2630b8675c214707b1f86d1fbd4deb87",
+                    sdcEndpoint: {
+                        address:
+                            "https://sdc-service-staging-35032072625.europe-west1.run.app/fhir/r5",
+                    },
                 });
                 const narrative = new TiroWebSDK.Narrative({ filler });
 
