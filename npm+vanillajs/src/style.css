@@ -1,0 +1,17 @@
+/* Import Tiro SDK styles */
+@import url('https://atticus-assets.tiro.health/sdk/latest/style.css');
+
+/* Custom styles replacing Tailwind classes */
+.container {
+    padding: 0 1rem;
+}
+
+.title {
+    font-size: 1.125rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.main-content {
+    padding: 0.5rem 0;
+}

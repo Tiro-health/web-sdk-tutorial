@@ -1,0 +1,5 @@
+version: "3.8"
+services:
+  sdc-service:
+    image: gcr.io/tiroapp-4cb17/sdc-service
+    container_name: sdc-service

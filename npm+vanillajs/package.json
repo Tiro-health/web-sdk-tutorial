@@ -1,0 +1,26 @@
+{
+  "name": "web-sdk-tutorial",
+  "version": "1.0.0",
+  "description": "Tiro Web SDK showcase without React",
+  "type": "module",
+  "scripts": {
+    "start": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "generate-npmrc": "gcloud artifacts print-settings npm --scope=@tiro-health --repository=npm-ext --location=europe > .npmrc",
+    "artifactregistry-login": "npx google-artifactregistry-auth --repo-config=./.npmrc --credential-config=./.npmrc"
+  },
+  "dependencies": {
+    "@tiro-health/web-sdk": "^0.1.3",
+    "lucide-react": "^0.330.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-modern-drawer": "^1.4.0",
+    "react-speech-recognition": "^3.10.0",
+    "rich-textarea": "^0.26.5"
+  },
+  "devDependencies": {
+    "terser": "^5.31.6",
+    "vite": "7.1.5"
+  }
+}

@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Tiro Web SDK Test</title>
+        <link
+            rel="stylesheet"
+            href="https://atticus-assets.tiro.health/sdk/latest/style.css"
+        />
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    </head>
+    <body class="px-4">
+        <h1 class="text-lg">Tiro Web SDK Test</h1>
+        <main class="py-2">
+            <div id="form-filler"></div>
+            <div id="narrative"></div>
+            <script
+                crossorigin
+                src="https://unpkg.com/react@18/umd/react.production.min.js"
+            ></script>
+            <script
+                crossorigin
+                src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+            ></script>
+            <script src="https://atticus-assets.tiro.health/sdk/latest/tiro-web-sdk.iife.js"></script>
+
+            <script>
+                const filler = new TiroWebSDK.FormFiller({
+                    questionnaire:
+                        "http://templates.tiro.health/templates/9fad72eee83e46179f8ff096dbd875d0",
+                });
+                const narrative = new TiroWebSDK.Narrative({ filler });
+
+                filler.mount(document.getElementById("form-filler"));
+                narrative.mount(document.getElementById("narrative"));
+            </script>
+        </main>
+    </body>
+</html>
