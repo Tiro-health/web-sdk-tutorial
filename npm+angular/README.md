@@ -113,4 +113,3 @@ The project uses Angular CLI's application builder with the following key config
 - React and ReactDOM are included as dependencies for SDK compatibility
 - The project uses Angular's standalone components for simplicity
 - This is a minimal tutorial implementation - for production use, consider proper error handling and more robust architecture
-- The project was previously using Vite with `@analogjs/vite-plugin-angular` but has been migrated to Angular CLI for better alignment with Angular best practices
