@@ -21,14 +21,11 @@ If you don't have Google Cloud CLI installed, see the [installation guide](https
 
 ### 1. Authenticate with Google Cloud
 
-First, ensure you're authenticated with Google Cloud and have the correct project set:
+First, ensure you're authenticated with Google Cloud:
 
 ```bash
 # Authenticate with Google Cloud (if not already authenticated)
 gcloud auth login
-
-# Set the Google Cloud project
-gcloud config set project tiroapp-4cb17
 
 # Configure Application Default Credentials
 gcloud auth application-default login
@@ -37,12 +34,14 @@ gcloud auth application-default login
 ### 2. Configure NPM Authentication
 
 ```bash
-# Generate NPM registry configuration
-npm run generate-npmrc
+# Set project and generate NPM registry configuration
+npm run setup-gcloud
 
 # Authenticate with Google Artifact Registry
 npm run artifactregistry-login
 ```
+
+The `setup-gcloud` script automatically sets the Google Cloud project to `tiroapp-4cb17` and generates the `.npmrc` file.
 
 ### 3. Install Dependencies
 

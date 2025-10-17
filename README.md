@@ -132,36 +132,30 @@ Most npm-based examples require authentication with Google Cloud to access the T
    ```
    This will open a browser window for you to sign in with your Google account.
 
-2. **Set the Google Cloud project**:
-   ```bash
-   gcloud config set project tiroapp-4cb17
-   ```
-   This sets the default project to the Tiro Health project where the SDK is hosted.
-
-3. **Configure Application Default Credentials** (recommended):
+2. **Configure Application Default Credentials** (recommended):
    ```bash
    gcloud auth application-default login
    ```
    This ensures that the authentication works properly with npm tooling.
 
-4. **Navigate to your chosen example directory**:
+3. **Navigate to your chosen example directory**:
    ```bash
    cd npm+angular  # or npm+react, npm+vanillajs
    ```
 
-5. **Generate NPM registry configuration**:
+4. **Run the setup script** (sets project and generates .npmrc):
    ```bash
-   npm run generate-npmrc
+   npm run setup-gcloud
    ```
-   This creates a `.npmrc` file with the correct registry settings for the Tiro Health packages.
+   This automatically sets the Google Cloud project to `tiroapp-4cb17` and creates a `.npmrc` file with the correct registry settings.
 
-6. **Authenticate with Google Artifact Registry**:
+5. **Authenticate with Google Artifact Registry**:
    ```bash
    npm run artifactregistry-login
    ```
    This configures npm to authenticate with Google Artifact Registry.
 
-7. **Install dependencies**:
+6. **Install dependencies**:
    ```bash
    npm ci
    ```
