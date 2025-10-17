@@ -1,15 +1,85 @@
-# React + TypeScript + Vite
+# Tiro Web SDK Tutorial - React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the React + TypeScript version of the Tiro Web SDK tutorial, demonstrating how to integrate the Tiro Web SDK into a modern React application using Vite.
 
-Currently, two official plugins are available:
+## What this tutorial shows
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- How to integrate the Tiro Web SDK into a React application
+- Full TypeScript support for type-safe development
+- Hot module replacement (HMR) with Vite
+- ESLint configuration for code quality
 
-## React Compiler
+## Prerequisites
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Node.js (version 18 or higher)
+- npm or yarn
+- [Google Cloud CLI](https://cloud.google.com/sdk/docs/install) (for authentication)
+
+If you don't have Google Cloud CLI installed, see the [installation guide](https://cloud.google.com/sdk/docs/install).
+
+## Installation
+
+### 1. Authenticate with Google Cloud
+
+First, ensure you're authenticated with Google Cloud and have the correct project set:
+
+```bash
+# Authenticate with Google Cloud (if not already authenticated)
+gcloud auth login
+
+# Set the Google Cloud project
+gcloud config set project tiroapp-4cb17
+
+# Configure Application Default Credentials
+gcloud auth application-default login
+```
+
+### 2. Configure NPM Authentication
+
+```bash
+# Generate NPM registry configuration
+npm run generate-npmrc
+
+# Authenticate with Google Artifact Registry
+npm run artifactregistry-login
+```
+
+### 3. Install Dependencies
+
+```bash
+npm ci
+```
+
+## Development
+
+Start the development server:
+```bash
+npm run dev
+```
+
+The application will be available at `http://localhost:5173` (default Vite port).
+
+## Building
+
+Build the project for production:
+```bash
+npm run build
+```
+
+The build artifacts will be stored in the `dist/` directory.
+
+## Linting
+
+Run ESLint to check code quality:
+```bash
+npm run lint
+```
+
+## Vite Plugins
+
+This template uses [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) which uses [Babel](https://babeljs.io/) for Fast Refresh.
+
+Alternative: [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh.
 
 ## Expanding the ESLint configuration
 
