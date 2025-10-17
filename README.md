@@ -120,6 +120,27 @@ npm run start
 npm run build
 ```
 
+## Prerequisites
+
+- Node.js 18+ (for npm-based examples)
+- [Google Cloud CLI](https://cloud.google.com/sdk/docs/install) (for authentication)
+- Modern web browser
+
+### Installing Google Cloud CLI
+
+If you don't have the Google Cloud CLI installed, follow the installation instructions for your operating system:
+
+- **Installation Guide**: https://cloud.google.com/sdk/docs/install
+- **Quick Install Options**:
+  - macOS: `brew install google-cloud-sdk`
+  - Windows: Download installer from the link above
+  - Linux: Follow the instructions in the installation guide
+
+After installation, verify it's working:
+```bash
+gcloud --version
+```
+
 ## Authentication
 
 Most npm-based examples require authentication with Google Cloud to access the Tiro Web SDK from the Google Artifact Registry.
@@ -176,27 +197,6 @@ Live versions of these tutorials are deployed via GitHub Pages. Check the reposi
 ## Documentation
 
 For detailed SDK documentation, visit [Tiro Health Documentation](https://docs.tiro.health).
-
-## Prerequisites
-
-- Node.js 18+ (for npm-based examples)
-- [Google Cloud CLI](https://cloud.google.com/sdk/docs/install) (for authentication)
-- Modern web browser
-
-### Installing Google Cloud CLI
-
-If you don't have the Google Cloud CLI installed, follow the installation instructions for your operating system:
-
-- **Installation Guide**: https://cloud.google.com/sdk/docs/install
-- **Quick Install Options**:
-  - macOS: `brew install google-cloud-sdk`
-  - Windows: Download installer from the link above
-  - Linux: Follow the instructions in the installation guide
-
-After installation, verify it's working:
-```bash
-gcloud --version
-```
 
 ## License
 
