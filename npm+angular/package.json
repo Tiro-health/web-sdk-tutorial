@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "description": "Tiro Web SDK showcase with Angular",
   "scripts": {
-    "start": "vite --host 0.0.0.0 --port 3400",
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "serve": "vite --host 0.0.0.0 --port 3000",
+    "start": "ng serve --host 0.0.0.0 --port 3400",
+    "dev": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "serve": "ng serve --host 0.0.0.0 --port 3000",
     "setup-gcloud": "gcloud config set project tiroapp-4cb17 && gcloud artifacts print-settings npm --scope=@tiro-health --repository=npm-ext --location=europe > .npmrc",
     "generate-npmrc": "gcloud artifacts print-settings npm --scope=@tiro-health --repository=npm-ext --location=europe > .npmrc",
     "artifactregistry-login": "npx google-artifactregistry-auth --repo-config=./.npmrc --credential-config=./.npmrc"
@@ -16,6 +16,7 @@
     "@angular-devkit/build-angular": "^20.3.3",
     "@angular/animations": "^20.3.2",
     "@angular/build": "^20.3.3",
+    "@angular/cli": "^20.3.3",
     "@angular/common": "^20.3.2",
     "@angular/compiler": "^20.3.2",
     "@angular/core": "^20.3.2",
@@ -35,12 +36,10 @@
     "rich-textarea": "^0.26.5"
   },
   "devDependencies": {
-    "@analogjs/vite-plugin-angular": "^1.21.1",
     "@angular/compiler-cli": "^20.3.2",
     "@types/node": "^24.6.0",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.1",
-    "typescript": "~5.9.2",
-    "vite": "^7.1.7"
+    "typescript": "~5.9.2"
   }
 }
