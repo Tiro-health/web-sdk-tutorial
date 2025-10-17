@@ -120,17 +120,68 @@ npm run start
 npm run build
 ```
 
+## Prerequisites
+
+- Node.js 18+ (for npm-based examples)
+- [Google Cloud CLI](https://cloud.google.com/sdk/docs/install) (for authentication)
+- Modern web browser
+
+### Installing Google Cloud CLI
+
+If you don't have the Google Cloud CLI installed, follow the installation instructions for your operating system:
+
+- **Installation Guide**: https://cloud.google.com/sdk/docs/install
+- **Quick Install Options**:
+  - macOS: `brew install google-cloud-sdk`
+  - Windows: Download installer from the link above
+  - Linux: Follow the instructions in the installation guide
+
+After installation, verify it's working:
+```bash
+gcloud --version
+```
+
 ## Authentication
 
-Most examples require authentication with Google Cloud to access the Tiro Web SDK from the npm registry:
+Most npm-based examples require authentication with Google Cloud to access the Tiro Web SDK from the Google Artifact Registry.
 
-```bash
-# Generate NPM registry configuration
-npm run generate-npmrc
+### Setup Steps
 
-# Authenticate with Google Artifact Registry
-npm run artifactregistry-login
-```
+1. **Authenticate with Google Cloud** (if not already authenticated):
+   ```bash
+   gcloud auth login
+   ```
+   This will open a browser window for you to sign in with your Google account.
+
+2. **Configure Application Default Credentials** (recommended):
+   ```bash
+   gcloud auth application-default login
+   ```
+   This ensures that the authentication works properly with npm tooling.
+
+3. **Navigate to your chosen example directory**:
+   ```bash
+   cd npm+angular  # or npm+react, npm+vanillajs
+   ```
+
+4. **Run the setup script** (sets project and generates .npmrc):
+   ```bash
+   npm run setup-gcloud
+   ```
+   This automatically sets the Google Cloud project to `tiroapp-4cb17` and creates a `.npmrc` file with the correct registry settings.
+
+5. **Authenticate with Google Artifact Registry**:
+   ```bash
+   npm run artifactregistry-login
+   ```
+   This configures npm to authenticate with Google Artifact Registry.
+
+6. **Install dependencies**:
+   ```bash
+   npm ci
+   ```
+
+> **Note**: The html+js example doesn't require authentication as it uses CDN-hosted bundles.
 
 ## Key SDK Components
 
@@ -146,12 +197,6 @@ Live versions of these tutorials are deployed via GitHub Pages. Check the reposi
 ## Documentation
 
 For detailed SDK documentation, visit [Tiro Health Documentation](https://docs.tiro.health).
-
-## Prerequisites
-
-- Node.js 18+ (for npm-based examples)
-- Google Cloud CLI (for authentication)
-- Modern web browser
 
 ## License
 

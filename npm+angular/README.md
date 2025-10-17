@@ -28,24 +28,41 @@ npm+angular/
 
 - Node.js (version 18 or higher)
 - npm or yarn
-- Google Cloud CLI (for authentication)
+- [Google Cloud CLI](https://cloud.google.com/sdk/docs/install) (for authentication)
+
+If you don't have Google Cloud CLI installed, see the [installation guide](https://cloud.google.com/sdk/docs/install).
 
 ## Installation
 
-1. **Generate NPM registry configuration:**
-   ```bash
-   npm run generate-npmrc
-   ```
+### 1. Authenticate with Google Cloud
 
-2. **Authenticate with Google Artifact Registry:**
-   ```bash
-   npm run artifactregistry-login
-   ```
+First, ensure you're authenticated with Google Cloud:
 
-3. **Install dependencies:**
-   ```bash
-   npm ci
-   ```
+```bash
+# Authenticate with Google Cloud (if not already authenticated)
+gcloud auth login
+
+# Configure Application Default Credentials
+gcloud auth application-default login
+```
+
+### 2. Configure NPM Authentication
+
+```bash
+# Set project and generate NPM registry configuration
+npm run setup-gcloud
+
+# Authenticate with Google Artifact Registry
+npm run artifactregistry-login
+```
+
+The `setup-gcloud` script automatically sets the Google Cloud project to `tiroapp-4cb17` and generates the `.npmrc` file.
+
+### 3. Install Dependencies
+
+```bash
+npm ci
+```
 
 ## Development
 
