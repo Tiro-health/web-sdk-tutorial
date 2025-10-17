@@ -1,6 +1,6 @@
 # Tiro Web SDK Tutorial - Angular
 
-This is the Angular version of the Tiro Web SDK tutorial, demonstrating how to integrate the Tiro Web SDK into an Angular application.
+This is the Angular version of the Tiro Web SDK tutorial, demonstrating how to integrate the Tiro Web SDK into an Angular application using Angular CLI.
 
 ## What this tutorial shows
 
@@ -54,7 +54,7 @@ Start the development server:
 npm run start
 ```
 
-The application will be available at `http://localhost:3000`.
+The application will be available at `http://localhost:3400`.
 
 ## Building
 
@@ -76,10 +76,19 @@ npm run test
 
 ### Key Implementation Details
 
-1. **React Compatibility**: The Tiro Web SDK requires React, which is made available globally in `main.ts`
-2. **Component Integration**: The SDK components are mounted directly in the main AppComponent
-3. **Lifecycle Management**: Proper cleanup of SDK components when the Angular component is destroyed
-4. **TypeScript Integration**: Full TypeScript support for better development experience
+1. **Angular CLI**: This project uses the Angular CLI with the modern `@angular-devkit/build-angular:application` builder
+2. **React Compatibility**: The Tiro Web SDK requires React, which is made available globally in `main.ts`
+3. **Component Integration**: The SDK components are mounted directly in the main AppComponent
+4. **Lifecycle Management**: Proper cleanup of SDK components when the Angular component is destroyed
+5. **TypeScript Integration**: Full TypeScript support for better development experience
+
+### Build Configuration
+
+The project uses Angular CLI's application builder with the following key configurations:
+- **Development Server**: Configured to run on `0.0.0.0:3400` with CORS headers
+- **Production Build**: Base path set to `/web-sdk-tutorial/npm-angular/`
+- **Bundle Budget**: Increased to 10MB warning / 15MB error to accommodate the Tiro SDK dependencies
+- **CommonJS Dependencies**: React and React-DOM are allowed as CommonJS dependencies
 
 ## Notes
 
@@ -87,3 +96,4 @@ npm run test
 - React and ReactDOM are included as dependencies for SDK compatibility
 - The project uses Angular's standalone components for simplicity
 - This is a minimal tutorial implementation - for production use, consider proper error handling and more robust architecture
+- The project was previously using Vite with `@analogjs/vite-plugin-angular` but has been migrated to Angular CLI for better alignment with Angular best practices
