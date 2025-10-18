@@ -188,7 +188,7 @@ Most npm-based examples require authentication with Google Cloud to access the T
 All examples demonstrate the core SDK components:
 
 - **FormFiller**: Interactive form for data collection based on FHIR questionnaires
-- **Narrative**: AI-powered clinical narrative generation from form data
+- **Narrative**: Clinical narrative generation from form data
 
 ## Live Demos
 
