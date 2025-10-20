@@ -21,6 +21,9 @@ importers:
       '@eslint/js':
         specifier: ^9.36.0
         version: 9.36.0
+      '@types/node':
+        specifier: ^22.0.0
+        version: 22.18.11
       '@types/react':
         specifier: ^19.1.13
         version: 19.1.15
@@ -29,7 +32,7 @@ importers:
         version: 19.1.9(@types/react@19.1.15)
       '@vitejs/plugin-react':
         specifier: ^5.0.3
-        version: 5.0.4(vite@7.1.7)
+        version: 5.0.4(vite@7.1.7(@types/node@22.18.11))
       eslint:
         specifier: ^9.36.0
         version: 9.36.0
@@ -50,7 +53,7 @@ importers:
         version: 8.44.1(eslint@9.36.0)(typescript@5.8.3)
       vite:
         specifier: ^7.1.7
-        version: 7.1.7
+        version: 7.1.7(@types/node@22.18.11)
 
 packages:
 
@@ -493,30 +496,7 @@ packages:
     peerDependencies:
       react: ^18.0.0
       react-dom: ^18.0.0
-    bundledDependencies:
-      - '@hookform/resolvers'
-      - '@sentry/react'
-      - '@tanstack/react-query'
-      - '@tanstack/react-table'
-      - date-fns
-      - framer-motion
-      - i18next
-      - i18next-browser-languagedetector
-      - i18next-chained-backend
-      - jotai
-      - lodash.debounce
-      - lodash.throttle
-      - lucide-react
-      - posthog-js
-      - react
-      - react-dom
-      - react-hook-form
-      - react-i18next
-      - uuid
-      - zod
-      - '@tiro-health/fhir-form-hooks'
-      - '@tiro-health/report-renderer'
-      - '@tiro-health/ui'
+    bundledDependencies: true
 
   '@types/babel__core@7.20.5':
     resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
@@ -535,6 +515,9 @@ packages:
 
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
+
+  '@types/node@22.18.11':
+    resolution: {integrity: sha512-Gd33J2XIrXurb+eT2ktze3rJAfAp9ZNjlBdh4SVgyrKEOADwCbdUDaK7QgJno8Ue4kcajscsKqu6n8OBG3hhCQ==}
 
   '@types/react-dom@19.1.9':
     resolution: {integrity: sha512-qXRuZaOsAdXKFyOhRBg6Lqqc0yay13vN7KrIg4L7N4aaHN68ma9OK3NE1BoDFgFOTfM7zg+3/8+2n8rLUH3OKQ==}
@@ -1087,6 +1070,9 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
+  undici-types@6.21.0:
+    resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
+
   update-browserslist-db@1.1.3:
     resolution: {integrity: sha512-UxhIZQ+QInVdunkDAaiazvvT/+fXL5Osr0JZlJulepYu6Jd7qJtDZjlur0emRlT71EN3ScPoE7gvsuIKKNavKw==}
     hasBin: true
@@ -1528,6 +1514,10 @@ snapshots:
 
   '@types/json-schema@7.0.15': {}
 
+  '@types/node@22.18.11':
+    dependencies:
+      undici-types: 6.21.0
+
   '@types/react-dom@19.1.9(@types/react@19.1.15)':
     dependencies:
       '@types/react': 19.1.15
@@ -1629,7 +1619,7 @@ snapshots:
       '@typescript-eslint/types': 8.44.1
       eslint-visitor-keys: 4.2.1
 
-  '@vitejs/plugin-react@5.0.4(vite@7.1.7)':
+  '@vitejs/plugin-react@5.0.4(vite@7.1.7(@types/node@22.18.11))':
     dependencies:
       '@babel/core': 7.28.4
       '@babel/plugin-transform-react-jsx-self': 7.27.1(@babel/core@7.28.4)
@@ -1637,7 +1627,7 @@ snapshots:
       '@rolldown/pluginutils': 1.0.0-beta.38
       '@types/babel__core': 7.20.5
       react-refresh: 0.17.0
-      vite: 7.1.7
+      vite: 7.1.7(@types/node@22.18.11)
     transitivePeerDependencies:
       - supports-color
 
@@ -2117,6 +2107,8 @@ snapshots:
 
   typescript@5.8.3: {}
 
+  undici-types@6.21.0: {}
+
   update-browserslist-db@1.1.3(browserslist@4.26.2):
     dependencies:
       browserslist: 4.26.2
@@ -2127,7 +2119,7 @@ snapshots:
     dependencies:
       punycode: 2.3.1
 
-  vite@7.1.7:
+  vite@7.1.7(@types/node@22.18.11):
     dependencies:
       esbuild: 0.25.10
       fdir: 6.5.0(picomatch@4.0.3)
@@ -2136,6 +2128,7 @@ snapshots:
       rollup: 4.52.3
       tinyglobby: 0.2.15
     optionalDependencies:
+      '@types/node': 22.18.11
       fsevents: 2.3.3
 
   which@2.0.2:
