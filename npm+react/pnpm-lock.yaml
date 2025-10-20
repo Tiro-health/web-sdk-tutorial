@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@tiro-health/web-sdk':
-        specifier: ^0.0.21
-        version: 0.0.21(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^0.1.3
+        version: 0.1.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: ^18
         version: 18.3.1
@@ -488,8 +488,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@tiro-health/web-sdk@0.0.21':
-    resolution: {integrity: sha512-dzm/Ta2z468o9Q7BcSauw3PCnL5SBH5LQuygkF2vMgH8a8xot57tQfg3mpEmb6iZ29t+RwIanjNHsSCOjy40ww==, tarball: https://europe-npm.pkg.dev/tiroapp-4cb17/npm-ext/@tiro-health/web-sdk/-/@tiro-health/web-sdk-0.0.21.tgz}
+  '@tiro-health/web-sdk@0.1.3':
+    resolution: {integrity: sha512-ngrslYz2INolcdK29drjyTF9t7upFspJ6aUgQTs6lEb4LV8GQxDMUJmQoW2FbhcU6A4HlfGAQszX6mu15wFELQ==, tarball: https://europe-npm.pkg.dev/tiroapp-4cb17/npm-ext/@tiro-health/web-sdk/-/@tiro-health/web-sdk-0.1.3.tgz}
     peerDependencies:
       react: ^18.0.0
       react-dom: ^18.0.0
@@ -1498,7 +1498,7 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.52.3':
     optional: true
 
-  '@tiro-health/web-sdk@0.0.21(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@tiro-health/web-sdk@0.1.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
