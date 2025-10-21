@@ -74,7 +74,7 @@ jobs:
           NODE_ENV=production npm run build
           cd ..
           mkdir -p final-dist/npm-angular
-          cp -r npm+angular/dist/* final-dist/npm-angular/
+          cp -r npm+angular/dist/browser/* final-dist/npm-angular/
 
       - name: Copy html+js
         run: |
