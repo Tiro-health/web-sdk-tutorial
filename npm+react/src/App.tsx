@@ -3,11 +3,12 @@ import { FormFiller } from "@tiro-health/web-sdk";
 import "./App.css";
 
 function App() {
-  const ref = useRef<HTMLDivElement>(null);
+  const formFillerRef = useRef<HTMLDivElement>(null);
+  const narrativeRef = useRef<HTMLDivElement>(null);
   const fillerRef = useRef<FormFiller | null>(null);
 
   useEffect(() => {
-    if (!ref.current) return;
+    if (!formFillerRef.current) return;
 
     const filler = new FormFiller({
       questionnaire:
@@ -15,7 +16,7 @@ function App() {
     });
 
     fillerRef.current = filler;
-    filler.mount(ref.current);
+    filler.mount(formFillerRef.current);
 
     console.log("Form filler mounted successfully");
 
@@ -27,7 +28,15 @@ function App() {
     };
   }, []);
 
-  return <div ref={ref} id="form-filler"></div>;
+  return (
+    <div className="container">
+      <h1 className="title">Tiro Web SDK Test</h1>
+      <main className="main-content">
+        <div ref={formFillerRef} id="form-filler"></div>
+        <div ref={narrativeRef} id="narrative"></div>
+      </main>
+    </div>
+  );
 }
 
 export default App;
