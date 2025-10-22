@@ -13,7 +13,7 @@ async function initializeApp() {
     // Create the form filler instance
     const filler = new FormFiller({
       questionnaire:
-        "http://templates.tiro.health/templates/9fad72eee83e46179f8ff096dbd875d0",
+        "http://templates.tiro.health/templates/2630b8675c214707b1f86d1fbd4deb87",
     });
 
     // Create the narrative instance
