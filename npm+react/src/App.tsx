@@ -41,11 +41,32 @@ function App() {
 
   return (
     <div className="container">
-      <h1 className="title">Tiro Web SDK Test</h1>
+      <div className="app-code-section">
+        <h1 className="title">
+          Tiro Web SDK Test
+          <span className="app-code-badge">Your App</span>
+        </h1>
+      </div>
       <main className="main-content">
-        <div ref={formFillerRef} id="form-filler"></div>
-        <div ref={narrativeRef} id="narrative"></div>
+        <div ref={formFillerRef} id="form-filler" className="sdk-component-wrapper">
+          <span className="sdk-component-badge">SDK: FormFiller</span>
+        </div>
+        <div ref={narrativeRef} id="narrative" className="sdk-component-wrapper">
+          <span className="sdk-component-badge">SDK: Narrative</span>
+        </div>
       </main>
+      
+      <div className="sdk-legend">
+        <h3>Component Legend</h3>
+        <div className="legend-item">
+          <div className="legend-box sdk"></div>
+          <span className="legend-label">SDK Component</span>
+        </div>
+        <div className="legend-item">
+          <div className="legend-box app"></div>
+          <span className="legend-label">Your Application</span>
+        </div>
+      </div>
     </div>
   );
 }
