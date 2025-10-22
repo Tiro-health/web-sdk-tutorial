@@ -40,7 +40,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     try {
       // Create the form filler instance
       this.filler = new TiroWebSDK.FormFiller({
-        questionnaire: "https://templates.tiro.health/templates/9fad72eee83e46179f8ff096dbd875d0",
+        questionnaire: "http://templates.tiro.health/templates/9fad72eee83e46179f8ff096dbd875d0",
       });
 
       // Create the narrative instance
