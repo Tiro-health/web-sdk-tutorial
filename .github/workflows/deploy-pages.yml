@@ -30,11 +30,6 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-
       - name: Authenticate with Google Cloud
         uses: google-github-actions/auth@v2
         with:
@@ -50,8 +45,8 @@ jobs:
         run: |
           cd npm+react
           gcloud artifacts print-settings npm --scope=@tiro-health --repository=npm-ext --location=europe > .npmrc
-          pnpm install
-          NODE_ENV=production pnpm run build
+          npm ci
+          NODE_ENV=production npm run build
           cd ..
           mkdir -p final-dist/npm-react
           cp -r npm+react/dist/* final-dist/npm-react/
