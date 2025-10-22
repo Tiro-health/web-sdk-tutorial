@@ -14,10 +14,6 @@ async function initializeApp() {
     const filler = new FormFiller({
       questionnaire:
         "http://templates.tiro.health/templates/2630b8675c214707b1f86d1fbd4deb87",
-      sdcEndpoint: {
-        address:
-          "https://sdc-service-staging-35032072625.europe-west1.run.app/fhir/r5",
-      },
     });
 
     // Create the narrative instance
