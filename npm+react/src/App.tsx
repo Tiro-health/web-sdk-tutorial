@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FormFiller, Narrative } from "@tiro-health/web-sdk";
 import "./App.css";
 
@@ -7,6 +7,7 @@ function App() {
   const narrativeRef = useRef<HTMLDivElement>(null);
   const fillerRef = useRef<FormFiller | null>(null);
   const narrativeInstanceRef = useRef<Narrative | null>(null);
+  const [showBoundaries, setShowBoundaries] = useState(false);
 
   useEffect(() => {
     if (!formFillerRef.current || !narrativeRef.current) return;
@@ -39,13 +40,37 @@ function App() {
     };
   }, []);
 
+  useEffect(() => {
+    if (showBoundaries) {
+      document.body.classList.add('show-sdk-boundaries');
+    } else {
+      document.body.classList.remove('show-sdk-boundaries');
+    }
+  }, [showBoundaries]);
+
   return (
     <div className="container">
-      <h1 className="title">Tiro Web SDK Test</h1>
+      <div className="app-code-section">
+        <h1 className="title">
+          Tiro Web SDK Test
+          <span className="app-code-badge">Your App</span>
+        </h1>
+      </div>
       <main className="main-content">
-        <div ref={formFillerRef} id="form-filler"></div>
-        <div ref={narrativeRef} id="narrative"></div>
+        <div ref={formFillerRef} id="form-filler" className="sdk-component-wrapper">
+          <span className="sdk-component-badge">SDK: FormFiller</span>
+        </div>
+        <div ref={narrativeRef} id="narrative" className="sdk-component-wrapper">
+          <span className="sdk-component-badge">SDK: Narrative</span>
+        </div>
       </main>
+      
+      <button 
+        className="toggle-visualization-btn" 
+        onClick={() => setShowBoundaries(!showBoundaries)}
+      >
+        Toggle SDK Visualization
+      </button>
     </div>
   );
 }

@@ -183,12 +183,34 @@ Most npm-based examples require authentication with Google Cloud to access the T
 
 > **Note**: The html+js example doesn't require authentication as it uses CDN-hosted bundles.
 
-## Key SDK Components
+## Understanding SDK vs Application Code
 
-All examples demonstrate the core SDK components:
+All tutorial examples include **visual indicators** to help you distinguish between:
 
+### SDK Components (Green Badges)
+Components provided by the `@tiro-health/web-sdk` package that render complete UI functionality:
 - **FormFiller**: Interactive form for data collection based on FHIR questionnaires
 - **Narrative**: Clinical narrative generation from form data
+
+### Application Code (Blue Badges)
+Elements you need to implement in your application:
+- Page structure and layout
+- Mount point `<div>` elements where SDK components render
+- SDK initialization and lifecycle management
+- Custom styling and branding
+
+### Interactive Visualization
+
+Each example includes a **"Toggle SDK Visualization"** button (purple, bottom-right) that enables an enhanced visualization mode:
+- **Green borders**: SDK-rendered components
+- **Blue dashed borders**: Your application code
+
+This feature helps you understand:
+- What the SDK provides out-of-the-box
+- What you need to implement yourself
+- How to integrate the SDK into your own application
+
+The visual indicators are educational tools included in these tutorials - they are not part of the SDK itself and can be removed or customized for production use.
 
 ## Live Demos
 

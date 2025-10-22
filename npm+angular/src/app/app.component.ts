@@ -22,6 +22,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     // Component initialization
   }
 
+  toggleVisualization(): void {
+    document.body.classList.toggle('show-sdk-boundaries');
+  }
+
   ngAfterViewInit(): void {
     this.initializeTiroSDK();
   }

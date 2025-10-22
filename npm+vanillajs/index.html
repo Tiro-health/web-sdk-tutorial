@@ -14,11 +14,25 @@
         </style>
     </head>
     <body class="container">
-        <h1 class="title">Tiro Web SDK Test</h1>
+        <div class="app-code-section">
+            <h1 class="title">
+                Tiro Web SDK Test
+                <span class="app-code-badge">Your App</span>
+            </h1>
+        </div>
         <main class="main-content">
-            <div id="form-filler"></div>
-            <div id="narrative"></div>
+            <div id="form-filler" class="sdk-component-wrapper">
+                <span class="sdk-component-badge">SDK: FormFiller</span>
+            </div>
+            <div id="narrative" class="sdk-component-wrapper">
+                <span class="sdk-component-badge">SDK: Narrative</span>
+            </div>
         </main>
+        
+        <button class="toggle-visualization-btn" id="toggle-btn">
+            Toggle SDK Visualization
+        </button>
+        
         <script type="module" src="./src/main.js"></script>
     </body>
 </html>
