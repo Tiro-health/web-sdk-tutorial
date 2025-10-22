@@ -47,23 +47,11 @@ async function initializeApp() {
   }
 }
 
-// Toggle visualization button handler
-function setupToggleButton() {
-  const toggleBtn = document.getElementById("toggle-btn");
-  if (toggleBtn) {
-    toggleBtn.addEventListener("click", () => {
-      document.body.classList.toggle("show-sdk-boundaries");
-    });
-  }
-}
-
 // Wait for DOM to be ready and initialize the application
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", () => {
     initializeApp();
-    setupToggleButton();
   });
 } else {
   initializeApp();
-  setupToggleButton();
 }

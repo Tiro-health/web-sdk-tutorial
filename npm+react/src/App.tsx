@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { FormFiller, Narrative } from "@tiro-health/web-sdk";
 import "./App.css";
 
@@ -7,7 +7,6 @@ function App() {
   const narrativeRef = useRef<HTMLDivElement>(null);
   const fillerRef = useRef<FormFiller | null>(null);
   const narrativeInstanceRef = useRef<Narrative | null>(null);
-  const [showBoundaries, setShowBoundaries] = useState(false);
 
   useEffect(() => {
     if (!formFillerRef.current || !narrativeRef.current) return;
@@ -40,14 +39,6 @@ function App() {
     };
   }, []);
 
-  useEffect(() => {
-    if (showBoundaries) {
-      document.body.classList.add('show-sdk-boundaries');
-    } else {
-      document.body.classList.remove('show-sdk-boundaries');
-    }
-  }, [showBoundaries]);
-
   return (
     <div className="container">
       <div className="app-code-section">
@@ -65,12 +56,17 @@ function App() {
         </div>
       </main>
       
-      <button 
-        className="toggle-visualization-btn" 
-        onClick={() => setShowBoundaries(!showBoundaries)}
-      >
-        Toggle SDK Visualization
-      </button>
+      <div className="sdk-legend">
+        <h3>Component Legend</h3>
+        <div className="legend-item">
+          <div className="legend-box sdk"></div>
+          <span className="legend-label">SDK Component</span>
+        </div>
+        <div className="legend-item">
+          <div className="legend-box app"></div>
+          <span className="legend-label">Your Application</span>
+        </div>
+      </div>
     </div>
   );
 }
