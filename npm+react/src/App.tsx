@@ -1,5 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FormFiller, Narrative } from "@tiro-health/web-sdk";
+import { SettingsPopover, getDefaultSettings, type Settings } from "./SettingsPopover";
 import "./App.css";
 
 function App() {
@@ -7,13 +8,21 @@ function App() {
   const narrativeRef = useRef<HTMLDivElement>(null);
   const fillerRef = useRef<FormFiller | null>(null);
   const narrativeInstanceRef = useRef<Narrative | null>(null);
+  const [settings, setSettings] = useState<Settings>(getDefaultSettings());
 
   useEffect(() => {
     if (!formFillerRef.current || !narrativeRef.current) return;
 
+    if (fillerRef.current && typeof fillerRef.current.unmount === "function") {
+      fillerRef.current.unmount();
+    }
+    if (narrativeInstanceRef.current && typeof narrativeInstanceRef.current.unmount === "function") {
+      narrativeInstanceRef.current.unmount();
+    }
+
     const filler = new FormFiller({
       questionnaire:
-        "http://templates.tiro.health/templates/2630b8675c214707b1f86d1fbd4deb87",
+        settings.backendUrl + "templates/2630b8675c214707b1f86d1fbd4deb87",
     });
 
     const narrative = new Narrative({ filler });
@@ -37,10 +46,15 @@ function App() {
         console.log("Narrative unmounted");
       }
     };
-  }, []);
+  }, [settings]);
+
+  const handleApplySettings = (newSettings: Settings) => {
+    setSettings(newSettings);
+  };
 
   return (
     <div className="container">
+      <SettingsPopover onApply={handleApplySettings} />
       <div className="app-code-section">
         <h1 className="title">
           Tiro Web SDK Test
