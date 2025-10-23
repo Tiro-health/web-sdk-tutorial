@@ -115,6 +115,18 @@
             </h1>
         </div>
         <main class="py-2">
+            <div class="app-code-section mb-4">
+                <label for="questionnaire-select" class="block text-sm font-medium mb-2">
+                    Select Questionnaire:
+                    <span class="app-code-badge">Your App</span>
+                </label>
+                <select 
+                    id="questionnaire-select" 
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                    <option value="">Loading questionnaires...</option>
+                </select>
+            </div>
             <div id="form-filler" class="sdk-component-wrapper">
                 <span class="sdk-component-badge">SDK: FormFiller</span>
             </div>
@@ -132,14 +144,61 @@
             <script src="https://atticus-assets.tiro.health/sdk/latest/tiro-web-sdk.iife.js"></script>
 
             <script>
-                const filler = new TiroWebSDK.FormFiller({
-                    questionnaire:
-                        "http://templates.tiro.health/templates/2630b8675c214707b1f86d1fbd4deb87",
-                });
-                const narrative = new TiroWebSDK.Narrative({ filler });
+                // Questionnaire list - can be fetched from API in the future
+                const questionnaires = [
+                    { 
+                        name: "Patient Intake Form", 
+                        url: "http://templates.tiro.health/templates/2630b8675c214707b1f86d1fbd4deb87" 
+                    },
+                    { 
+                        name: "General Medical History", 
+                        url: "http://templates.tiro.health/templates/9fad72eee83e46179f8ff096dbd875d0" 
+                    }
+                ];
 
-                filler.mount(document.getElementById("form-filler"));
-                narrative.mount(document.getElementById("narrative"));
+                let currentFiller = null;
+                let currentNarrative = null;
+
+                // Populate the dropdown
+                const selectElement = document.getElementById("questionnaire-select");
+                selectElement.innerHTML = questionnaires.map((q, index) => 
+                    `<option value="${index}">${q.name}</option>`
+                ).join('');
+
+                // Function to initialize SDK components
+                function initializeSDK(questionnaireUrl) {
+                    // Cleanup existing instances
+                    if (currentFiller && typeof currentFiller.unmount === 'function') {
+                        currentFiller.unmount();
+                    }
+                    if (currentNarrative && typeof currentNarrative.unmount === 'function') {
+                        currentNarrative.unmount();
+                    }
+
+                    // Create new instances
+                    currentFiller = new TiroWebSDK.FormFiller({
+                        questionnaire: questionnaireUrl,
+                    });
+                    currentNarrative = new TiroWebSDK.Narrative({ filler: currentFiller });
+
+                    // Mount to DOM
+                    currentFiller.mount(document.getElementById("form-filler"));
+                    currentNarrative.mount(document.getElementById("narrative"));
+                }
+
+                // Handle questionnaire selection change
+                selectElement.addEventListener('change', function(event) {
+                    const selectedIndex = event.target.value;
+                    if (selectedIndex !== '' && questionnaires[selectedIndex]) {
+                        initializeSDK(questionnaires[selectedIndex].url);
+                    }
+                });
+
+                // Initialize with first questionnaire
+                if (questionnaires.length > 0) {
+                    selectElement.value = '0';
+                    initializeSDK(questionnaires[0].url);
+                }
             </script>
         </main>
         
