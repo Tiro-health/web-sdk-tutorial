@@ -15,8 +15,11 @@
         id="questionnaire-select"
         [value]="selectedQuestionnaire"
         (change)="onQuestionnaireChange($event)"
+        [disabled]="loading || error"
         style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05)"
       >
+        <option *ngIf="loading" value="">Loading questionnaires...</option>
+        <option *ngIf="error" value="">Error loading questionnaires</option>
         <option *ngFor="let q of questionnaires" [value]="q.url">
           {{ q.name }}
         </option>

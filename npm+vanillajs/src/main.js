@@ -7,18 +7,7 @@ import { FormFiller, Narrative } from "@tiro-health/web-sdk";
 window.React = React;
 window.ReactDOM = ReactDOM;
 
-// Questionnaire list - can be fetched from API in the future
-const questionnaires = [
-  { 
-    name: "Patient Intake Form", 
-    url: "http://templates.tiro.health/templates/2630b8675c214707b1f86d1fbd4deb87" 
-  },
-  { 
-    name: "General Medical History", 
-    url: "http://templates.tiro.health/templates/9fad72eee83e46179f8ff096dbd875d0" 
-  }
-];
-
+let questionnaires = [];
 let currentFiller = null;
 let currentNarrative = null;
 
@@ -65,18 +54,54 @@ function initializeSDK(questionnaireUrl) {
   }
 }
 
+// Fetch questionnaires from API
+async function fetchQuestionnaires() {
+  const selectElement = document.getElementById("questionnaire-select");
+  
+  try {
+    const response = await fetch('https://reports.tiro.health/fhir/r5/Questionnaire/', {
+      headers: {
+        'Accept': 'application/fhir+json'
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    if (data.resourceType === 'Bundle' && Array.isArray(data.entry)) {
+      questionnaires = data.entry.map(entry => ({
+        name: entry.resource.name || entry.resource.id,
+        url: entry.resource.url
+      }));
+      
+      // Populate the dropdown
+      selectElement.innerHTML = questionnaires.map((q, index) => 
+        `<option value="${index}">${q.name}</option>`
+      ).join('');
+      
+      // Initialize with first questionnaire
+      if (questionnaires.length > 0) {
+        selectElement.value = '0';
+        initializeSDK(questionnaires[0].url);
+      }
+    }
+  } catch (error) {
+    console.error('Failed to fetch questionnaires:', error);
+    selectElement.innerHTML = '<option value="">Error loading questionnaires</option>';
+  }
+}
+
 // Initialize the application
 function initializeApp() {
-  // Populate the dropdown
+  // Get the dropdown element
   const selectElement = document.getElementById("questionnaire-select");
   if (!selectElement) {
     console.error("Questionnaire select element not found");
     return;
   }
-
-  selectElement.innerHTML = questionnaires.map((q, index) => 
-    `<option value="${index}">${q.name}</option>`
-  ).join('');
 
   // Handle questionnaire selection change
   selectElement.addEventListener('change', function(event) {
@@ -86,11 +111,8 @@ function initializeApp() {
     }
   });
 
-  // Initialize with first questionnaire
-  if (questionnaires.length > 0) {
-    selectElement.value = '0';
-    initializeSDK(questionnaires[0].url);
-  }
+  // Fetch questionnaires
+  fetchQuestionnaires();
 }
 
 // Wait for DOM to be ready and initialize the application

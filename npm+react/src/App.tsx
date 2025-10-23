@@ -7,26 +7,56 @@ interface Questionnaire {
   url: string;
 }
 
-const questionnaires: Questionnaire[] = [
-  { 
-    name: "Patient Intake Form", 
-    url: "http://templates.tiro.health/templates/2630b8675c214707b1f86d1fbd4deb87" 
-  },
-  { 
-    name: "General Medical History", 
-    url: "http://templates.tiro.health/templates/9fad72eee83e46179f8ff096dbd875d0" 
-  }
-];
-
 function App() {
   const formFillerRef = useRef<HTMLDivElement>(null);
   const narrativeRef = useRef<HTMLDivElement>(null);
   const fillerRef = useRef<FormFiller | null>(null);
   const narrativeInstanceRef = useRef<Narrative | null>(null);
-  const [selectedQuestionnaire, setSelectedQuestionnaire] = useState<string>(questionnaires[0].url);
+  const [questionnaires, setQuestionnaires] = useState<Questionnaire[]>([]);
+  const [selectedQuestionnaire, setSelectedQuestionnaire] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!formFillerRef.current || !narrativeRef.current) return;
+    async function fetchQuestionnaires() {
+      try {
+        const response = await fetch('https://reports.tiro.health/fhir/r5/Questionnaire/', {
+          headers: {
+            'Accept': 'application/fhir+json'
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.resourceType === 'Bundle' && Array.isArray(data.entry)) {
+          const fetchedQuestionnaires = data.entry.map((entry: any) => ({
+            name: entry.resource.name || entry.resource.id,
+            url: entry.resource.url
+          }));
+          
+          setQuestionnaires(fetchedQuestionnaires);
+          
+          if (fetchedQuestionnaires.length > 0) {
+            setSelectedQuestionnaire(fetchedQuestionnaires[0].url);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch questionnaires:', err);
+        setError('Failed to load questionnaires');
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    fetchQuestionnaires();
+  }, []);
+
+  useEffect(() => {
+    if (!formFillerRef.current || !narrativeRef.current || !selectedQuestionnaire) return;
 
     // Cleanup existing instances
     if (fillerRef.current && typeof fillerRef.current.unmount === "function") {
@@ -81,6 +111,7 @@ function App() {
             id="questionnaire-select"
             value={selectedQuestionnaire}
             onChange={(e) => setSelectedQuestionnaire(e.target.value)}
+            disabled={loading || !!error}
             style={{
               width: '100%',
               padding: '0.5rem 0.75rem',
@@ -89,7 +120,9 @@ function App() {
               boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
             }}
           >
-            {questionnaires.map((q) => (
+            {loading && <option value="">Loading questionnaires...</option>}
+            {error && <option value="">Error loading questionnaires</option>}
+            {!loading && !error && questionnaires.map((q) => (
               <option key={q.url} value={q.url}>
                 {q.name}
               </option>
