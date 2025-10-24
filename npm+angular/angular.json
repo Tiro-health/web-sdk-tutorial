@@ -75,7 +75,8 @@
             "port": 3400,
             "headers": {
               "X-Frame-Options": "ALLOWALL"
-            }
+            },
+            "proxyConfig": "proxy.conf.json"
           },
           "configurations": {
             "production": {
