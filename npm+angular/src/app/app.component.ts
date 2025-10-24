@@ -1,11 +1,12 @@
 import { Component, type OnInit, type OnDestroy, ElementRef, ViewChild, type AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import * as TiroWebSDK from "@tiro-health/web-sdk";
+import { SettingsPopoverComponent, getDefaultSettings, type Settings } from './settings-popover.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, SettingsPopoverComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
@@ -15,6 +16,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private filler: any;
   private narrative: any;
+  private settings: Settings = getDefaultSettings();
 
   constructor() { }
 
@@ -36,11 +38,23 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  onSettingsApplied(settings: Settings): void {
+    this.settings = settings;
+    this.initializeTiroSDK();
+  }
+
   private async initializeTiroSDK(): Promise<void> {
     try {
+      if (this.filler && typeof this.filler.unmount === 'function') {
+        this.filler.unmount();
+      }
+      if (this.narrative && typeof this.narrative.unmount === 'function') {
+        this.narrative.unmount();
+      }
+
       // Create the form filler instance
       this.filler = new TiroWebSDK.FormFiller({
-        questionnaire: "http://templates.tiro.health/templates/2630b8675c214707b1f86d1fbd4deb87",
+        questionnaire: this.settings.backendUrl + "templates/2630b8675c214707b1f86d1fbd4deb87",
       });
 
       // Create the narrative instance

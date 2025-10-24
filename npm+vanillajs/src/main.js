@@ -1,25 +1,31 @@
-// Import React and ReactDOM to make them available globally for Tiro Web SDK
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { FormFiller, Narrative } from "@tiro-health/web-sdk";
+import { SettingsManager, getDefaultSettings } from "./settings.js";
+import "./settings.css";
 
-// Make React available globally since Tiro Web SDK expects it
 window.React = React;
 window.ReactDOM = ReactDOM;
 
-// Initialize the application
-async function initializeApp() {
+let filler = null;
+let narrative = null;
+
+async function initializeApp(settings) {
   try {
-    // Create the form filler instance
-    const filler = new FormFiller({
+    if (filler && typeof filler.unmount === "function") {
+      filler.unmount();
+    }
+    if (narrative && typeof narrative.unmount === "function") {
+      narrative.unmount();
+    }
+
+    filler = new FormFiller({
       questionnaire:
-        "http://templates.tiro.health/templates/2630b8675c214707b1f86d1fbd4deb87",
+        settings.backendUrl + "templates/2630b8675c214707b1f86d1fbd4deb87",
     });
 
-    // Create the narrative instance
-    const narrative = new Narrative({ filler });
+    narrative = new Narrative({ filler });
 
-    // Mount the components to their respective DOM elements
     const formFillerElement = document.getElementById("form-filler");
     const narrativeElement = document.getElementById("narrative");
 
@@ -43,11 +49,18 @@ async function initializeApp() {
   }
 }
 
-// Wait for DOM to be ready and initialize the application
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", () => {
-    initializeApp();
+    const settings = getDefaultSettings();
+    new SettingsManager((newSettings) => {
+      initializeApp(newSettings);
+    });
+    initializeApp(settings);
   });
 } else {
-  initializeApp();
+  const settings = getDefaultSettings();
+  new SettingsManager((newSettings) => {
+    initializeApp(newSettings);
+  });
+  initializeApp(settings);
 }
