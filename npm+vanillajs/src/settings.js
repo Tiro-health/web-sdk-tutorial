@@ -71,21 +71,21 @@ export class SettingsManager {
             />
           </div>
           <div class="form-group">
-            <label for="username">Username:</label>
+            <label for="username">Username (Basic Auth):</label>
             <input
               type="text"
               id="username"
               value="${this.settings.username || ""}"
-              placeholder="Enter username"
+              placeholder="Enter basic auth username"
             />
           </div>
           <div class="form-group">
-            <label for="password">Password:</label>
+            <label for="password">Password (Basic Auth):</label>
             <input
               type="password"
               id="password"
               value="${this.settings.password || ""}"
-              placeholder="Enter password"
+              placeholder="Enter basic auth password"
             />
           </div>
           <div class="button-group">

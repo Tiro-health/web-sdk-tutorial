@@ -117,23 +117,23 @@ export function SettingsPopover({ onApply }: SettingsPopoverProps) {
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="username">Username:</label>
+                <label htmlFor="username">Username (Basic Auth):</label>
                 <input
                   type="text"
                   id="username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Enter username"
+                  placeholder="Enter basic auth username"
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="password">Password:</label>
+                <label htmlFor="password">Password (Basic Auth):</label>
                 <input
                   type="password"
                   id="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter password"
+                  placeholder="Enter basic auth password"
                 />
               </div>
               <div className="button-group">
