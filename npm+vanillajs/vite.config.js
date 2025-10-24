@@ -5,7 +5,15 @@ export default defineConfig({
   server: {
     port: 3000,
     host: '0.0.0.0',
-    open: true
+    open: true,
+    proxy: {
+      '/api/fhir': {
+        target: 'https://reports.tiro.health',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/fhir/, '/fhir'),
+        secure: false,
+      }
+    }
   },
   build: {
     outDir: 'dist',

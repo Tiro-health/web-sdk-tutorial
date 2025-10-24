@@ -1,0 +1,10 @@
+{
+  "/api/fhir": {
+    "target": "https://reports.tiro.health",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api/fhir": "/fhir"
+    }
+  }
+}

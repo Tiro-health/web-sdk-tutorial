@@ -7,6 +7,17 @@ interface Questionnaire {
   url: string;
 }
 
+const FALLBACK_QUESTIONNAIRES: Questionnaire[] = [
+  {
+    name: "General Medical History",
+    url: "http://templates.tiro.health/templates/9fad72eee83e46179f8ff096dbd875d0"
+  },
+  {
+    name: "Patient Intake Form",
+    url: "http://templates.tiro.health/templates/2630b8675c214707b1f86d1fbd4deb87"
+  }
+];
+
 function App() {
   const formFillerRef = useRef<HTMLDivElement>(null);
   const narrativeRef = useRef<HTMLDivElement>(null);
@@ -20,7 +31,7 @@ function App() {
   useEffect(() => {
     async function fetchQuestionnaires() {
       try {
-        const response = await fetch('https://reports.tiro.health/fhir/r5/Questionnaire/', {
+        const response = await fetch('/api/fhir/r5/Questionnaire/', {
           headers: {
             'Accept': 'application/fhir+json'
           }
@@ -45,8 +56,11 @@ function App() {
           }
         }
       } catch (err) {
-        console.error('Failed to fetch questionnaires:', err);
-        setError('Failed to load questionnaires');
+        console.error('Failed to fetch questionnaires, using fallback list:', err);
+        setQuestionnaires(FALLBACK_QUESTIONNAIRES);
+        if (FALLBACK_QUESTIONNAIRES.length > 0) {
+          setSelectedQuestionnaire(FALLBACK_QUESTIONNAIRES[0].url);
+        }
       } finally {
         setLoading(false);
       }

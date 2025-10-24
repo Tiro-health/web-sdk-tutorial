@@ -7,6 +7,17 @@ import { FormFiller, Narrative } from "@tiro-health/web-sdk";
 window.React = React;
 window.ReactDOM = ReactDOM;
 
+const FALLBACK_QUESTIONNAIRES = [
+  {
+    name: "General Medical History",
+    url: "http://templates.tiro.health/templates/9fad72eee83e46179f8ff096dbd875d0"
+  },
+  {
+    name: "Patient Intake Form",
+    url: "http://templates.tiro.health/templates/2630b8675c214707b1f86d1fbd4deb87"
+  }
+];
+
 let questionnaires = [];
 let currentFiller = null;
 let currentNarrative = null;
@@ -59,7 +70,7 @@ async function fetchQuestionnaires() {
   const selectElement = document.getElementById("questionnaire-select");
   
   try {
-    const response = await fetch('https://reports.tiro.health/fhir/r5/Questionnaire/', {
+    const response = await fetch('/api/fhir/r5/Questionnaire/', {
       headers: {
         'Accept': 'application/fhir+json'
       }
@@ -89,8 +100,19 @@ async function fetchQuestionnaires() {
       }
     }
   } catch (error) {
-    console.error('Failed to fetch questionnaires:', error);
-    selectElement.innerHTML = '<option value="">Error loading questionnaires</option>';
+    console.error('Failed to fetch questionnaires, using fallback list:', error);
+    questionnaires = FALLBACK_QUESTIONNAIRES;
+    
+    // Populate the dropdown with fallback questionnaires
+    selectElement.innerHTML = questionnaires.map((q, index) => 
+      `<option value="${index}">${q.name}</option>`
+    ).join('');
+    
+    // Initialize with first questionnaire
+    if (questionnaires.length > 0) {
+      selectElement.value = '0';
+      initializeSDK(questionnaires[0].url);
+    }
   }
 }
 

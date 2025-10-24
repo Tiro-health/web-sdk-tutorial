@@ -7,6 +7,17 @@ interface Questionnaire {
   url: string;
 }
 
+const FALLBACK_QUESTIONNAIRES: Questionnaire[] = [
+  {
+    name: "General Medical History",
+    url: "http://templates.tiro.health/templates/9fad72eee83e46179f8ff096dbd875d0"
+  },
+  {
+    name: "Patient Intake Form",
+    url: "http://templates.tiro.health/templates/2630b8675c214707b1f86d1fbd4deb87"
+  }
+];
+
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -34,7 +45,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async fetchQuestionnaires(): Promise<void> {
     try {
-      const response = await fetch('https://reports.tiro.health/fhir/r5/Questionnaire/', {
+      const response = await fetch('/api/fhir/r5/Questionnaire/', {
         headers: {
           'Accept': 'application/fhir+json'
         }
@@ -57,8 +68,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
     } catch (err) {
-      console.error('Failed to fetch questionnaires:', err);
-      this.error = 'Failed to load questionnaires';
+      console.error('Failed to fetch questionnaires, using fallback list:', err);
+      this.questionnaires = FALLBACK_QUESTIONNAIRES;
+      if (this.questionnaires.length > 0) {
+        this.selectedQuestionnaire = this.questionnaires[0].url;
+      }
     } finally {
       this.loading = false;
     }
