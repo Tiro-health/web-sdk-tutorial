@@ -65,7 +65,7 @@
 /* Legend styles */
 .sdk-legend {
     position: fixed;
-    top: 20px;
+    bottom: 20px;
     right: 20px;
     background: white;
     border: 1px solid #e5e7eb;
