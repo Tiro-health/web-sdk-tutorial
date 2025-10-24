@@ -4,10 +4,18 @@ import { FormsModule } from '@angular/forms';
 
 export interface Settings {
   backendUrl: string;
-  apiKey?: string;
+  email: string;
+  username: string;
+  password: string;
 }
 
 const DEFAULT_BACKEND_URL = "https://templates.tiro.health/";
+
+export function transformEmailToUserId(email: string): string {
+  const parts = email.split("@");
+  if (parts.length !== 2) return email;
+  return `${parts[1]}|${parts[0]}`;
+}
 
 export function getDefaultSettings(): Settings {
   const saved = localStorage.getItem("tiro-settings");
@@ -20,7 +28,9 @@ export function getDefaultSettings(): Settings {
   }
   return {
     backendUrl: DEFAULT_BACKEND_URL,
-    apiKey: "",
+    email: "",
+    username: "",
+    password: "",
   };
 }
 
@@ -62,13 +72,33 @@ export function getDefaultSettings(): Settings {
             />
           </div>
           <div class="form-group">
-            <label for="apiKey">API Key (optional):</label>
+            <label for="email">Email:</label>
+            <input
+              type="email"
+              id="email"
+              [(ngModel)]="email"
+              name="email"
+              placeholder="user@domain.com"
+            />
+          </div>
+          <div class="form-group">
+            <label for="username">Username:</label>
+            <input
+              type="text"
+              id="username"
+              [(ngModel)]="username"
+              name="username"
+              placeholder="Enter username"
+            />
+          </div>
+          <div class="form-group">
+            <label for="password">Password:</label>
             <input
               type="password"
-              id="apiKey"
-              [(ngModel)]="apiKey"
-              name="apiKey"
-              placeholder="Enter API key"
+              id="password"
+              [(ngModel)]="password"
+              name="password"
+              placeholder="Enter password"
             />
           </div>
           <div class="button-group">
@@ -234,18 +264,24 @@ export class SettingsPopoverComponent implements OnInit {
   
   isOpen = false;
   backendUrl = "";
-  apiKey = "";
+  email = "";
+  username = "";
+  password = "";
 
   ngOnInit(): void {
     const settings = getDefaultSettings();
     this.backendUrl = settings.backendUrl;
-    this.apiKey = settings.apiKey || "";
+    this.email = settings.email;
+    this.username = settings.username;
+    this.password = settings.password;
   }
 
   handleSubmit(): void {
     const settings: Settings = {
       backendUrl: this.backendUrl,
-      apiKey: this.apiKey || undefined,
+      email: this.email,
+      username: this.username,
+      password: this.password,
     };
     localStorage.setItem("tiro-settings", JSON.stringify(settings));
     this.settingsApplied.emit(settings);
@@ -254,6 +290,8 @@ export class SettingsPopoverComponent implements OnInit {
 
   handleReset(): void {
     this.backendUrl = DEFAULT_BACKEND_URL;
-    this.apiKey = "";
+    this.email = "";
+    this.username = "";
+    this.password = "";
   }
 }

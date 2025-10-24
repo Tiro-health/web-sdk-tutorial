@@ -1,5 +1,11 @@
 const DEFAULT_BACKEND_URL = "https://templates.tiro.health/";
 
+export function transformEmailToUserId(email) {
+  const parts = email.split("@");
+  if (parts.length !== 2) return email;
+  return `${parts[1]}|${parts[0]}`;
+}
+
 export function getDefaultSettings() {
   const saved = localStorage.getItem("tiro-settings");
   if (saved) {
@@ -11,7 +17,9 @@ export function getDefaultSettings() {
   }
   return {
     backendUrl: DEFAULT_BACKEND_URL,
-    apiKey: "",
+    email: "",
+    username: "",
+    password: "",
   };
 }
 
@@ -54,12 +62,30 @@ export class SettingsManager {
             />
           </div>
           <div class="form-group">
-            <label for="apiKey">API Key (optional):</label>
+            <label for="email">Email:</label>
+            <input
+              type="email"
+              id="email"
+              value="${this.settings.email || ""}"
+              placeholder="user@domain.com"
+            />
+          </div>
+          <div class="form-group">
+            <label for="username">Username:</label>
+            <input
+              type="text"
+              id="username"
+              value="${this.settings.username || ""}"
+              placeholder="Enter username"
+            />
+          </div>
+          <div class="form-group">
+            <label for="password">Password:</label>
             <input
               type="password"
-              id="apiKey"
-              value="${this.settings.apiKey || ""}"
-              placeholder="Enter API key"
+              id="password"
+              value="${this.settings.password || ""}"
+              placeholder="Enter password"
             />
           </div>
           <div class="button-group">
@@ -113,11 +139,15 @@ export class SettingsManager {
   handleSubmit(e) {
     e.preventDefault();
     const backendUrl = document.getElementById("backendUrl").value;
-    const apiKey = document.getElementById("apiKey").value;
+    const email = document.getElementById("email").value;
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
 
     this.settings = {
       backendUrl,
-      apiKey: apiKey || undefined,
+      email,
+      username,
+      password,
     };
 
     localStorage.setItem("tiro-settings", JSON.stringify(this.settings));
@@ -130,6 +160,8 @@ export class SettingsManager {
 
   handleReset() {
     document.getElementById("backendUrl").value = DEFAULT_BACKEND_URL;
-    document.getElementById("apiKey").value = "";
+    document.getElementById("email").value = "";
+    document.getElementById("username").value = "";
+    document.getElementById("password").value = "";
   }
 }

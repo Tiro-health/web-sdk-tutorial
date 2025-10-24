@@ -3,7 +3,9 @@ import "./SettingsPopover.css";
 
 export interface Settings {
   backendUrl: string;
-  apiKey?: string;
+  email: string;
+  username: string;
+  password: string;
 }
 
 interface SettingsPopoverProps {
@@ -11,6 +13,12 @@ interface SettingsPopoverProps {
 }
 
 const DEFAULT_BACKEND_URL = "https://templates.tiro.health/";
+
+export function transformEmailToUserId(email: string): string {
+  const parts = email.split("@");
+  if (parts.length !== 2) return email;
+  return `${parts[1]}|${parts[0]}`;
+}
 
 export function getDefaultSettings(): Settings {
   const saved = localStorage.getItem("tiro-settings");
@@ -23,26 +31,34 @@ export function getDefaultSettings(): Settings {
   }
   return {
     backendUrl: DEFAULT_BACKEND_URL,
-    apiKey: "",
+    email: "",
+    username: "",
+    password: "",
   };
 }
 
 export function SettingsPopover({ onApply }: SettingsPopoverProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [backendUrl, setBackendUrl] = useState("");
-  const [apiKey, setApiKey] = useState("");
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   useEffect(() => {
     const settings = getDefaultSettings();
     setBackendUrl(settings.backendUrl);
-    setApiKey(settings.apiKey || "");
+    setEmail(settings.email);
+    setUsername(settings.username);
+    setPassword(settings.password);
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const settings: Settings = {
       backendUrl,
-      apiKey: apiKey || undefined,
+      email,
+      username,
+      password,
     };
     localStorage.setItem("tiro-settings", JSON.stringify(settings));
     onApply(settings);
@@ -51,7 +67,9 @@ export function SettingsPopover({ onApply }: SettingsPopoverProps) {
 
   const handleReset = () => {
     setBackendUrl(DEFAULT_BACKEND_URL);
-    setApiKey("");
+    setEmail("");
+    setUsername("");
+    setPassword("");
   };
 
   return (
@@ -89,13 +107,33 @@ export function SettingsPopover({ onApply }: SettingsPopoverProps) {
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="apiKey">API Key (optional):</label>
+                <label htmlFor="email">Email:</label>
+                <input
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="user@domain.com"
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="username">Username:</label>
+                <input
+                  type="text"
+                  id="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Enter username"
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="password">Password:</label>
                 <input
                   type="password"
-                  id="apiKey"
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                  placeholder="Enter API key"
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter password"
                 />
               </div>
               <div className="button-group">

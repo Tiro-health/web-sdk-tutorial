@@ -272,11 +272,27 @@
                         />
                     </div>
                     <div class="form-group">
-                        <label for="apiKey">API Key (optional):</label>
+                        <label for="email">Email:</label>
+                        <input
+                            type="email"
+                            id="email"
+                            placeholder="user@domain.com"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="username">Username:</label>
+                        <input
+                            type="text"
+                            id="username"
+                            placeholder="Enter username"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password:</label>
                         <input
                             type="password"
-                            id="apiKey"
-                            placeholder="Enter API key"
+                            id="password"
+                            placeholder="Enter password"
                         />
                     </div>
                     <div class="button-group">
@@ -317,6 +333,12 @@
             <script>
                 const DEFAULT_BACKEND_URL = "https://templates.tiro.health/";
                 
+                function transformEmailToUserId(email) {
+                    const parts = email.split("@");
+                    if (parts.length !== 2) return email;
+                    return `${parts[1]}|${parts[0]}`;
+                }
+                
                 function getDefaultSettings() {
                     const saved = localStorage.getItem("tiro-settings");
                     if (saved) {
@@ -328,7 +350,9 @@
                     }
                     return {
                         backendUrl: DEFAULT_BACKEND_URL,
-                        apiKey: "",
+                        email: "",
+                        username: "",
+                        password: "",
                     };
                 }
 
@@ -361,11 +385,15 @@
                 const settingsForm = document.getElementById("settings-form");
                 const resetButton = document.getElementById("reset-settings");
                 const backendUrlInput = document.getElementById("backendUrl");
-                const apiKeyInput = document.getElementById("apiKey");
+                const emailInput = document.getElementById("email");
+                const usernameInput = document.getElementById("username");
+                const passwordInput = document.getElementById("password");
 
                 const settings = getDefaultSettings();
                 backendUrlInput.value = settings.backendUrl;
-                apiKeyInput.value = settings.apiKey || "";
+                emailInput.value = settings.email || "";
+                usernameInput.value = settings.username || "";
+                passwordInput.value = settings.password || "";
 
                 settingsButton.addEventListener("click", () => {
                     settingsModal.style.display = "flex";
@@ -385,7 +413,9 @@
                     e.preventDefault();
                     const newSettings = {
                         backendUrl: backendUrlInput.value,
-                        apiKey: apiKeyInput.value || undefined,
+                        email: emailInput.value,
+                        username: usernameInput.value,
+                        password: passwordInput.value,
                     };
                     localStorage.setItem("tiro-settings", JSON.stringify(newSettings));
                     settingsModal.style.display = "none";
@@ -394,7 +424,9 @@
 
                 resetButton.addEventListener("click", () => {
                     backendUrlInput.value = DEFAULT_BACKEND_URL;
-                    apiKeyInput.value = "";
+                    emailInput.value = "";
+                    usernameInput.value = "";
+                    passwordInput.value = "";
                 });
 
                 initializeApp(settings);
