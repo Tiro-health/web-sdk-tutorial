@@ -1,12 +1,14 @@
+// ============================================================
+// DEMO FUNCTIONALITY - This is just for this demo
+// ============================================================
+
+import { initializeTiroSDK } from "./main.js";
+import "./settings.css";
+
 const DEFAULT_BACKEND_URL = "https://templates.tiro.health/";
+const TEMPLATE_ID = "2630b8675c214707b1f86d1fbd4deb87";
 
-export function transformEmailToUserId(email) {
-  const parts = email.split("@");
-  if (parts.length !== 2) return email;
-  return `${parts[1]}|${parts[0]}`;
-}
-
-export function getDefaultSettings() {
+function getDefaultSettings() {
   const saved = localStorage.getItem("tiro-settings");
   if (saved) {
     try {
@@ -24,12 +26,37 @@ export function getDefaultSettings() {
 }
 
 export class SettingsManager {
-  constructor(onSettingsChange) {
-    this.onSettingsChange = onSettingsChange;
+  constructor() {
     this.settings = getDefaultSettings();
     this.isOpen = false;
     this.createUI();
     this.attachEventListeners();
+    
+    // Initialize SDK with default settings on page load
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", () => {
+        this.initializeSDK();
+      });
+    } else {
+      this.initializeSDK();
+    }
+  }
+  
+  initializeSDK() {
+    // Convert settings to SDK configuration
+    const config = {
+      questionnaire: this.settings.backendUrl + "templates/" + TEMPLATE_ID,
+      sdcEndpoint: {
+        address: "https://sdc-service-staging-wkrcomcqfq-ew.a.run.app/fhir/r5",
+      },
+      dataEndpoint: {
+        resourceType: "Endpoint",
+        address: "https://fhir-candle-35032072625.europe-west1.run.app/fhir/r4",
+      },
+    };
+    
+    // Initialize the Tiro SDK
+    initializeTiroSDK(config);
   }
 
   createUI() {
@@ -153,9 +180,8 @@ export class SettingsManager {
     localStorage.setItem("tiro-settings", JSON.stringify(this.settings));
     this.close();
 
-    if (this.onSettingsChange) {
-      this.onSettingsChange(this.settings);
-    }
+    // Re-initialize SDK with new settings
+    this.initializeSDK();
   }
 
   handleReset() {

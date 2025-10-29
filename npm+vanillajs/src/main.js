@@ -1,66 +1,31 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { FormFiller, Narrative } from "@tiro-health/web-sdk";
-import { SettingsManager, getDefaultSettings } from "./settings.js";
-import "./settings.css";
+// ============================================================
+// CORE FUNCTIONALITY - This is what you need in your app
+// ============================================================
 
-window.React = React;
-window.ReactDOM = ReactDOM;
+import { FormFiller, Narrative, LaunchContextProvider } from "@tiro-health/web-sdk";
 
-let filler = null;
-let narrative = null;
+export function initializeTiroSDK(config) {
+  const filler = new FormFiller({
+    questionnaire: config.questionnaire,
+    sdcEndpoint: config.sdcEndpoint,
+  });
 
-async function initializeApp(settings) {
-  try {
-    if (filler && typeof filler.unmount === "function") {
-      filler.unmount();
-    }
-    if (narrative && typeof narrative.unmount === "function") {
-      narrative.unmount();
-    }
+  const launchContextProvider = new LaunchContextProvider({
+    dataEndpoint: config.dataEndpoint,
+    filler,
+  });
 
-    filler = new FormFiller({
-      questionnaire:
-        settings.backendUrl + "templates/2630b8675c214707b1f86d1fbd4deb87",
-    });
+  const narrative = new Narrative({ filler });
 
-    narrative = new Narrative({ filler });
-
-    const formFillerElement = document.getElementById("form-filler");
-    const narrativeElement = document.getElementById("narrative");
-
-    if (formFillerElement) {
-      filler.mount(formFillerElement);
-      console.log("Form filler mounted successfully");
-    } else {
-      console.error("Form filler element not found");
-    }
-
-    if (narrativeElement) {
-      narrative.mount(narrativeElement);
-      console.log("Narrative mounted successfully");
-    } else {
-      console.error("Narrative element not found");
-    }
-
-    console.log("Tiro Web SDK initialized successfully");
-  } catch (error) {
-    console.error("Failed to initialize Tiro Web SDK:", error);
-  }
+  launchContextProvider.mount(document.getElementById("launch-context"));
+  filler.mount(document.getElementById("form-filler"));
+  narrative.mount(document.getElementById("narrative"));
 }
 
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", () => {
-    const settings = getDefaultSettings();
-    new SettingsManager((newSettings) => {
-      initializeApp(newSettings);
-    });
-    initializeApp(settings);
-  });
-} else {
-  const settings = getDefaultSettings();
-  new SettingsManager((newSettings) => {
-    initializeApp(newSettings);
-  });
-  initializeApp(settings);
-}
+// ============================================================
+// DEMO FUNCTIONALITY - This is just for this demo
+// ============================================================
+
+import { SettingsManager } from "./settings.js";
+
+new SettingsManager();
