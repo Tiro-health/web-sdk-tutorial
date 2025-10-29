@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Tiro Web SDK Test - Launch Context Provider</title>
+        <link
+            rel="stylesheet"
+            href="https://atticus-assets.tiro.health/sdk/latest/style.css"
+        />
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+        <style>
+            /* SDK Component Visualization Styles */
+            .sdk-component-wrapper {
+                position: relative;
+                margin: 1rem 0;
+                border: 2px solid #10b981;
+                padding: 1rem;
+                background: rgba(16, 185, 129, 0.05);
+                border-radius: 8px;
+            }
+
+            .sdk-component-badge {
+                position: absolute;
+                top: 8px;
+                right: 8px;
+                background: linear-gradient(135deg, #10b981, #059669);
+                color: white;
+                padding: 4px 10px;
+                border-radius: 12px;
+                font-size: 0.7rem;
+                font-weight: 600;
+                z-index: 1000;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+
+            .app-code-section {
+                position: relative;
+                border: 2px dashed #3b82f6;
+                padding: 1rem;
+                background: rgba(59, 130, 246, 0.05);
+                border-radius: 8px;
+                margin-bottom: 1rem;
+            }
+
+            .app-code-badge {
+                display: inline-block;
+                background: linear-gradient(135deg, #3b82f6, #2563eb);
+                color: white;
+                padding: 4px 10px;
+                border-radius: 12px;
+                font-size: 0.7rem;
+                font-weight: 600;
+                margin-left: 0.5rem;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+
+            .patient-info {
+                padding: 10px;
+                margin: 10px 0;
+                background-color: #e3f2fd;
+                border-radius: 4px;
+                border: 1px solid #2196f3;
+                display: none;
+            }
+
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 2rem;
+            }
+
+            .sdk-legend {
+                margin-top: 2rem;
+                padding: 1rem;
+                background: #f9fafb;
+                border-radius: 8px;
+            }
+
+            .sdk-legend h3 {
+                margin-top: 0;
+                margin-bottom: 1rem;
+                font-size: 1rem;
+                font-weight: 600;
+                color: #111827;
+            }
+
+            .legend-item {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .legend-box {
+                width: 40px;
+                height: 24px;
+                border-radius: 4px;
+            }
+
+            .legend-box.sdk {
+                border: 2px solid #10b981;
+                background: rgba(16, 185, 129, 0.1);
+            }
+
+            .legend-box.app {
+                border: 2px dashed #3b82f6;
+                background: rgba(59, 130, 246, 0.1);
+            }
+
+            .legend-label {
+                color: #374151;
+                font-size: 0.8rem;
+            }
+        </style>
+    </head>
+    <body class="px-4">
+        <div class="container">
+            <div class="app-code-section">
+                <h1 class="text-lg">
+                    Tiro Web SDK Test - Launch Context Provider
+                    <span class="app-code-badge">Your App</span>
+                </h1>
+                <div id="patient-info" class="patient-info"></div>
+            </div>
+            <div id="launch-context-container"></div>
+            <div class="sdk-legend">
+                <h3>Component Legend</h3>
+                <div class="legend-item">
+                    <div class="legend-box sdk"></div>
+                    <span class="legend-label">SDK Component</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-box app"></div>
+                    <span class="legend-label">Your Application</span>
+                </div>
+            </div>
+        </div>
+
+        <script
+            crossorigin
+            src="https://unpkg.com/react@18/umd/react.production.min.js"
+        ></script>
+        <script
+            crossorigin
+            src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+        ></script>
+        <script src="https://atticus-assets.tiro.health/sdk/latest/tiro-web-sdk.iife.js"></script>
+
+        <script>
+            const DEFAULT_BACKEND_URL = "https://templates.tiro.health/";
+            
+            let filler = null;
+            let narrative = null;
+
+            function handlePatientChange(patientId, patient) {
+                console.log("Patient changed:", patientId, patient);
+                const patientInfoDiv = document.getElementById("patient-info");
+                if (patient && patientInfoDiv) {
+                    const name = patient.name?.[0]?.text || "Unknown";
+                    const birthDate = patient.birthDate || "Unknown";
+                    patientInfoDiv.innerHTML = `<strong>Selected Patient:</strong> ${name} (DOB: ${birthDate})`;
+                    patientInfoDiv.style.display = "block";
+                } else if (patientInfoDiv) {
+                    patientInfoDiv.style.display = "none";
+                }
+            }
+
+            async function initializeSDK() {
+                try {
+                    if (filler && typeof filler.unmount === "function") {
+                        filler.unmount();
+                    }
+                    if (narrative && typeof narrative.unmount === "function") {
+                        narrative.unmount();
+                    }
+
+                    // Create the form filler instance
+                    filler = new TiroWebSDK.FormFiller({
+                        questionnaire: DEFAULT_BACKEND_URL + "templates/2630b8675c214707b1f86d1fbd4deb87",
+                    });
+
+                    // Create the narrative instance
+                    narrative = new TiroWebSDK.Narrative({ filler });
+
+                    const launchContextContainer = document.getElementById("launch-context-container");
+
+                    if (launchContextContainer) {
+                        // Clear the container
+                        launchContextContainer.innerHTML = "";
+
+                        // Create a React root and render LaunchContextProvider
+                        const root = ReactDOM.createRoot(launchContextContainer);
+                        
+                        root.render(
+                            React.createElement(TiroWebSDK.LaunchContextProvider, {
+                                patients: [
+                                    {
+                                        id: "patient-1",
+                                        name: "John Doe",
+                                        birthDate: "1980-05-15",
+                                        gender: "male",
+                                    },
+                                    {
+                                        id: "patient-2",
+                                        name: "Jane Smith",
+                                        birthDate: "1975-03-22",
+                                        gender: "female",
+                                    },
+                                    {
+                                        id: "patient-3",
+                                        name: "Bob Johnson",
+                                        birthDate: "1990-11-08",
+                                        gender: "male",
+                                    },
+                                ],
+                                onPatientChange: handlePatientChange,
+                                children: ({ launchContext }) => {
+                                    console.log("Launch context:", launchContext);
+
+                                    // Create main content structure
+                                    const mainContent = React.createElement("main", { className: "py-2" },
+                                        React.createElement("div", { className: "sdk-component-wrapper" },
+                                            React.createElement("span", { className: "sdk-component-badge" }, "SDK: LaunchContextProvider"),
+                                            React.createElement("div", { 
+                                                id: "form-filler",
+                                                ref: (element) => {
+                                                    if (element && filler) {
+                                                        filler.mount(element);
+                                                        console.log("Form filler mounted successfully");
+                                                    }
+                                                }
+                                            },
+                                                React.createElement("span", { className: "sdk-component-badge" }, "SDK: FormFiller")
+                                            )
+                                        ),
+                                        React.createElement("div", { 
+                                            className: "sdk-component-wrapper",
+                                            id: "narrative",
+                                            ref: (element) => {
+                                                if (element && narrative) {
+                                                    narrative.mount(element);
+                                                    console.log("Narrative mounted successfully");
+                                                }
+                                            }
+                                        },
+                                            React.createElement("span", { className: "sdk-component-badge" }, "SDK: Narrative")
+                                        )
+                                    );
+
+                                    return mainContent;
+                                }
+                            })
+                        );
+
+                        console.log("LaunchContextProvider initialized successfully");
+                    } else {
+                        console.error("LaunchContextProvider container element not found");
+                    }
+
+                    console.log("Tiro Web SDK initialized successfully");
+                } catch (error) {
+                    console.error("Failed to initialize Tiro Web SDK:", error);
+                }
+            }
+
+            // Initialize when the page loads
+            if (document.readyState === "loading") {
+                document.addEventListener("DOMContentLoaded", initializeSDK);
+            } else {
+                initializeSDK();
+            }
+        </script>
+    </body>
+</html>

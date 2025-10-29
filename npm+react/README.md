@@ -9,6 +9,23 @@ This is the React + TypeScript version of the Tiro Web SDK tutorial, demonstrati
 - Hot module replacement (HMR) with Vite
 - ESLint configuration for code quality
 
+## Examples
+
+This tutorial includes two examples:
+
+1. **App.tsx** - Basic integration with FormFiller and Narrative components
+2. **LaunchContextExample.tsx** - Advanced integration showing how to use the LaunchContextProvider component for patient selection and FHIR-compliant launch context
+
+### LaunchContextProvider Example
+
+The `LaunchContextProvider` component enables:
+- Patient selection from a predefined list
+- Building FHIR-compliant launch context
+- Passing patient context to SDK components
+- Handling patient change events
+
+To try the LaunchContextProvider example, update `main.tsx` to import and use `LaunchContextExample` instead of `App`.
+
 ## Prerequisites
 
 - Node.js (version 18 or higher)

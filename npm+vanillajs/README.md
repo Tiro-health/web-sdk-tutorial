@@ -9,6 +9,23 @@ This is the Vanilla JavaScript version of the Tiro Web SDK tutorial, demonstrati
 - Mounting form filler and narrative components
 - Modern build tooling with Vite
 
+## Examples
+
+This tutorial includes two examples:
+
+1. **index.html / main.js** - Basic integration with FormFiller and Narrative components
+2. **launch-context-example.html / launch-context-example.js** - Advanced integration showing how to use the LaunchContextProvider component for patient selection and FHIR-compliant launch context
+
+### LaunchContextProvider Example
+
+The `LaunchContextProvider` component enables:
+- Patient selection from a predefined list
+- Building FHIR-compliant launch context
+- Passing patient context to SDK components
+- Handling patient change events
+
+To try the LaunchContextProvider example, open `launch-context-example.html` in your development server or update your Vite configuration to use it as the entry point.
+
 ## Project Structure
 
 ```
