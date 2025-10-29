@@ -11,12 +11,12 @@ import { SettingsPopoverComponent, getDefaultSettings, type Settings } from './s
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild('formFiller', { static: true }) formFillerElement!: ElementRef;
-  @ViewChild('narrative', { static: true }) narrativeElement!: ElementRef;
+  @ViewChild('launchContextProvider', { static: true }) launchContextProviderElement!: ElementRef;
 
   private filler: any;
   private narrative: any;
   private settings: Settings = getDefaultSettings();
+  selectedPatientInfo = '';
 
   constructor() { }
 
@@ -43,6 +43,17 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.initializeTiroSDK();
   }
 
+  private handlePatientChange = (patientId: string, patient: any): void => {
+    console.log("Patient changed:", patientId, patient);
+    if (patient) {
+      const name = patient.name?.[0]?.text || "Unknown";
+      const birthDate = patient.birthDate || "Unknown";
+      this.selectedPatientInfo = `${name} (DOB: ${birthDate})`;
+    } else {
+      this.selectedPatientInfo = "";
+    }
+  };
+
   private async initializeTiroSDK(): Promise<void> {
     try {
       if (this.filler && typeof this.filler.unmount === 'function') {
@@ -60,22 +71,84 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       // Create the narrative instance
       this.narrative = new TiroWebSDK.Narrative({ filler: this.filler });
 
-      // Mount the components to their respective DOM elements
-      const formFillerElement = this.formFillerElement.nativeElement;
-      const narrativeElement = this.narrativeElement.nativeElement;
+      // Mount LaunchContextProvider with FormFiller and Narrative
+      const launchContextProviderElement = this.launchContextProviderElement.nativeElement;
 
-      if (formFillerElement) {
-        this.filler.mount(formFillerElement);
-        console.log('Form filler mounted successfully');
-      } else {
-        console.error('Form filler element not found');
-      }
+      if (launchContextProviderElement) {
+        TiroWebSDK.mountLaunchContextProvider(launchContextProviderElement, {
+          patients: [
+            {
+              id: "patient-1",
+              name: "John Doe",
+              birthDate: "1980-05-15",
+              gender: "male",
+            },
+            {
+              id: "patient-2",
+              name: "Jane Smith",
+              birthDate: "1975-03-22",
+              gender: "female",
+            },
+            {
+              id: "patient-3",
+              name: "Bob Johnson",
+              birthDate: "1990-11-08",
+              gender: "male",
+            },
+          ],
+          onPatientChange: this.handlePatientChange,
+          children: ({ launchContext }: { launchContext: Record<string, unknown> }) => {
+            console.log("Launch context:", launchContext);
+            
+            // Create container for FormFiller and Narrative
+            const mainContent = document.createElement('main');
+            mainContent.className = 'main-content';
 
-      if (narrativeElement) {
-        this.narrative.mount(narrativeElement);
-        console.log('Narrative mounted successfully');
+            const formFillerWrapper = document.createElement('div');
+            formFillerWrapper.className = 'sdk-component-wrapper';
+            
+            const launchContextBadge = document.createElement('span');
+            launchContextBadge.className = 'sdk-component-badge';
+            launchContextBadge.textContent = 'SDK: LaunchContextProvider';
+            formFillerWrapper.appendChild(launchContextBadge);
+
+            const formFillerDiv = document.createElement('div');
+            formFillerDiv.id = 'form-filler';
+            
+            const formFillerBadge = document.createElement('span');
+            formFillerBadge.className = 'sdk-component-badge';
+            formFillerBadge.textContent = 'SDK: FormFiller';
+            formFillerDiv.appendChild(formFillerBadge);
+            
+            formFillerWrapper.appendChild(formFillerDiv);
+
+            const narrativeWrapper = document.createElement('div');
+            narrativeWrapper.className = 'sdk-component-wrapper';
+            narrativeWrapper.id = 'narrative';
+            
+            const narrativeBadge = document.createElement('span');
+            narrativeBadge.className = 'sdk-component-badge';
+            narrativeBadge.textContent = 'SDK: Narrative';
+            narrativeWrapper.appendChild(narrativeBadge);
+
+            mainContent.appendChild(formFillerWrapper);
+            mainContent.appendChild(narrativeWrapper);
+
+            // Mount SDK components
+            setTimeout(() => {
+              this.filler.mount(formFillerDiv);
+              console.log('Form filler mounted successfully');
+              
+              this.narrative.mount(narrativeWrapper);
+              console.log('Narrative mounted successfully');
+            }, 0);
+
+            return mainContent;
+          }
+        });
+        console.log('LaunchContextProvider mounted successfully');
       } else {
-        console.error('Narrative element not found');
+        console.error('LaunchContextProvider element not found');
       }
 
       console.log('Tiro Web SDK initialized successfully');

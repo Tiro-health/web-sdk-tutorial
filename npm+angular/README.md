@@ -9,6 +9,23 @@ This is the Angular version of the Tiro Web SDK tutorial, demonstrating how to i
 - Mounting form filler and narrative components
 - Basic Angular component lifecycle management
 
+## Examples
+
+This tutorial includes two examples:
+
+1. **app.component.ts** - Basic integration with FormFiller and Narrative components
+2. **launch-context-example.component.ts** - Advanced integration showing how to use the LaunchContextProvider component for patient selection and FHIR-compliant launch context
+
+### LaunchContextProvider Example
+
+The `LaunchContextProvider` component enables:
+- Patient selection from a predefined list
+- Building FHIR-compliant launch context
+- Passing patient context to SDK components
+- Handling patient change events
+
+To try the LaunchContextProvider example, update `main.ts` to import and use `LaunchContextExampleComponent` instead of `AppComponent`.
+
 ## Project Structure
 
 ```

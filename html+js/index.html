@@ -250,6 +250,15 @@
                 box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
                 transform: translateY(-1px);
             }
+
+            .patient-info {
+                padding: 10px;
+                margin: 10px 0;
+                background-color: #e3f2fd;
+                border-radius: 4px;
+                border: 1px solid #2196f3;
+                display: none;
+            }
         </style>
     </head>
     <body class="px-4">
@@ -312,14 +321,9 @@
                 Tiro Web SDK Test
                 <span class="app-code-badge">Your App</span>
             </h1>
+            <div id="patient-info" class="patient-info"></div>
         </div>
-        <main class="py-2">
-            <div id="form-filler" class="sdk-component-wrapper">
-                <span class="sdk-component-badge">SDK: FormFiller</span>
-            </div>
-            <div id="narrative" class="sdk-component-wrapper">
-                <span class="sdk-component-badge">SDK: Narrative</span>
-            </div>
+        <div id="launch-context-container"></div>
             <script
                 crossorigin
                 src="https://unpkg.com/react@18/umd/react.production.min.js"
@@ -359,6 +363,19 @@
                 let filler = null;
                 let narrative = null;
 
+                function handlePatientChange(patientId, patient) {
+                    console.log("Patient changed:", patientId, patient);
+                    const patientInfoDiv = document.getElementById("patient-info");
+                    if (patient && patientInfoDiv) {
+                        const name = patient.name?.[0]?.text || "Unknown";
+                        const birthDate = patient.birthDate || "Unknown";
+                        patientInfoDiv.innerHTML = `<strong>Selected Patient:</strong> ${name} (DOB: ${birthDate})`;
+                        patientInfoDiv.style.display = "block";
+                    } else if (patientInfoDiv) {
+                        patientInfoDiv.style.display = "none";
+                    }
+                }
+
                 function initializeApp(settings) {
                     if (filler && typeof filler.unmount === "function") {
                         filler.unmount();
@@ -373,8 +390,74 @@
                     });
                     narrative = new TiroWebSDK.Narrative({ filler });
 
-                    filler.mount(document.getElementById("form-filler"));
-                    narrative.mount(document.getElementById("narrative"));
+                    const launchContextContainer = document.getElementById("launch-context-container");
+
+                    if (launchContextContainer) {
+                        launchContextContainer.innerHTML = "";
+                        const root = ReactDOM.createRoot(launchContextContainer);
+                        
+                        root.render(
+                            React.createElement(TiroWebSDK.LaunchContextProvider, {
+                                patients: [
+                                    {
+                                        id: "patient-1",
+                                        name: "John Doe",
+                                        birthDate: "1980-05-15",
+                                        gender: "male",
+                                    },
+                                    {
+                                        id: "patient-2",
+                                        name: "Jane Smith",
+                                        birthDate: "1975-03-22",
+                                        gender: "female",
+                                    },
+                                    {
+                                        id: "patient-3",
+                                        name: "Bob Johnson",
+                                        birthDate: "1990-11-08",
+                                        gender: "male",
+                                    },
+                                ],
+                                onPatientChange: handlePatientChange,
+                                children: ({ launchContext }) => {
+                                    console.log("Launch context:", launchContext);
+
+                                    const mainContent = React.createElement("main", { className: "py-2" },
+                                        React.createElement("div", { className: "sdk-component-wrapper" },
+                                            React.createElement("span", { className: "sdk-component-badge" }, "SDK: LaunchContextProvider"),
+                                            React.createElement("div", { 
+                                                id: "form-filler",
+                                                ref: (element) => {
+                                                    if (element && filler) {
+                                                        filler.mount(element);
+                                                        console.log("Form filler mounted successfully");
+                                                    }
+                                                }
+                                            },
+                                                React.createElement("span", { className: "sdk-component-badge" }, "SDK: FormFiller")
+                                            )
+                                        ),
+                                        React.createElement("div", { 
+                                            className: "sdk-component-wrapper",
+                                            id: "narrative",
+                                            ref: (element) => {
+                                                if (element && narrative) {
+                                                    narrative.mount(element);
+                                                    console.log("Narrative mounted successfully");
+                                                }
+                                            }
+                                        },
+                                            React.createElement("span", { className: "sdk-component-badge" }, "SDK: Narrative")
+                                        )
+                                    );
+
+                                    return mainContent;
+                                }
+                            })
+                        );
+
+                        console.log("LaunchContextProvider initialized successfully");
+                    }
                     
                     console.log("Tiro Web SDK initialized successfully");
                 }

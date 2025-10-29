@@ -183,6 +183,26 @@ Most npm-based examples require authentication with Google Cloud to access the T
 
 > **Note**: The html+js example doesn't require authentication as it uses CDN-hosted bundles.
 
+## SDK Components
+
+The Tiro Web SDK provides the following components:
+
+### Core Components
+- **FormFiller**: Interactive form for data collection based on FHIR questionnaires
+- **Narrative**: Clinical narrative generation from form data
+- **LaunchContextProvider**: Patient context management with FHIR-compliant launch context
+
+### LaunchContextProvider
+
+The `LaunchContextProvider` component enables patient-aware form filling by:
+- Managing patient selection from a list or endpoint
+- Building FHIR-compliant launch context automatically
+- Converting simple patient objects to FHIR Patient resources
+- Providing patient context to child SDK components
+- Supporting patient change event callbacks
+
+Each tutorial directory includes examples of both basic integration (FormFiller + Narrative) and advanced integration (LaunchContextProvider with patient selection).
+
 ## Understanding SDK vs Application Code
 
 All tutorial examples include **visual indicators** to help you distinguish between:
@@ -191,6 +211,7 @@ All tutorial examples include **visual indicators** to help you distinguish betw
 Components provided by the `@tiro-health/web-sdk` package that render complete UI functionality:
 - **FormFiller**: Interactive form for data collection based on FHIR questionnaires
 - **Narrative**: Clinical narrative generation from form data
+- **LaunchContextProvider**: Patient context management with FHIR-compliant launch context
 
 ### Application Code (Blue Badges)
 Elements you need to implement in your application:
@@ -198,6 +219,7 @@ Elements you need to implement in your application:
 - Mount point `<div>` elements where SDK components render
 - SDK initialization and lifecycle management
 - Custom styling and branding
+- Patient data management (when using LaunchContextProvider)
 
 ### Interactive Visualization
 
