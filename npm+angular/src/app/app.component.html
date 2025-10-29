@@ -5,15 +5,11 @@
       Tiro Web SDK Test
       <span class="app-code-badge">Your App</span>
     </h1>
+    <div *ngIf="selectedPatientInfo" style="padding: 10px; margin: 10px 0; background-color: #e3f2fd; border-radius: 4px; border: 1px solid #2196f3;">
+      <strong>Selected Patient:</strong> {{ selectedPatientInfo }}
+    </div>
   </div>
-  <main class="main-content">
-    <div #formFiller id="form-filler" class="sdk-component-wrapper">
-      <span class="sdk-component-badge">SDK: FormFiller</span>
-    </div>
-    <div #narrative id="narrative" class="sdk-component-wrapper">
-      <span class="sdk-component-badge">SDK: Narrative</span>
-    </div>
-  </main>
+  <div #launchContextProvider></div>
   
   <div class="sdk-legend">
     <h3>Component Legend</h3>
