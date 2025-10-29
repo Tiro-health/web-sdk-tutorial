@@ -2,7 +2,6 @@
 // DEMO FUNCTIONALITY - This is just for this demo
 // ============================================================
 
-import { initializeTiroSDK } from "./main.js";
 import "./settings.css";
 
 const DEFAULT_BACKEND_URL = "https://templates.tiro.health/";
@@ -29,21 +28,24 @@ export class SettingsManager {
   constructor() {
     this.settings = getDefaultSettings();
     this.isOpen = false;
+    this.listeners = {};
     this.createUI();
     this.attachEventListeners();
-    
-    // Initialize SDK with default settings on page load
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", () => {
-        this.initializeSDK();
-      });
-    } else {
-      this.initializeSDK();
-    }
   }
   
-  initializeSDK() {
-    // Convert settings to SDK configuration
+  init() {
+    // Trigger initial setup after listeners are attached
+    this.emitChange();
+  }
+  
+  on(event, callback) {
+    if (!this.listeners[event]) {
+      this.listeners[event] = [];
+    }
+    this.listeners[event].push(callback);
+  }
+  
+  emitChange() {
     const config = {
       questionnaire: this.settings.backendUrl + "templates/" + TEMPLATE_ID,
       sdcEndpoint: {
@@ -55,8 +57,9 @@ export class SettingsManager {
       },
     };
     
-    // Initialize the Tiro SDK
-    initializeTiroSDK(config);
+    if (this.listeners.change) {
+      this.listeners.change.forEach(callback => callback(config));
+    }
   }
 
   createUI() {
@@ -180,8 +183,8 @@ export class SettingsManager {
     localStorage.setItem("tiro-settings", JSON.stringify(this.settings));
     this.close();
 
-    // Re-initialize SDK with new settings
-    this.initializeSDK();
+    // Emit change event to re-initialize SDK with new settings
+    this.emitChange();
   }
 
   handleReset() {

@@ -28,4 +28,6 @@ export function initializeTiroSDK(config) {
 
 import { SettingsManager } from "./settings.js";
 
-new SettingsManager();
+const settings = new SettingsManager();
+settings.on("change", (newSettings) => initializeTiroSDK(newSettings));
+settings.init();
