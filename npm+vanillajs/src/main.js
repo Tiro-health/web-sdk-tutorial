@@ -30,4 +30,3 @@ import { SettingsManager } from "./settings.js";
 
 const settings = new SettingsManager();
 settings.on("change", (newSettings) => initializeTiroSDK(newSettings));
-settings.init();
