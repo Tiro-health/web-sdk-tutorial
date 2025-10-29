@@ -16,56 +16,54 @@ main {
 
 section {
     margin: 2rem 0;
-}
-
-/* SDK Component Visualization Styles */
-.sdk-component-wrapper {
+    padding: 1.5rem;
     position: relative;
-    margin: 1rem 0;
-    border: 2px solid #10b981;
-    padding: 1rem;
-    background: rgba(16, 185, 129, 0.05);
-    border-radius: 8px;
 }
 
-.sdk-component-badge {
+/* SDK Components - Green borders */
+section.sdk-component {
+    border: 2px solid #10b981;
+    border-radius: 8px;
+    background: rgba(16, 185, 129, 0.05);
+}
+
+section.sdk-component::after {
+    content: "SDK Component";
     position: absolute;
-    top: 8px;
-    right: 8px;
+    top: -12px;
+    right: 12px;
     background: linear-gradient(135deg, #10b981, #059669);
     color: white;
-    padding: 4px 10px;
+    padding: 4px 12px;
     border-radius: 12px;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     font-weight: 600;
-    z-index: 1000;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.app-code-section {
-    position: relative;
+/* App Code - Blue borders */
+section.app-code {
     border: 2px dashed #3b82f6;
-    padding: 1rem;
-    background: rgba(59, 130, 246, 0.05);
     border-radius: 8px;
-    margin-bottom: 1rem;
+    background: rgba(59, 130, 246, 0.05);
 }
 
-.app-code-badge {
-    display: inline-block;
+section.app-code::after {
+    content: "Your App Code";
+    position: absolute;
+    top: -12px;
+    right: 12px;
     background: linear-gradient(135deg, #3b82f6, #2563eb);
     color: white;
-    padding: 4px 10px;
+    padding: 4px 12px;
     border-radius: 12px;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     font-weight: 600;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    margin-left: 0.5rem;
-    vertical-align: middle;
 }
 
-/* Legend styles */
-.sdk-legend {
+/* Legend */
+.legend {
     position: fixed;
     bottom: 20px;
     right: 20px;
@@ -78,7 +76,7 @@ section {
     font-size: 0.875rem;
 }
 
-.sdk-legend h3 {
+.legend h3 {
     margin: 0 0 8px 0;
     font-size: 0.875rem;
     font-weight: 600;
@@ -114,11 +112,146 @@ section {
     font-size: 0.8rem;
 }
 
-.patient-info {
-    padding: 10px;
-    margin: 10px 0;
-    background-color: #e3f2fd;
+/* Settings Button */
+.settings-button {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    border: 2px dashed #3b82f6;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+    z-index: 1002;
+}
+
+.settings-button:hover {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+/* Settings Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.modal-content {
+    background: white;
+    border: 2px dashed #3b82f6;
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: #3b82f6;
+    font-size: 1.5rem;
+}
+
+.close-button {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #6b7280;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 4px;
-    border: 1px solid #2196f3;
-    display: none;
+}
+
+.close-button:hover {
+    background: #f3f4f6;
+    color: #1f2937;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #374151;
+    font-weight: 500;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    box-sizing: border-box;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.form-actions button {
+    flex: 1;
+    padding: 0.75rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.875rem;
+    border: none;
+}
+
+.form-actions button[type="submit"] {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+}
+
+.form-actions button[type="submit"]:hover {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+}
+
+.form-actions button[type="button"] {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.form-actions button[type="button"]:hover {
+    background: #e5e7eb;
 }
