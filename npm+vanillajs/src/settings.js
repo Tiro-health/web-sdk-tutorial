@@ -31,11 +31,9 @@ export class SettingsManager {
     this.listeners = {};
     this.createUI();
     this.attachEventListeners();
-  }
-  
-  init() {
-    // Trigger initial setup after listeners are attached
-    this.emitChange();
+    
+    // Trigger initial setup after listeners are attached (setTimeout ensures listener is registered)
+    setTimeout(() => this.emitChange(), 0);
   }
   
   on(event, callback) {
