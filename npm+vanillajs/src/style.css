@@ -1,69 +1,69 @@
 /* Import Tiro SDK styles */
 @import url('https://atticus-assets.tiro.health/sdk/latest/style.css');
 
-/* Custom styles replacing Tailwind classes */
-.container {
-    padding: 0 1rem;
+/* Basic page layout */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: system-ui, -apple-system, sans-serif;
 }
 
-.title {
-    font-size: 1.125rem;
-    font-weight: bold;
-    margin-bottom: 1rem;
+main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
 }
 
-.main-content {
-    padding: 0.5rem 0;
-}
-
-/* SDK Component Visualization Styles */
-.sdk-component-wrapper {
+section {
+    margin: 2rem 0;
+    padding: 1.5rem;
     position: relative;
-    margin: 1rem 0;
-    border: 2px solid #10b981;
-    padding: 1rem;
-    background: rgba(16, 185, 129, 0.05);
-    border-radius: 8px;
 }
 
-.sdk-component-badge {
+/* SDK Components - Green borders */
+section.sdk-component {
+    border: 2px solid #10b981;
+    border-radius: 8px;
+    background: rgba(16, 185, 129, 0.05);
+}
+
+section.sdk-component::after {
+    content: "SDK Component";
     position: absolute;
-    top: 8px;
-    right: 8px;
+    top: -12px;
+    right: 12px;
     background: linear-gradient(135deg, #10b981, #059669);
     color: white;
-    padding: 4px 10px;
+    padding: 4px 12px;
     border-radius: 12px;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     font-weight: 600;
-    z-index: 1000;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.app-code-section {
-    position: relative;
+/* App Code - Blue borders */
+section.app-code {
     border: 2px dashed #3b82f6;
-    padding: 1rem;
-    background: rgba(59, 130, 246, 0.05);
     border-radius: 8px;
-    margin-bottom: 1rem;
+    background: rgba(59, 130, 246, 0.05);
 }
 
-.app-code-badge {
-    display: inline-block;
+section.app-code::after {
+    content: "Your App Code";
+    position: absolute;
+    top: -12px;
+    right: 12px;
     background: linear-gradient(135deg, #3b82f6, #2563eb);
     color: white;
-    padding: 4px 10px;
+    padding: 4px 12px;
     border-radius: 12px;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     font-weight: 600;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    margin-left: 0.5rem;
-    vertical-align: middle;
 }
 
-/* Legend styles */
-.sdk-legend {
+/* Legend */
+.legend {
     position: fixed;
     bottom: 20px;
     right: 20px;
@@ -76,7 +76,7 @@
     font-size: 0.875rem;
 }
 
-.sdk-legend h3 {
+.legend h3 {
     margin: 0 0 8px 0;
     font-size: 0.875rem;
     font-weight: 600;

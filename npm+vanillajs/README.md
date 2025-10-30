@@ -28,6 +28,22 @@ npm+vanillajs/
 
 If you don't have Google Cloud CLI installed, see the [installation guide](https://cloud.google.com/sdk/docs/install).
 
+## Configuration
+
+Before running the application, you need to configure the environment variables:
+
+1. Copy the `.env.example` file to `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Update the `.env` file with your configuration:
+   - `VITE_QUESTIONNAIRE_URI`: Full URL to your questionnaire template
+   - `VITE_BACKEND_URL`: URL to your SDC FHIR server endpoint
+   - `VITE_DATA_SERVER_URL`: URL to your data FHIR server endpoint
+
+The `.env.example` file contains default values that you can use as a starting point.
+
 ## Installation
 
 ### 1. Authenticate with Google Cloud

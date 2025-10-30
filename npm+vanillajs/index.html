@@ -1,46 +1,43 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Tiro Web SDK Test</title>
-        <link rel="stylesheet" href="./src/style.css" />
-        <style>
-            .container {
-                padding: 2rem;
-                max-width: 1200px;
-                margin: 0 auto;
-            }
-        </style>
-    </head>
-    <body class="container">
-        <div class="app-code-section">
-            <h1 class="title">
-                Tiro Web SDK Test
-                <span class="app-code-badge">Your App</span>
-            </h1>
-        </div>
-        <main class="main-content">
-            <div id="form-filler" class="sdk-component-wrapper">
-                <span class="sdk-component-badge">SDK: FormFiller</span>
-            </div>
-            <div id="narrative" class="sdk-component-wrapper">
-                <span class="sdk-component-badge">SDK: Narrative</span>
-            </div>
-        </main>
-        
-        <div class="sdk-legend">
-            <h3>Component Legend</h3>
-            <div class="legend-item">
-                <div class="legend-box sdk"></div>
-                <span class="legend-label">SDK Component</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-box app"></div>
-                <span class="legend-label">Your Application</span>
-            </div>
-        </div>
-        
-        <script type="module" src="./src/main.js"></script>
-    </body>
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" href="./favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tiro Web SDK Demo</title>
+  <link rel="stylesheet" href="./src/style.css" />
+</head>
+<body>
+<main>
+  <section class="app-code">
+    <h1>Tiro Web SDK Demo</h1>
+  </section>
+  
+  <section class="sdk-component">
+    <div id="launch-context"></div>
+  </section>
+  
+  <section class="sdk-component">
+    <div id="form-filler"></div>
+  </section>
+  
+  <section class="sdk-component">
+    <div id="narrative"></div>
+  </section>
+</main>
+
+<div class="legend">
+  <h3>Legend</h3>
+  <div class="legend-item">
+    <div class="legend-box sdk"></div>
+    <span class="legend-label">SDK Component</span>
+  </div>
+  <div class="legend-item">
+    <div class="legend-box app"></div>
+    <span class="legend-label">Your App Code</span>
+  </div>
+</div>
+
+<script type="module" src="./src/main.js"></script>
+</body>
 </html>
