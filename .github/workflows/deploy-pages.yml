@@ -60,6 +60,10 @@ jobs:
           cd ..
           mkdir -p final-dist/npm-vanillajs
           cp -r npm+vanillajs/dist/* final-dist/npm-vanillajs/
+        env:
+          VITE_QUESTIONNAIRE_URI: ${{ vars.VITE_QUESTIONNAIRE_URI }}
+          VITE_BACKEND_URL: ${{ vars.VITE_BACKEND_URL }}
+          VITE_DATA_SERVER_URL: ${{ vars.VITE_DATA_SERVER_URL }}
 
       - name: Build npm+angular
         run: |
