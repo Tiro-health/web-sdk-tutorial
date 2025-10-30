@@ -3,8 +3,9 @@
 // ============================================================
 
 import { FormFiller, Narrative, LaunchContextProvider } from "@tiro-health/web-sdk";
+import { loadConfig } from "./settings.js";
 
-export function initializeTiroSDK(config) {
+function initializeTiroSDK(config) {
   const filler = new FormFiller({
     questionnaire: config.questionnaire,
     sdcEndpoint: config.sdcEndpoint,
@@ -22,11 +23,5 @@ export function initializeTiroSDK(config) {
   narrative.mount(document.getElementById("narrative"));
 }
 
-// ============================================================
-// DEMO FUNCTIONALITY - This is just for this demo
-// ============================================================
-
-import { SettingsManager } from "./settings.js";
-
-const settings = new SettingsManager();
-settings.on("change", (newSettings) => initializeTiroSDK(newSettings));
+const config = loadConfig();
+initializeTiroSDK(config);

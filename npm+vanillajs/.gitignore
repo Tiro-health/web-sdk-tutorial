@@ -1,1 +1,3 @@
 .npmrc
+.env
+.env.local
