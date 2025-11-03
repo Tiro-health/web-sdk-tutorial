@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Tiro Web SDK Test</title>
+        <title>Tiro Web SDK Demo</title>
         <link
             rel="stylesheet"
             href="https://atticus-assets.tiro.health/sdk/latest/style.css"
@@ -105,215 +105,19 @@
                 color: #374151;
                 font-size: 0.8rem;
             }
-
-            /* Settings styles */
-            .settings-button {
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: linear-gradient(135deg, #6366f1, #4f46e5);
-                color: white;
-                border: none;
-                padding: 10px 16px;
-                border-radius: 8px;
-                cursor: pointer;
-                font-size: 0.875rem;
-                font-weight: 600;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-                z-index: 1002;
-                transition: all 0.2s ease;
-            }
-
-            .settings-button:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-            }
-
-            .modal-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0, 0, 0, 0.5);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 1003;
-            }
-
-            .modal-content {
-                background: white;
-                border-radius: 12px;
-                padding: 24px;
-                width: 90%;
-                max-width: 500px;
-                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            }
-
-            .modal-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 20px;
-            }
-
-            .modal-header h2 {
-                margin: 0;
-                font-size: 1.5rem;
-                font-weight: 600;
-                color: #111827;
-            }
-
-            .close-button {
-                background: none;
-                border: none;
-                font-size: 1.5rem;
-                cursor: pointer;
-                color: #6b7280;
-                padding: 0;
-                width: 32px;
-                height: 32px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border-radius: 6px;
-                transition: all 0.2s ease;
-            }
-
-            .close-button:hover {
-                background: #f3f4f6;
-                color: #111827;
-            }
-
-            .form-group {
-                margin-bottom: 20px;
-            }
-
-            .form-group label {
-                display: block;
-                margin-bottom: 8px;
-                font-weight: 500;
-                color: #374151;
-                font-size: 0.875rem;
-            }
-
-            .form-group input {
-                width: 100%;
-                padding: 10px 12px;
-                border: 1px solid #d1d5db;
-                border-radius: 6px;
-                font-size: 0.875rem;
-                transition: all 0.2s ease;
-                box-sizing: border-box;
-            }
-
-            .form-group input:focus {
-                outline: none;
-                border-color: #6366f1;
-                box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-            }
-
-            .button-group {
-                display: flex;
-                gap: 12px;
-                justify-content: flex-end;
-                margin-top: 24px;
-            }
-
-            .reset-button,
-            .apply-button {
-                padding: 10px 20px;
-                border: none;
-                border-radius: 6px;
-                font-size: 0.875rem;
-                font-weight: 600;
-                cursor: pointer;
-                transition: all 0.2s ease;
-            }
-
-            .reset-button {
-                background: #f3f4f6;
-                color: #374151;
-            }
-
-            .reset-button:hover {
-                background: #e5e7eb;
-            }
-
-            .apply-button {
-                background: linear-gradient(135deg, #6366f1, #4f46e5);
-                color: white;
-            }
-
-            .apply-button:hover {
-                box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-                transform: translateY(-1px);
-            }
         </style>
     </head>
     <body class="px-4">
-        <button class="settings-button" id="settings-button">⚙️ Settings</button>
-        
-        <div class="modal-overlay" id="settings-modal" style="display: none;">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>Settings</h2>
-                    <button class="close-button" id="close-settings">✕</button>
-                </div>
-                <form id="settings-form">
-                    <div class="form-group">
-                        <label for="backendUrl">Backend URL:</label>
-                        <input
-                            type="url"
-                            id="backendUrl"
-                            required
-                            placeholder="https://templates.tiro.health/"
-                        />
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email:</label>
-                        <input
-                            type="email"
-                            id="email"
-                            placeholder="user@domain.com"
-                        />
-                    </div>
-                    <div class="form-group">
-                        <label for="username">Username (Basic Auth):</label>
-                        <input
-                            type="text"
-                            id="username"
-                            placeholder="Enter basic auth username"
-                        />
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Password (Basic Auth):</label>
-                        <input
-                            type="password"
-                            id="password"
-                            placeholder="Enter basic auth password"
-                        />
-                    </div>
-                    <div class="button-group">
-                        <button type="button" class="reset-button" id="reset-settings">
-                            Reset
-                        </button>
-                        <button type="submit" class="apply-button">
-                            Apply & Restart
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
         <div class="app-code-section">
             <h1 class="text-lg">
-                Tiro Web SDK Test
+                Tiro Web SDK Demo
                 <span class="app-code-badge">Your App</span>
             </h1>
         </div>
         <main class="py-2">
+            <div id="launch-context" class="sdk-component-wrapper">
+                <span class="sdk-component-badge">SDK: LaunchContextProvider</span>
+            </div>
             <div id="form-filler" class="sdk-component-wrapper">
                 <span class="sdk-component-badge">SDK: FormFiller</span>
             </div>
@@ -331,105 +135,36 @@
             <script src="https://atticus-assets.tiro.health/sdk/latest/tiro-web-sdk.iife.js"></script>
 
             <script>
-                const DEFAULT_BACKEND_URL = "https://templates.tiro.health/";
-                
-                function transformEmailToUserId(email) {
-                    const parts = email.split("@");
-                    if (parts.length !== 2) return email;
-                    return `${parts[1]}|${parts[0]}`;
-                }
-                
-                function getDefaultSettings() {
-                    const saved = localStorage.getItem("tiro-settings");
-                    if (saved) {
-                        try {
-                            return JSON.parse(saved);
-                        } catch (e) {
-                            console.error("Failed to parse saved settings:", e);
-                        }
-                    }
-                    return {
-                        backendUrl: DEFAULT_BACKEND_URL,
-                        email: "",
-                        username: "",
-                        password: "",
-                    };
-                }
+                const QUESTIONNAIRE_URI = "https://templates.tiro.health/templates/2630b8675c214707b1f86d1fbd4deb87";
+                const BACKEND_URL = "https://sdc-service-staging-wkrcomcqfq-ew.a.run.app/fhir/r5";
+                const DATA_SERVER_URL = "https://fhir-candle-35032072625.europe-west1.run.app/fhir/r4";
 
-                let filler = null;
-                let narrative = null;
-
-                function initializeApp(settings) {
-                    if (filler && typeof filler.unmount === "function") {
-                        filler.unmount();
-                    }
-                    if (narrative && typeof narrative.unmount === "function") {
-                        narrative.unmount();
-                    }
-
-                    filler = new TiroWebSDK.FormFiller({
-                        questionnaire:
-                            settings.backendUrl + "templates/2630b8675c214707b1f86d1fbd4deb87",
+                function initializeApp() {
+                    const filler = new TiroWebSDK.FormFiller({
+                        questionnaire: QUESTIONNAIRE_URI,
+                        sdcEndpoint: {
+                            address: BACKEND_URL,
+                        },
                     });
-                    narrative = new TiroWebSDK.Narrative({ filler });
 
+                    const launchContextProvider = new TiroWebSDK.LaunchContextProvider({
+                        dataEndpoint: {
+                            resourceType: "Endpoint",
+                            address: DATA_SERVER_URL,
+                        },
+                        filler,
+                    });
+
+                    const narrative = new TiroWebSDK.Narrative({ filler });
+
+                    launchContextProvider.mount(document.getElementById("launch-context"));
                     filler.mount(document.getElementById("form-filler"));
                     narrative.mount(document.getElementById("narrative"));
                     
                     console.log("Tiro Web SDK initialized successfully");
                 }
 
-                const settingsButton = document.getElementById("settings-button");
-                const settingsModal = document.getElementById("settings-modal");
-                const closeButton = document.getElementById("close-settings");
-                const settingsForm = document.getElementById("settings-form");
-                const resetButton = document.getElementById("reset-settings");
-                const backendUrlInput = document.getElementById("backendUrl");
-                const emailInput = document.getElementById("email");
-                const usernameInput = document.getElementById("username");
-                const passwordInput = document.getElementById("password");
-
-                const settings = getDefaultSettings();
-                backendUrlInput.value = settings.backendUrl;
-                emailInput.value = settings.email || "";
-                usernameInput.value = settings.username || "";
-                passwordInput.value = settings.password || "";
-
-                settingsButton.addEventListener("click", () => {
-                    settingsModal.style.display = "flex";
-                });
-
-                closeButton.addEventListener("click", () => {
-                    settingsModal.style.display = "none";
-                });
-
-                settingsModal.addEventListener("click", (e) => {
-                    if (e.target === settingsModal) {
-                        settingsModal.style.display = "none";
-                    }
-                });
-
-                settingsForm.addEventListener("submit", (e) => {
-                    e.preventDefault();
-                    const newSettings = {
-                        backendUrl: backendUrlInput.value,
-                        email: emailInput.value,
-                        username: usernameInput.value,
-                        password: passwordInput.value,
-                    };
-                    localStorage.setItem("tiro-settings", JSON.stringify(newSettings));
-                    settingsModal.style.display = "none";
-                    initializeApp(newSettings);
-                });
-
-                resetButton.addEventListener("click", () => {
-                    backendUrlInput.value = DEFAULT_BACKEND_URL;
-                    emailInput.value = "";
-                    usernameInput.value = "";
-                    passwordInput.value = "";
-                });
-
-                initializeApp(settings);
+                initializeApp();
             </script>
         </main>
         
