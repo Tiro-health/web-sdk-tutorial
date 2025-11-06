@@ -1,6 +1,6 @@
 import { Component, type OnInit, type OnDestroy, ElementRef, ViewChild, type AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import * as TiroWebSDK from "@tiro-health/web-sdk";
+import { FormFiller, Narrative, LaunchContextProvider } from "@tiro-health/web-sdk";
 
 const QUESTIONNAIRE_URI = "https://templates.tiro.health/templates/2630b8675c214707b1f86d1fbd4deb87";
 const BACKEND_URL = "https://sdc-service-staging-wkrcomcqfq-ew.a.run.app/fhir/r5";
@@ -46,14 +46,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private async initializeTiroSDK(): Promise<void> {
     try {
-      this.filler = new TiroWebSDK.FormFiller({
+      this.filler = new FormFiller({
         questionnaire: QUESTIONNAIRE_URI,
         sdcEndpoint: {
           address: BACKEND_URL,
         },
       });
 
-      this.launchContextProvider = new TiroWebSDK.LaunchContextProvider({
+      this.launchContextProvider = new LaunchContextProvider({
         dataEndpoint: {
           resourceType: "Endpoint",
           address: DATA_SERVER_URL,
@@ -61,7 +61,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         filler: this.filler,
       });
 
-      this.narrative = new TiroWebSDK.Narrative({ filler: this.filler });
+      this.narrative = new Narrative({ filler: this.filler });
 
       const launchContextElement = this.launchContextElement.nativeElement;
       const formFillerElement = this.formFillerElement.nativeElement;
