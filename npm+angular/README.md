@@ -5,7 +5,6 @@ This is the Angular version of the Tiro Web SDK tutorial, demonstrating how to i
 ## What this tutorial shows
 
 - How to integrate the Tiro Web SDK into an Angular application
-- Setting up React globals for SDK compatibility
 - Mounting form filler and narrative components
 - Basic Angular component lifecycle management
 
@@ -17,7 +16,7 @@ npm+angular/
 │   ├── app/
 │   │   └── app.component.ts           # Main component with SDK integration
 │   ├── index.html                     # Main HTML file
-│   ├── main.ts                        # Application bootstrap with React globals
+│   ├── main.ts                        # Application bootstrap
 │   └── styles.css                     # Global styles
 ├── angular.json                       # Angular CLI configuration
 ├── package.json                       # Dependencies and scripts
@@ -94,7 +93,7 @@ npm run test
 ### Key Implementation Details
 
 1. **Angular CLI**: This project uses the Angular CLI with the modern `@angular-devkit/build-angular:application` builder
-2. **React Compatibility**: The Tiro Web SDK requires React, which is made available globally in `main.ts`
+2. **React Compatibility**: The Tiro Web SDK requires React as a dependency in package.json
 3. **Component Integration**: The SDK components are mounted directly in the main AppComponent
 4. **Lifecycle Management**: Proper cleanup of SDK components when the Angular component is destroyed
 5. **TypeScript Integration**: Full TypeScript support for better development experience
