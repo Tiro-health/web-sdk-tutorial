@@ -50,6 +50,10 @@ jobs:
           cd ..
           mkdir -p final-dist/npm-react
           cp -r npm+react/dist/* final-dist/npm-react/
+        env:
+          VITE_QUESTIONNAIRE_URI: ${{ vars.VITE_QUESTIONNAIRE_URI }}
+          VITE_BACKEND_URL: ${{ vars.VITE_BACKEND_URL }}
+          VITE_DATA_SERVER_URL: ${{ vars.VITE_DATA_SERVER_URL }}
 
       - name: Build npm+vanillajs
         run: |
