@@ -49,6 +49,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       this.filler = new FormFiller({
         questionnaire: QUESTIONNAIRE_URI,
         sdcEndpoint: {
+          resourceType: "Endpoint",
           address: BACKEND_URL,
         },
       });
