@@ -15,6 +15,7 @@ function initializeTiroSDK() {
   const filler = new FormFiller({
     questionnaire: QUESTIONNAIRE_URI,
     sdcEndpoint: {
+      resourceType: "Endpoint",
       address: BACKEND_URL,
     },
   });
