@@ -1,12 +1,14 @@
 <div class="container">
-  <app-settings-popover (settingsApplied)="onSettingsApplied($event)"></app-settings-popover>
   <div class="app-code-section">
     <h1 class="title">
-      Tiro Web SDK Test
+      Tiro Web SDK Demo
       <span class="app-code-badge">Your App</span>
     </h1>
   </div>
   <main class="main-content">
+    <div #launchContext id="launch-context" class="sdk-component-wrapper">
+      <span class="sdk-component-badge">SDK: LaunchContextProvider</span>
+    </div>
     <div #formFiller id="form-filler" class="sdk-component-wrapper">
       <span class="sdk-component-badge">SDK: FormFiller</span>
     </div>
@@ -27,4 +29,3 @@
     </div>
   </div>
 </div>
-
