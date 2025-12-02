@@ -84,6 +84,11 @@ jobs:
           mkdir -p final-dist/html-js
           cp -r html+js/* final-dist/html-js/
 
+      - name: Copy html+js-smartwebmessaging
+        run: |
+          mkdir -p final-dist/html+js-smartwebmessaging
+          cp -r html+js-smartwebmessaging/* final-dist/html+js-smartwebmessaging/
+
       - name: Copy landing page
         run: cp index.html final-dist/
 
