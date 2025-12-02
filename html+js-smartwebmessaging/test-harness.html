@@ -1,0 +1,615 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>SMART Web Messaging Test Harness</title>
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: system-ui, -apple-system, sans-serif;
+                background: #f3f4f6;
+            }
+
+            .container {
+                max-width: 1400px;
+                margin: 0 auto;
+                padding: 1rem;
+            }
+
+            header {
+                background: linear-gradient(135deg, #1e40af, #3b82f6);
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                margin-bottom: 1rem;
+            }
+
+            header h1 {
+                margin: 0;
+                font-size: 1.5rem;
+            }
+
+            header p {
+                margin: 0.5rem 0 0 0;
+                opacity: 0.9;
+                font-size: 0.875rem;
+            }
+
+            .control-panel {
+                background: white;
+                border-radius: 8px;
+                padding: 1rem;
+                margin-bottom: 1rem;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            }
+
+            .control-panel h2 {
+                margin: 0 0 1rem 0;
+                font-size: 1rem;
+                color: #374151;
+            }
+
+            .button-group {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .btn {
+                padding: 8px 16px;
+                border-radius: 6px;
+                font-weight: 500;
+                cursor: pointer;
+                border: none;
+                font-size: 0.875rem;
+                transition: all 0.2s;
+            }
+
+            .btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+
+            .btn-primary {
+                background: #3b82f6;
+                color: white;
+            }
+
+            .btn-primary:hover:not(:disabled) {
+                background: #2563eb;
+            }
+
+            .btn-success {
+                background: #10b981;
+                color: white;
+            }
+
+            .btn-success:hover:not(:disabled) {
+                background: #059669;
+            }
+
+            .btn-warning {
+                background: #f59e0b;
+                color: white;
+            }
+
+            .btn-warning:hover:not(:disabled) {
+                background: #d97706;
+            }
+
+            .input-group {
+                display: flex;
+                gap: 0.5rem;
+                align-items: center;
+            }
+
+            .input-group label {
+                font-size: 0.875rem;
+                color: #374151;
+                white-space: nowrap;
+            }
+
+            .input-group input,
+            .input-group select {
+                flex: 1;
+                padding: 8px 12px;
+                border: 1px solid #d1d5db;
+                border-radius: 6px;
+                font-size: 0.875rem;
+            }
+
+            .main-content {
+                display: grid;
+                grid-template-columns: 1fr 400px;
+                gap: 1rem;
+            }
+
+            @media (max-width: 1024px) {
+                .main-content {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            .iframe-container {
+                background: white;
+                border-radius: 8px;
+                overflow: hidden;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            }
+
+            .iframe-container iframe {
+                width: 100%;
+                height: 700px;
+                border: none;
+            }
+
+            .message-log {
+                background: white;
+                border-radius: 8px;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+                display: flex;
+                flex-direction: column;
+                max-height: 700px;
+            }
+
+            .message-log-header {
+                padding: 1rem;
+                border-bottom: 1px solid #e5e7eb;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .message-log-header h2 {
+                margin: 0;
+                font-size: 1rem;
+                color: #374151;
+            }
+
+            .message-log-content {
+                flex: 1;
+                overflow-y: auto;
+                padding: 0.5rem;
+                font-family: 'Monaco', 'Consolas', monospace;
+                font-size: 0.75rem;
+            }
+
+            .log-entry {
+                padding: 0.5rem;
+                border-radius: 4px;
+                margin-bottom: 0.5rem;
+            }
+
+            .log-entry.received {
+                background: #fef3c7;
+                border-left: 3px solid #f59e0b;
+            }
+
+            .log-entry.sent {
+                background: #dbeafe;
+                border-left: 3px solid #3b82f6;
+            }
+
+            .log-entry-header {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 0.25rem;
+                font-weight: 600;
+            }
+
+            .log-entry-type {
+                color: #6b7280;
+            }
+
+            .log-entry-time {
+                color: #9ca3af;
+                font-weight: normal;
+            }
+
+            .log-entry-content {
+                white-space: pre-wrap;
+                word-break: break-all;
+                color: #374151;
+            }
+
+            .btn-clear {
+                padding: 4px 8px;
+                font-size: 0.75rem;
+                background: #e5e7eb;
+                color: #374151;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            .btn-clear:hover {
+                background: #d1d5db;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <header>
+                <h1>SMART Web Messaging Test Harness</h1>
+                <p>Simulates the .NET SMARTWebEHR host for testing web messaging</p>
+            </header>
+
+            <div class="control-panel">
+                <h2>Host Controls</h2>
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="sendConfigure()">
+                        Send Configure
+                    </button>
+                    <button class="btn btn-primary" onclick="sendConfigureContext()">
+                        Send Context
+                    </button>
+                    <button class="btn btn-success" onclick="sendDisplayQuestionnaire()">
+                        Send Questionnaire
+                    </button>
+                    <button class="btn btn-warning" onclick="sendRequestSubmit()">
+                        Request Submit
+                    </button>
+                </div>
+                <div class="input-group" style="margin-bottom: 0.5rem;">
+                    <label for="patient-select">Patient:</label>
+                    <select id="patient-select" onchange="onPatientSelected()">
+                        <option value="">-- Select Patient --</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="loadPatients()" style="padding: 8px 12px;">
+                        Refresh
+                    </button>
+                </div>
+                <div class="input-group" style="margin-bottom: 0.5rem;">
+                    <label for="practitioner-select">User:</label>
+                    <select id="practitioner-select" onchange="onPractitionerSelected()">
+                        <option value="">-- Select Practitioner --</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="loadPractitioners()" style="padding: 8px 12px;">
+                        Refresh
+                    </button>
+                </div>
+                <div class="input-group">
+                    <label for="questionnaire-url">Questionnaire URL:</label>
+                    <input
+                        type="text"
+                        id="questionnaire-url"
+                        value="http://templates.tiro.health/templates/2630b8675c214707b1f86d1fbd4deb87"
+                    />
+                </div>
+            </div>
+
+            <div class="main-content">
+                <div class="iframe-container">
+                    <iframe id="sdk-iframe" src="index.html"></iframe>
+                </div>
+
+                <div class="message-log">
+                    <div class="message-log-header">
+                        <h2>Message Log</h2>
+                        <button class="btn-clear" onclick="clearLog()">Clear</button>
+                    </div>
+                    <div class="message-log-content" id="log-content"></div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // ===========================================
+            // Message Handling
+            // ===========================================
+
+            const messagingHandle = 'smart-web-messaging';
+            let pendingHandshakeId = null;
+
+            function generateMessageId() {
+                return crypto.randomUUID();
+            }
+
+            // Listen for messages from iframe
+            window.addEventListener('message', (event) => {
+                // Only accept messages from our iframe
+                const iframe = document.getElementById('sdk-iframe');
+                if (event.source !== iframe.contentWindow) return;
+
+                let message;
+                try {
+                    message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+                } catch (e) {
+                    console.error('Failed to parse message:', e);
+                    return;
+                }
+
+                logMessage('received', message);
+
+                // Auto-respond to certain messages
+                if (message.messageType === 'status.handshake') {
+                    // Respond to handshake
+                    sendResponse(message.messageId, { $type: 'base' });
+                } else if (message.messageType === 'form.submitted') {
+                    // Acknowledge form submission
+                    sendResponse(message.messageId, { $type: 'base' });
+                    console.log('Form submitted:', message.payload);
+                }
+            });
+
+            // Send message to iframe
+            function sendToIframe(message) {
+                const iframe = document.getElementById('sdk-iframe');
+                const json = JSON.stringify(message);
+                iframe.contentWindow.postMessage(json, '*');
+                logMessage('sent', message);
+            }
+
+            // Send response to a request
+            function sendResponse(responseToMessageId, payload) {
+                sendToIframe({
+                    messageId: generateMessageId(),
+                    responseToMessageId,
+                    additionalResponsesExpected: false,
+                    payload
+                });
+            }
+
+            // ===========================================
+            // Control Buttons
+            // ===========================================
+
+            function sendConfigure() {
+                sendToIframe({
+                    messageId: generateMessageId(),
+                    messagingHandle,
+                    messageType: 'sdc.configure',
+                    payload: {
+                        terminologyServer: 'https://sdc-service-staging-wkrcomcqfq-ew.a.run.app/fhir/r5',
+                        dataServer: 'https://fhir-candle-35032072625.europe-west1.run.app/fhir/r4',
+                        configuration: {
+                            enableValidation: true
+                        }
+                    }
+                });
+            }
+
+            // ===========================================
+            // Patient & Practitioner Management
+            // ===========================================
+
+            const FHIR_SERVER = 'https://fhir-candle-35032072625.europe-west1.run.app/fhir/r4';
+            let selectedPatientId = null;
+            let selectedPractitionerId = null;
+
+            // Store full resources for embedding in launchContext
+            const patientCache = new Map();
+            const practitionerCache = new Map();
+
+            // --- Patient functions ---
+            async function loadPatients() {
+                const select = document.getElementById('patient-select');
+                select.innerHTML = '<option value="">Loading...</option>';
+
+                try {
+                    const response = await fetch(`${FHIR_SERVER}/Patient?_count=50`);
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                    const bundle = await response.json();
+                    select.innerHTML = '<option value="">-- Select Patient --</option>';
+
+                    if (bundle.entry && bundle.entry.length > 0) {
+                        bundle.entry.forEach(entry => {
+                            const patient = entry.resource;
+                            patientCache.set(patient.id, patient); // Cache full resource
+                            const name = getPersonName(patient);
+                            const option = document.createElement('option');
+                            option.value = patient.id;
+                            option.textContent = `${name} (${patient.id})`;
+                            select.appendChild(option);
+                        });
+                        console.log(`Loaded ${bundle.entry.length} patients`);
+                    } else {
+                        select.innerHTML = '<option value="">No patients found</option>';
+                    }
+                } catch (error) {
+                    console.error('Failed to load patients:', error);
+                    select.innerHTML = '<option value="">Error loading patients</option>';
+                }
+            }
+
+            function onPatientSelected() {
+                const select = document.getElementById('patient-select');
+                selectedPatientId = select.value;
+
+                if (selectedPatientId) {
+                    console.log('Patient selected:', selectedPatientId);
+                    sendConfigureContext();
+                }
+            }
+
+            function getSelectedPatientReference() {
+                return selectedPatientId
+                    ? { reference: `Patient/${selectedPatientId}` }
+                    : null;
+            }
+
+            function getSelectedPatientResource() {
+                return selectedPatientId ? patientCache.get(selectedPatientId) : null;
+            }
+
+            // --- Practitioner functions ---
+            async function loadPractitioners() {
+                const select = document.getElementById('practitioner-select');
+                select.innerHTML = '<option value="">Loading...</option>';
+
+                try {
+                    const response = await fetch(`${FHIR_SERVER}/Practitioner?_count=50`);
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                    const bundle = await response.json();
+                    select.innerHTML = '<option value="">-- Select Practitioner --</option>';
+
+                    if (bundle.entry && bundle.entry.length > 0) {
+                        bundle.entry.forEach(entry => {
+                            const practitioner = entry.resource;
+                            practitionerCache.set(practitioner.id, practitioner); // Cache full resource
+                            const name = getPersonName(practitioner);
+                            const option = document.createElement('option');
+                            option.value = practitioner.id;
+                            option.textContent = `${name} (${practitioner.id})`;
+                            select.appendChild(option);
+                        });
+                        console.log(`Loaded ${bundle.entry.length} practitioners`);
+                    } else {
+                        select.innerHTML = '<option value="">No practitioners found</option>';
+                    }
+                } catch (error) {
+                    console.error('Failed to load practitioners:', error);
+                    select.innerHTML = '<option value="">Error loading practitioners</option>';
+                }
+            }
+
+            function onPractitionerSelected() {
+                const select = document.getElementById('practitioner-select');
+                selectedPractitionerId = select.value;
+
+                if (selectedPractitionerId) {
+                    console.log('Practitioner selected:', selectedPractitionerId);
+                    sendConfigureContext();
+                }
+            }
+
+            function getSelectedPractitionerReference() {
+                return selectedPractitionerId
+                    ? { reference: `Practitioner/${selectedPractitionerId}` }
+                    : null;
+            }
+
+            function getSelectedPractitionerResource() {
+                return selectedPractitionerId ? practitionerCache.get(selectedPractitionerId) : null;
+            }
+
+            // --- Shared helper ---
+            function getPersonName(resource) {
+                if (resource.name && resource.name.length > 0) {
+                    const name = resource.name[0];
+                    const given = name.given ? name.given.join(' ') : '';
+                    const family = name.family || '';
+                    return `${given} ${family}`.trim() || 'Unknown';
+                }
+                return 'Unknown';
+            }
+
+            function sendConfigureContext() {
+                const patientRef = getSelectedPatientReference();
+                const practitionerRef = getSelectedPractitionerReference();
+                const patientResource = getSelectedPatientResource();
+                const practitionerResource = getSelectedPractitionerResource();
+
+                const payload = {
+                    launchContext: {}
+                };
+
+                if (patientRef) payload.subject = patientRef;
+                if (practitionerRef) payload.author = practitionerRef;
+
+                // Embed full resources in launchContext as key-value pairs
+                if (patientResource) {
+                    payload.launchContext.patient = patientResource;
+                }
+                if (practitionerResource) {
+                    payload.launchContext.user = practitionerResource;
+                }
+
+                sendToIframe({
+                    messageId: generateMessageId(),
+                    messagingHandle,
+                    messageType: 'sdc.configureContext',
+                    payload
+                });
+            }
+
+            function sendDisplayQuestionnaire() {
+                const questionnaireUrl = document.getElementById('questionnaire-url').value;
+                const patientRef = getSelectedPatientReference();
+                const patientResource = getSelectedPatientResource();
+                const practitionerResource = getSelectedPractitionerResource();
+
+                // Build launchContext with full resources as key-value pairs
+                const launchContext = {};
+                if (patientResource) {
+                    launchContext.patient = patientResource;
+                }
+                if (practitionerResource) {
+                    launchContext.user = practitionerResource;
+                }
+
+                sendToIframe({
+                    messageId: generateMessageId(),
+                    messagingHandle,
+                    messageType: 'sdc.displayQuestionnaire',
+                    payload: {
+                        questionnaire: questionnaireUrl,
+                        questionnaireResponse: null,
+                        context: {
+                            subject: patientRef,
+                            author: getSelectedPractitionerReference() || { reference: 'Practitioner/test-practitioner-456' },
+                            encounter: { reference: 'Encounter/test-encounter-789' },
+                            launchContext
+                        }
+                    }
+                });
+            }
+
+            function sendRequestSubmit() {
+                sendToIframe({
+                    messageId: generateMessageId(),
+                    messagingHandle,
+                    messageType: 'ui.form.requestSubmit',
+                    payload: {}
+                });
+            }
+
+            // ===========================================
+            // Message Log
+            // ===========================================
+
+            function logMessage(direction, message) {
+                const logContent = document.getElementById('log-content');
+                const entry = document.createElement('div');
+                entry.className = `log-entry ${direction}`;
+
+                const time = new Date().toLocaleTimeString();
+                const messageType = message.messageType || (message.responseToMessageId ? 'response' : 'unknown');
+                const arrow = direction === 'received' ? '<<' : '>>';
+
+                entry.innerHTML = `
+                    <div class="log-entry-header">
+                        <span class="log-entry-type">${arrow} ${messageType}</span>
+                        <span class="log-entry-time">${time}</span>
+                    </div>
+                    <div class="log-entry-content">${JSON.stringify(message, null, 2)}</div>
+                `;
+
+                logContent.appendChild(entry);
+                logContent.scrollTop = logContent.scrollHeight;
+            }
+
+            function clearLog() {
+                document.getElementById('log-content').innerHTML = '';
+            }
+
+            // ===========================================
+            // Initialize
+            // ===========================================
+
+            console.log('Test harness loaded. Waiting for iframe to initialize...');
+
+            // Auto-load patients and practitioners on page load
+            document.addEventListener('DOMContentLoaded', () => {
+                loadPatients();
+                loadPractitioners();
+            });
+        </script>
+    </body>
+</html>
