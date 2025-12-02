@@ -120,14 +120,12 @@
 
                 // Send message to host
                 sendMessage(message) {
-                    const json = JSON.stringify(message);
                     console.log('[SWM] Sending:', message.messageType, message);
 
                     if (this.isWebView2()) {
-                        window.chrome.webview.postMessage(json);
+                        window.chrome.webview.postMessage(message);
                     } else if (this.isIframe()) {
-                        // Iframe mode - send to parent window
-                        window.parent.postMessage(json, '*');
+                        window.parent.postMessage(message, '*');
                     } else {
                         console.warn('[SWM] No host available - message not sent');
                     }
@@ -167,15 +165,7 @@
                 },
 
                 // Handle incoming message from host
-                handleMessage(data) {
-                    let message;
-                    try {
-                        message = typeof data === 'string' ? JSON.parse(data) : data;
-                    } catch (e) {
-                        console.error('[SWM] Failed to parse message:', e);
-                        return;
-                    }
-
+                handleMessage(message) {
                     console.log('[SWM] Received:', message.messageType || 'response', message);
 
                     // Handle response to our request
