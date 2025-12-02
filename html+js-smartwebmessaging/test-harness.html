@@ -315,14 +315,7 @@
                 const iframe = document.getElementById('sdk-iframe');
                 if (event.source !== iframe.contentWindow) return;
 
-                let message;
-                try {
-                    message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
-                } catch (e) {
-                    console.error('Failed to parse message:', e);
-                    return;
-                }
-
+                const message = event.data;
                 logMessage('received', message);
 
                 // Auto-respond to certain messages
@@ -339,8 +332,7 @@
             // Send message to iframe
             function sendToIframe(message) {
                 const iframe = document.getElementById('sdk-iframe');
-                const json = JSON.stringify(message);
-                iframe.contentWindow.postMessage(json, '*');
+                iframe.contentWindow.postMessage(message, '*');
                 logMessage('sent', message);
             }
 
