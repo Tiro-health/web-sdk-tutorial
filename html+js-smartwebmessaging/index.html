@@ -242,6 +242,8 @@
 
                 // Handle sdc.displayQuestionnaire
                 handleDisplayQuestionnaire(message) {
+                    console.log('[SWM] Full displayQuestionnaire message:', JSON.stringify(message, null, 2));
+                    
                     const { questionnaire, questionnaireResponse, context } = message.payload;
 
                     // Merge context if provided
@@ -250,6 +252,14 @@
                     }
 
                     console.log('[SWM] Display questionnaire:', questionnaire);
+                    console.log('[SWM] QuestionnaireResponse:', questionnaireResponse);
+                    console.log('[SWM] Context:', context);
+                    
+                    if (!questionnaire) {
+                        console.error('[SWM] No questionnaire found in payload:', message.payload);
+                        return;
+                    }
+                    
                     initializeSDK(questionnaire, questionnaireResponse);
                 },
 
