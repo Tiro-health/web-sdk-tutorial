@@ -282,7 +282,8 @@
                     if (this.isWebView2()) {
                         // WebView2 mode
                         window.chrome.webview.addEventListener('message', (event) => {
-                            self.handleMessage(event.data);
+                            const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+                            self.handleMessage(message);
                         });
                         console.log('[SWM] WebView2 message listener initialized');
                     } else if (this.isIframe()) {
