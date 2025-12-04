@@ -388,9 +388,17 @@
                     if (SmartWebMessaging.context.encounter) {
                         fillerOptions.encounter = SmartWebMessaging.context.encounter;
                     }
-                    // Pass full resources via launchContext (object with keys like 'patient', 'user')
-                    if (SmartWebMessaging.context.launchContext && Object.keys(SmartWebMessaging.context.launchContext).length > 0) {
-                        fillerOptions.launchContext = SmartWebMessaging.context.launchContext;
+                    // Pass full resources via launchContext - convert array format to key-value object
+                    if (SmartWebMessaging.context.launchContext && Array.isArray(SmartWebMessaging.context.launchContext) && SmartWebMessaging.context.launchContext.length > 0) {
+                        const launchContextObj = {};
+                        SmartWebMessaging.context.launchContext.forEach(item => {
+                            if (item.name && item.contentResource) {
+                                launchContextObj[item.name] = item.contentResource;
+                            }
+                        });
+                        if (Object.keys(launchContextObj).length > 0) {
+                            fillerOptions.launchContext = launchContextObj;
+                        }
                     }
                 }
 
@@ -416,9 +424,17 @@
                     if (SmartWebMessaging.context.encounter) {
                         launchContextOptions.encounter = SmartWebMessaging.context.encounter;
                     }
-                    // Pass full resources via launchContext (object with keys like 'patient', 'user')
-                    if (SmartWebMessaging.context.launchContext && Object.keys(SmartWebMessaging.context.launchContext).length > 0) {
-                        launchContextOptions.launchContext = SmartWebMessaging.context.launchContext;
+                    // Pass full resources via launchContext - convert array format to key-value object
+                    if (SmartWebMessaging.context.launchContext && Array.isArray(SmartWebMessaging.context.launchContext) && SmartWebMessaging.context.launchContext.length > 0) {
+                        const launchContextObj = {};
+                        SmartWebMessaging.context.launchContext.forEach(item => {
+                            if (item.name && item.contentResource) {
+                                launchContextObj[item.name] = item.contentResource;
+                            }
+                        });
+                        if (Object.keys(launchContextObj).length > 0) {
+                            launchContextOptions.launchContext = launchContextObj;
+                        }
                     }
                     console.log('[SDK] Using context from host:', SmartWebMessaging.context);
                 }
