@@ -507,18 +507,18 @@
                 const practitionerResource = getSelectedPractitionerResource();
 
                 const payload = {
-                    launchContext: {}
+                    launchContext: []
                 };
 
                 if (patientRef) payload.subject = patientRef;
                 if (practitionerRef) payload.author = practitionerRef;
 
-                // Embed full resources in launchContext as key-value pairs
+                // Embed full resources in launchContext as array per SDC SWM spec
                 if (patientResource) {
-                    payload.launchContext.patient = patientResource;
+                    payload.launchContext.push({ name: 'patient', contentResource: patientResource });
                 }
                 if (practitionerResource) {
-                    payload.launchContext.user = practitionerResource;
+                    payload.launchContext.push({ name: 'user', contentResource: practitionerResource });
                 }
 
                 sendToIframe({
@@ -535,13 +535,13 @@
                 const patientResource = getSelectedPatientResource();
                 const practitionerResource = getSelectedPractitionerResource();
 
-                // Build launchContext with full resources as key-value pairs
-                const launchContext = {};
+                // Build launchContext as array per SDC SWM spec
+                const launchContext = [];
                 if (patientResource) {
-                    launchContext.patient = patientResource;
+                    launchContext.push({ name: 'patient', contentResource: patientResource });
                 }
                 if (practitionerResource) {
-                    launchContext.user = practitionerResource;
+                    launchContext.push({ name: 'user', contentResource: practitionerResource });
                 }
 
                 sendToIframe({

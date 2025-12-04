@@ -320,6 +320,33 @@
             let narrative = null;
             let launchContext = null;
 
+            // Helper to extract content from launchContext item (handles content[x] polymorphism)
+            function extractLaunchContextContent(item) {
+                // Find any property starting with 'content' (contentResource, contentReference, etc.)
+                for (const key of Object.keys(item)) {
+                    if (key.startsWith('content')) {
+                        return item[key];
+                    }
+                }
+                return null;
+            }
+
+            // Helper to convert spec array format to SDK object format
+            function convertLaunchContextToObject(launchContextArray) {
+                const result = {};
+                if (Array.isArray(launchContextArray)) {
+                    launchContextArray.forEach(item => {
+                        if (item.name) {
+                            const content = extractLaunchContextContent(item);
+                            if (content) {
+                                result[item.name] = content;
+                            }
+                        }
+                    });
+                }
+                return result;
+            }
+
             function checkReadyToInitialize() {
                 // Auto-initialize is handled by sdc.displayQuestionnaire
                 // This function can be used for status updates
@@ -388,9 +415,9 @@
                     if (SmartWebMessaging.context.encounter) {
                         fillerOptions.encounter = SmartWebMessaging.context.encounter;
                     }
-                    // Pass full resources via launchContext (object with keys like 'patient', 'user')
-                    if (SmartWebMessaging.context.launchContext && Object.keys(SmartWebMessaging.context.launchContext).length > 0) {
-                        fillerOptions.launchContext = SmartWebMessaging.context.launchContext;
+                    // Convert launchContext from spec array format to SDK object format
+                    if (SmartWebMessaging.context.launchContext && Array.isArray(SmartWebMessaging.context.launchContext) && SmartWebMessaging.context.launchContext.length > 0) {
+                        fillerOptions.launchContext = convertLaunchContextToObject(SmartWebMessaging.context.launchContext);
                     }
                 }
 
@@ -416,9 +443,9 @@
                     if (SmartWebMessaging.context.encounter) {
                         launchContextOptions.encounter = SmartWebMessaging.context.encounter;
                     }
-                    // Pass full resources via launchContext (object with keys like 'patient', 'user')
-                    if (SmartWebMessaging.context.launchContext && Object.keys(SmartWebMessaging.context.launchContext).length > 0) {
-                        launchContextOptions.launchContext = SmartWebMessaging.context.launchContext;
+                    // Convert launchContext from spec array format to SDK object format
+                    if (SmartWebMessaging.context.launchContext && Array.isArray(SmartWebMessaging.context.launchContext) && SmartWebMessaging.context.launchContext.length > 0) {
+                        launchContextOptions.launchContext = convertLaunchContextToObject(SmartWebMessaging.context.launchContext);
                     }
                     console.log('[SDK] Using context from host:', SmartWebMessaging.context);
                 }
