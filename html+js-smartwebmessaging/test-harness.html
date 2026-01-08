@@ -320,8 +320,10 @@
 
                 // Auto-respond to certain messages
                 if (message.messageType === 'status.handshake') {
-                    // Respond to handshake
-                    sendResponse(message.messageId, { $type: 'base' });
+                    // Respond to handshake after delay (to demonstrate retry logic)
+                    setTimeout(() => {
+                        sendResponse(message.messageId, { $type: 'base' });
+                    }, 3000); // 3 second delay - SDK will retry ~3 times
                 } else if (message.messageType === 'form.submitted') {
                     // Acknowledge form submission
                     sendResponse(message.messageId, { $type: 'base' });
@@ -356,7 +358,7 @@
                     messagingHandle,
                     messageType: 'sdc.configure',
                     payload: {
-                        terminologyServer: 'https://sdc-service-staging-wkrcomcqfq-ew.a.run.app/fhir/r5',
+                        terminologyServer: 'https://sdc-service-wkrcomcqfq-ew.a.run.app/fhir/r5',
                         dataServer: 'https://fhir-candle-35032072625.europe-west1.run.app/fhir/r4',
                         configuration: {
                             enableValidation: true
