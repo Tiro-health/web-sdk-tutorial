@@ -164,6 +164,71 @@
                     });
                 },
 
+                // Retry handshake until success or timeout
+                retryHandshake(retryIntervalMs = 1000, timeoutMs = 30000) {
+                    return new Promise((resolve, reject) => {
+                        const startTime = Date.now();
+                        let attemptCount = 0;
+                        let resolved = false;
+                        const attemptMessageIds = [];  // Track all attempt messageIds
+
+                        const cleanup = () => {
+                            // Remove all pending requests for this handshake
+                            attemptMessageIds.forEach(id => this.pendingRequests.delete(id));
+                        };
+
+                        const onSuccess = (payload) => {
+                            if (resolved) return;  // Already resolved
+                            resolved = true;
+                            cleanup();
+                            resolve(payload);
+                        };
+
+                        const attempt = () => {
+                            if (resolved) return;
+
+                            attemptCount++;
+                            console.log(`[SWM] Handshake attempt ${attemptCount}...`);
+
+                            const messageId = this.generateMessageId();
+                            attemptMessageIds.push(messageId);
+
+                            // All attempts share the same success handler
+                            this.pendingRequests.set(messageId, {
+                                resolve: onSuccess,
+                                reject: () => {}  // Individual timeouts don't reject
+                            });
+
+                            this.sendMessage({
+                                messageId,
+                                messagingHandle: this.messagingHandle,
+                                messageType: 'status.handshake',
+                                payload: {}
+                            });
+
+                            // Schedule next attempt (keep old messageId active)
+                            setTimeout(() => {
+                                if (!resolved) {
+                                    const remaining = timeoutMs - (Date.now() - startTime);
+                                    if (remaining > 0) {
+                                        attempt();
+                                    }
+                                }
+                            }, retryIntervalMs);
+                        };
+
+                        // Overall timeout
+                        setTimeout(() => {
+                            if (!resolved) {
+                                cleanup();
+                                reject(new Error(`Handshake timeout after ${attemptCount} attempts`));
+                            }
+                        }, timeoutMs);
+
+                        attempt();
+                    });
+                },
+
                 // Handle incoming message from host
                 handleMessage(message) {
                     console.log('[SWM] Received:', message.messageType || 'response', message);
@@ -300,15 +365,15 @@
                         return;
                     }
 
-                    // Send handshake
-                    this.sendRequest('status.handshake', {})
+                    // Send handshake with retry (every 1 second, timeout after 30 seconds)
+                    this.retryHandshake(1000, 30000)
                         .then(() => {
                             console.log('[SWM] Handshake successful');
                             updateStatus('waiting', 'Connected - waiting for configuration...');
                         })
                         .catch((err) => {
                             console.error('[SWM] Handshake failed:', err);
-                            updateStatus('error', 'Handshake failed');
+                            updateStatus('error', 'Handshake failed - host not responding');
                         });
                 }
             };
