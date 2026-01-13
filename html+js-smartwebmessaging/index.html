@@ -570,9 +570,22 @@
             }
 
             // Called from the tiro-submit event listener
-            function sendFormSubmission(questionnaireResponse) {
+            async function sendFormSubmission(questionnaireResponse) {
                 // Mark as completed
                 questionnaireResponse.status = "completed";
+
+                // Generate narrative using SDCClient from form-filler
+                const formFiller = document.getElementById("form-filler");
+                try {
+                    const narrative = await formFiller.sdcClient.generateNarrative(questionnaireResponse);
+                    questionnaireResponse.text = {
+                        status: narrative.status || "generated",
+                        div: narrative.div,
+                    };
+                    console.log("[Action] Generated narrative:", questionnaireResponse.text);
+                } catch (err) {
+                    console.warn("[Action] Narrative generation error:", err);
+                }
 
                 const operationOutcome = {
                     resourceType: "OperationOutcome",
