@@ -4,11 +4,11 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Tiro Web SDK - SMART Web Messaging</title>
-        <link
-            rel="stylesheet"
-            href="https://atticus-assets.tiro.health/sdk/v0.1.9/style.css"
-        />
-        <script src="https://browser.sentry-cdn.com/10.33.0/bundle.tracing.min.js" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="sdk-dist/tiro-web-sdk.css" />
+        <script
+            src="https://browser.sentry-cdn.com/10.33.0/bundle.tracing.min.js"
+            crossorigin="anonymous"
+        ></script>
         <script>
             Sentry.init({
                 dsn: "https://5b3c2798d1b788d50ee2f655ad3ca731@o4509350631292928.ingest.de.sentry.io/4510703453405264",
@@ -33,73 +33,17 @@
                 margin: 0 auto;
                 padding: 2rem;
             }
-
-            section {
-                margin: 2rem 0;
-                padding: 1.5rem;
-                position: relative;
-            }
-
-            /* SDK Components - Green borders */
-            section.sdk-component {
-                border: 2px solid #10b981;
-                border-radius: 8px;
-                background: rgba(16, 185, 129, 0.05);
-            }
-
-            section.sdk-component::after {
-                content: "SDK Component";
-                position: absolute;
-                top: -12px;
-                right: 12px;
-                background: linear-gradient(135deg, #10b981, #059669);
-                color: white;
-                padding: 4px 12px;
-                border-radius: 12px;
-                font-size: 0.75rem;
-                font-weight: 600;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            }
-
-            #narrative {
-                background-color: white;
-            }
-
-            /* Loading state */
-            .loading-placeholder {
-                padding: 2rem;
-                text-align: center;
-                color: #6b7280;
-            }
         </style>
     </head>
     <body class="px-4 w-full">
         <main>
-            <section class="sdk-component">
-                <div id="form-filler">
-                    <div class="loading-placeholder">
-                        Waiting for questionnaire from host...
-                    </div>
-                </div>
-            </section>
-
-            <section class="sdk-component">
-                <div id="narrative"></div>
-            </section>
+            <tiro-form-filler
+                id="form-filler"
+                sdc-endpoint-address="https://sdc-service-dev-wkrcomcqfq-ew.a.run.app/fhir/r5"
+            ></tiro-form-filler>
         </main>
 
-        <!-- Hidden elements for SDK integration -->
-        <div id="launch-context" style="display: none"></div>
-
-        <script
-            crossorigin
-            src="https://unpkg.com/react@18/umd/react.production.min.js"
-        ></script>
-        <script
-            crossorigin
-            src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
-        ></script>
-        <script src="https://atticus-assets.tiro.health/sdk/v0.1.9/tiro-web-sdk.iife.js"></script>
+        <script src="sdk-dist/tiro-web-sdk.iife.js"></script>
 
         <script>
             // ===========================================
@@ -517,11 +461,8 @@
             };
 
             // ===========================================
-            // SDK Integration
+            // SDK Integration (Web Components API)
             // ===========================================
-            let filler = null;
-            let narrative = null;
-            let launchContext = null;
 
             function checkReadyToInitialize() {
                 // Auto-initialize is handled by sdc.displayQuestionnaire
@@ -535,311 +476,130 @@
             }
 
             function initializeSDK(questionnaire, questionnaireResponse) {
-                // Cleanup existing components
-                if (filler && typeof filler.unmount === "function") {
-                    filler.unmount();
-                }
-                if (narrative && typeof narrative.unmount === "function") {
-                    narrative.unmount();
-                }
-                if (
-                    launchContext &&
-                    typeof launchContext.unmount === "function"
-                ) {
-                    launchContext.unmount();
-                }
+                const formFiller = document.getElementById("form-filler");
 
-                // Build endpoint configuration
-                const sdcEndpoint = {
-                    address:
-                        SmartWebMessaging.config?.dataServer ||
-                        "https://sdc-service-staging-wkrcomcqfq-ew.a.run.app/fhir/r5",
-                };
-
-                const dataEndpoint = {
-                    resourceType: "Endpoint",
-                    address:
-                        SmartWebMessaging.config?.dataServer ||
-                        "https://fhir-candle-35032072625.europe-west1.run.app/fhir/r4",
-                };
-
-                // Determine questionnaire source
-                let questionnaireConfig;
-                if (typeof questionnaire === "string") {
-                    // URL reference
-                    questionnaireConfig = questionnaire;
-                } else if (
-                    questionnaire &&
-                    questionnaire.resourceType === "Questionnaire"
-                ) {
-                    // Inline Questionnaire resource
-                    questionnaireConfig = questionnaire;
-                } else {
-                    console.error(
-                        "[SDK] Invalid questionnaire:",
-                        questionnaire,
-                    );
-                    updateStatus("error", "Invalid questionnaire received");
+                // Validate questionnaire
+                if (!questionnaire) {
+                    console.error("[SDK] No questionnaire provided");
+                    updateStatus("error", "No questionnaire received");
                     return;
                 }
 
-                // Initialize FormFiller
-                const fillerOptions = {
-                    questionnaire: questionnaireConfig,
-                    sdcEndpoint,
-                };
+                console.log("[SDK] Setting up form filler with:", {
+                    questionnaire,
+                    questionnaireResponse,
+                    context: SmartWebMessaging.context,
+                });
 
-                // Add pre-populated response if provided
-                if (questionnaireResponse) {
-                    fillerOptions.questionnaireResponse = questionnaireResponse;
-                }
-
-                // Add context from host (subject, author, encounter, launchContext)
+                // Build and set launch context from SWM context
                 if (SmartWebMessaging.context) {
-                    if (SmartWebMessaging.context.subject) {
-                        fillerOptions.subject =
-                            SmartWebMessaging.context.subject;
-                    }
-                    if (SmartWebMessaging.context.author) {
-                        fillerOptions.author = SmartWebMessaging.context.author;
-                    }
-                    if (SmartWebMessaging.context.encounter) {
-                        fillerOptions.encounter =
-                            SmartWebMessaging.context.encounter;
-                    }
-                    // Pass full resources via launchContext - convert array format to key-value object
+                    const launchContext = {};
+
+                    // Convert array format to object format
                     if (
-                        SmartWebMessaging.context.launchContext &&
                         Array.isArray(
                             SmartWebMessaging.context.launchContext,
                         ) &&
                         SmartWebMessaging.context.launchContext.length > 0
                     ) {
-                        const launchContextObj = {};
                         SmartWebMessaging.context.launchContext.forEach(
                             (item) => {
                                 if (item.name && item.contentResource) {
-                                    launchContextObj[item.name] =
+                                    launchContext[item.name] =
                                         item.contentResource;
                                 }
                             },
                         );
-                        if (Object.keys(launchContextObj).length > 0) {
-                            fillerOptions.launchContext = launchContextObj;
-                        }
                     }
-                }
 
-                filler = new TiroWebSDK.FormFiller(fillerOptions);
-
-                // Initialize Narrative
-                narrative = new TiroWebSDK.Narrative({ filler });
-
-                // Initialize LaunchContextProvider with context from host
-                const launchContextOptions = {
-                    dataEndpoint,
-                    filler,
-                };
-
-                // Apply context from host (subject, author, encounter, launchContext)
-                if (SmartWebMessaging.context) {
-                    if (SmartWebMessaging.context.subject) {
-                        launchContextOptions.subject =
-                            SmartWebMessaging.context.subject;
-                    }
-                    if (SmartWebMessaging.context.author) {
-                        launchContextOptions.author =
-                            SmartWebMessaging.context.author;
-                    }
-                    if (SmartWebMessaging.context.encounter) {
-                        launchContextOptions.encounter =
-                            SmartWebMessaging.context.encounter;
-                    }
-                    // Pass full resources via launchContext - convert array format to key-value object
-                    if (
-                        SmartWebMessaging.context.launchContext &&
-                        Array.isArray(
-                            SmartWebMessaging.context.launchContext,
-                        ) &&
-                        SmartWebMessaging.context.launchContext.length > 0
-                    ) {
-                        const launchContextObj = {};
-                        SmartWebMessaging.context.launchContext.forEach(
-                            (item) => {
-                                if (item.name && item.contentResource) {
-                                    launchContextObj[item.name] =
-                                        item.contentResource;
-                                }
-                            },
+                    if (Object.keys(launchContext).length > 0) {
+                        formFiller.setAttribute(
+                            "launch-context",
+                            JSON.stringify(launchContext),
                         );
-                        if (Object.keys(launchContextObj).length > 0) {
-                            launchContextOptions.launchContext =
-                                launchContextObj;
-                        }
+                        console.log("[SDK] Set launch-context:", launchContext);
                     }
+
                     console.log(
                         "[SDK] Using context from host:",
                         SmartWebMessaging.context,
                     );
                 }
 
-                launchContext = new TiroWebSDK.LaunchContextProvider(
-                    launchContextOptions,
+                // Set initial response if provided
+                if (questionnaireResponse) {
+                    formFiller.setAttribute(
+                        "initial-response",
+                        JSON.stringify(questionnaireResponse),
+                    );
+                    console.log("[SDK] Set initial-response");
+                }
+
+                // Set questionnaire last (triggers render)
+                if (typeof questionnaire === "string") {
+                    formFiller.setAttribute("questionnaire", questionnaire);
+                } else {
+                    formFiller.setAttribute(
+                        "questionnaire",
+                        JSON.stringify(questionnaire),
+                    );
+                }
+                console.log("[SDK] Set questionnaire:", questionnaire);
+
+                // Narrative automatically links via for="form-filler" attribute
+                console.log(
+                    "[SDK] Tiro Web SDK initialized with web components",
                 );
-
-                // Mount components
-                filler.mount(document.getElementById("form-filler"));
-                narrative.mount(document.getElementById("narrative"));
-                launchContext.mount(document.getElementById("launch-context"));
-
-                updateStatus("connected", "Questionnaire loaded");
-                console.log("[SDK] Tiro Web SDK initialized successfully");
             }
 
             // ===========================================
             // Action Handlers
             // ===========================================
-            async function handleSubmit() {
-                if (!filler) {
+
+            // Trigger form submission - fires tiro-submit event
+            function handleSubmit() {
+                const formFiller = document.getElementById("form-filler");
+
+                if (!formFiller.questionnaire) {
                     console.warn("[Action] No form to submit");
                     return;
                 }
 
-                try {
-                    // Get current QuestionnaireResponse from the filler
-                    // Note: The SDK API method may vary - check SDK documentation
-                    let questionnaireResponse = null;
+                // Trigger form submission - this fires the tiro-submit event
+                formFiller.submit();
+            }
 
-                    if (typeof filler.getQuestionnaireResponse === "function") {
-                        questionnaireResponse =
-                            await filler.getQuestionnaireResponse();
-                    } else if (typeof filler.getValue === "function") {
-                        questionnaireResponse = await filler.getValue();
-                    } else if (filler.questionnaireResponse) {
-                        questionnaireResponse = filler.questionnaireResponse;
-                    } else {
-                        console.warn(
-                            "[Action] Unable to extract QuestionnaireResponse - SDK API not found",
-                        );
-                        // Create a placeholder response
-                        questionnaireResponse = {
-                            resourceType: "QuestionnaireResponse",
-                            status: "completed",
-                            questionnaire: "Questionnaire/placeholder",
-                            text: {
-                                status: "generated",
-                                div:
-                                    '<div xmlns="http://www.w3.org/1999/xhtml">' +
-                                    "<h3>Specimen Information</h3>" +
-                                    "<p>Specimen type and collection details not available</p>" +
-                                    "<h3>Gross Description</h3>" +
-                                    "<p>Macroscopic examination findings pending</p>" +
-                                    "<h3>Microscopic Findings</h3>" +
-                                    "<p>Histological analysis data could not be extracted</p>" +
-                                    "<h3>Diagnosis</h3>" +
-                                    "<p>Final pathological diagnosis pending form data extraction</p>" +
-                                    "</div>",
-                                extension: [
-                                    {
-                                        url: "http://fhir.tiro.health/StructureDefinition/narrative-alternative-format",
-                                        valueAttachment: {
-                                            contentType: "text/rtf",
-                                            data: btoa(
-                                                "{\\rtf1\\ansi\\deff0" +
-                                                    "{\\fonttbl{\\f0 Arial;}}" +
-                                                    "\\f0\\fs24" +
-                                                    "\\b Specimen Information\\b0\\par" +
-                                                    "Specimen type and collection details not available\\par\\par" +
-                                                    "\\b Gross Description\\b0\\par" +
-                                                    "Macroscopic examination findings pending\\par\\par" +
-                                                    "\\b Microscopic Findings\\b0\\par" +
-                                                    "Histological analysis data could not be extracted\\par\\par" +
-                                                    "\\b Diagnosis\\b0\\par" +
-                                                    "Final pathological diagnosis pending form data extraction\\par" +
-                                                    "}",
-                                            ),
-                                        },
-                                    },
-                                ],
-                            },
-                            item: [
-                                {
-                                    linkId: "diagnosis",
-                                    text: "Diagnosis",
-                                    answer: [
-                                        {
-                                            valueCoding: {
-                                                system: "http://snomed.info/sct",
-                                                code: "254637007",
-                                                display:
-                                                    "Non-small cell lung cancer",
-                                            },
-                                        },
-                                    ],
-                                    item: [
-                                        {
-                                            linkId: "diagnosis-codap",
-                                            text: "CODAP Code",
-                                            answer: [
-                                                {
-                                                    valueCoding: {
-                                                        system: "http://codap.be",
-                                                        code: "8140/3",
-                                                        display:
-                                                            "Adenocarcinoma, NOS",
-                                                    },
-                                                },
-                                            ],
-                                        },
-                                    ],
-                                },
-                            ],
-                        };
-                    }
+            // Called from the tiro-submit event listener
+            function sendFormSubmission(questionnaireResponse) {
+                // Mark as completed
+                questionnaireResponse.status = "completed";
 
-                    // Mark as completed
-                    if (questionnaireResponse) {
-                        questionnaireResponse.status = "completed";
-                    }
+                const operationOutcome = {
+                    resourceType: "OperationOutcome",
+                    issue: [
+                        {
+                            severity: "information",
+                            code: "informational",
+                            diagnostics: "Form submitted successfully",
+                        },
+                    ],
+                };
 
-                    // Create a minimal OperationOutcome (required by SMARTWebEHR)
-                    const operationOutcome = {
-                        resourceType: "OperationOutcome",
-                        issue: [
-                            {
-                                severity: "information",
-                                code: "informational",
-                                diagnostics: "Form submitted successfully",
-                            },
-                        ],
-                    };
-
-                    // Send form.submitted event
-                    SmartWebMessaging.sendRequest("form.submitted", {
-                        response: questionnaireResponse,
-                        outcome: operationOutcome,
+                SmartWebMessaging.sendRequest("form.submitted", {
+                    response: questionnaireResponse,
+                    outcome: operationOutcome,
+                })
+                    .then(() => {
+                        console.log("[Action] Form submitted successfully");
+                        updateStatus("connected", "Form submitted");
                     })
-                        .then(() => {
-                            console.log("[Action] Form submitted successfully");
-                            updateStatus("connected", "Form submitted");
-                        })
-                        .catch((err) => {
-                            console.error(
-                                "[Action] Form submission failed:",
-                                err,
-                            );
-                            updateStatus(
-                                "error",
-                                "Submission failed: " + err.message,
-                            );
-                        });
-                } catch (err) {
-                    console.error(
-                        "[Action] Failed to get QuestionnaireResponse:",
-                        err,
-                    );
-                    updateStatus("error", "Failed to get form data");
-                }
+                    .catch((err) => {
+                        console.error("[Action] Form submission failed:", err);
+                        updateStatus(
+                            "error",
+                            "Submission failed: " + err.message,
+                        );
+                    });
             }
 
             function handleDone() {
@@ -860,6 +620,42 @@
             // Initialize
             // ===========================================
             document.addEventListener("DOMContentLoaded", () => {
+                const formFiller = document.getElementById("form-filler");
+
+                // Listen for form updates (for debugging/status)
+                formFiller.addEventListener("tiro-update", (event) => {
+                    console.log("[SDK] Form updated:", event.detail.response);
+                });
+
+                // Listen for form submission - sends response to host
+                formFiller.addEventListener("tiro-submit", (event) => {
+                    console.log("[SDK] Form submitted via tiro-submit event");
+                    sendFormSubmission(event.detail.response);
+                });
+
+                // Listen for questionnaire ready
+                formFiller.addEventListener("tiro-ready", (event) => {
+                    console.log(
+                        "[SDK] Questionnaire loaded:",
+                        event.detail.questionnaire,
+                    );
+                    updateStatus("connected", "Questionnaire loaded");
+                });
+
+                // Listen for errors
+                formFiller.addEventListener("tiro-error", (event) => {
+                    console.error(
+                        "[SDK] Error:",
+                        event.detail.type,
+                        event.detail.error,
+                    );
+                    updateStatus(
+                        "error",
+                        `Error: ${event.detail.error.message}`,
+                    );
+                });
+
+                // Initialize SWM
                 SmartWebMessaging.init();
             });
         </script>

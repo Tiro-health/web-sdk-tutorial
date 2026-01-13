@@ -280,6 +280,13 @@
                         value="http://templates.tiro.health/templates/2630b8675c214707b1f86d1fbd4deb87"
                     />
                 </div>
+                <div class="input-group" style="margin-top: 0.5rem;">
+                    <label for="initial-response-upload">Initial Response:</label>
+                    <input type="file" id="initial-response-upload" accept=".json" />
+                    <button class="btn btn-primary" onclick="clearInitialResponse()" style="padding: 8px 12px;">
+                        Clear
+                    </button>
+                </div>
             </div>
 
             <div class="main-content">
@@ -328,6 +335,12 @@
                     // Acknowledge form submission
                     sendResponse(message.messageId, { $type: 'base' });
                     console.log('Form submitted:', message.payload);
+
+                    // Download the response as JSON
+                    if (message.payload && message.payload.response) {
+                        const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+                        downloadJson(message.payload.response, `questionnaire-response-${timestamp}.json`);
+                    }
                 }
             });
 
@@ -374,6 +387,7 @@
             const FHIR_SERVER = 'https://fhir-candle-35032072625.europe-west1.run.app/fhir/r4';
             let selectedPatientId = null;
             let selectedPractitionerId = null;
+            let storedInitialResponse = null;
 
             // Store full resources for embedding in launchContext
             const patientCache = new Map();
@@ -556,7 +570,7 @@
                     messageType: 'sdc.displayQuestionnaire',
                     payload: {
                         questionnaire: questionnaireUrl,
-                        questionnaireResponse: null,
+                        questionnaireResponse: storedInitialResponse,
                         context: {
                             subject: patientRef,
                             author: getSelectedPractitionerReference() || { reference: 'Practitioner/test-practitioner-456' },
@@ -605,6 +619,24 @@
                 document.getElementById('log-content').innerHTML = '';
             }
 
+            function downloadJson(data, filename) {
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+
+            function clearInitialResponse() {
+                storedInitialResponse = null;
+                document.getElementById('initial-response-upload').value = '';
+                console.log('Cleared initial response');
+            }
+
             // ===========================================
             // Initialize
             // ===========================================
@@ -615,6 +647,25 @@
             document.addEventListener('DOMContentLoaded', () => {
                 loadPatients();
                 loadPractitioners();
+
+                // Handle initial response file upload
+                document.getElementById('initial-response-upload').addEventListener('change', (event) => {
+                    const file = event.target.files[0];
+                    if (!file) return;
+
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        try {
+                            storedInitialResponse = JSON.parse(e.target.result);
+                            console.log('Loaded initial response from file:', storedInitialResponse);
+                        } catch (err) {
+                            console.error('Failed to parse JSON:', err);
+                            alert('Invalid JSON file');
+                            storedInitialResponse = null;
+                        }
+                    };
+                    reader.readAsText(file);
+                });
             });
         </script>
     </body>
