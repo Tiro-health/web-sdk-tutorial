@@ -8,6 +8,14 @@
             rel="stylesheet"
             href="https://atticus-assets.tiro.health/sdk/v0.1.9/style.css"
         />
+        <script src="https://browser.sentry-cdn.com/10.33.0/bundle.tracing.min.js" crossorigin="anonymous"></script>
+        <script>
+            Sentry.init({
+                dsn: "https://5b3c2798d1b788d50ee2f655ad3ca731@o4509350631292928.ingest.de.sentry.io/4510703453405264",
+                tracesSampleRate: 1.0,
+                integrations: [Sentry.browserTracingIntegration()],
+            });
+        </script>
         <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
         <style>
             /* Basic page layout */
@@ -81,7 +89,7 @@
         </main>
 
         <!-- Hidden elements for SDK integration -->
-        <div id="launch-context" style="display: none;"></div>
+        <div id="launch-context" style="display: none"></div>
 
         <script
             crossorigin
@@ -98,7 +106,7 @@
             // SMART Web Messaging Module
             // ===========================================
             const SmartWebMessaging = {
-                messagingHandle: 'smart-web-messaging',
+                messagingHandle: "smart-web-messaging",
                 pendingRequests: new Map(),
                 config: null,
                 context: null,
@@ -120,14 +128,48 @@
 
                 // Send message to host
                 sendMessage(message) {
-                    console.log('[SWM] Sending:', message.messageType, message);
+                    console.log("[SWM] Sending:", message.messageType, message);
 
-                    if (this.isWebView2()) {
-                        window.chrome.webview.postMessage(message);
-                    } else if (this.isIframe()) {
-                        window.parent.postMessage(message, '*');
+                    const doSend = () => {
+                        if (this.isWebView2()) {
+                            window.chrome.webview.postMessage(message);
+                        } else if (this.isIframe()) {
+                            window.parent.postMessage(message, "*");
+                        } else {
+                            console.warn(
+                                "[SWM] No host available - message not sent",
+                            );
+                        }
+                    };
+
+                    // Wrap in Sentry span if available
+                    if (
+                        typeof Sentry !== "undefined" &&
+                        typeof Sentry.startSpan === "function"
+                    ) {
+                        Sentry.startSpan(
+                            {
+                                op: "swm.send",
+                                name: message.messageType || "response",
+                            },
+                            (span) => {
+                                span.setAttribute(
+                                    "swm.messageId",
+                                    message.messageId,
+                                );
+                                span.setAttribute(
+                                    "swm.messageType",
+                                    message.messageType || null,
+                                );
+                                span.setAttribute(
+                                    "swm.hasPayload",
+                                    !!message.payload,
+                                );
+                                doSend();
+                            },
+                        );
                     } else {
-                        console.warn('[SWM] No host available - message not sent');
+                        doSend();
                     }
                 },
 
@@ -135,20 +177,27 @@
                 sendRequest(messageType, payload = {}) {
                     return new Promise((resolve, reject) => {
                         const messageId = this.generateMessageId();
-                        this.pendingRequests.set(messageId, { resolve, reject });
+                        this.pendingRequests.set(messageId, {
+                            resolve,
+                            reject,
+                        });
 
                         this.sendMessage({
                             messageId,
                             messagingHandle: this.messagingHandle,
                             messageType,
-                            payload
+                            payload,
                         });
 
                         // Timeout after 30 seconds
                         setTimeout(() => {
                             if (this.pendingRequests.has(messageId)) {
                                 this.pendingRequests.delete(messageId);
-                                reject(new Error(`Request timeout: ${messageType}`));
+                                reject(
+                                    new Error(
+                                        `Request timeout: ${messageType}`,
+                                    ),
+                                );
                             }
                         }, 30000);
                     });
@@ -160,7 +209,7 @@
                         messageId: this.generateMessageId(),
                         messagingHandle: this.messagingHandle,
                         messageType,
-                        payload
+                        payload,
                     });
                 },
 
@@ -170,15 +219,17 @@
                         const startTime = Date.now();
                         let attemptCount = 0;
                         let resolved = false;
-                        const attemptMessageIds = [];  // Track all attempt messageIds
+                        const attemptMessageIds = []; // Track all attempt messageIds
 
                         const cleanup = () => {
                             // Remove all pending requests for this handshake
-                            attemptMessageIds.forEach(id => this.pendingRequests.delete(id));
+                            attemptMessageIds.forEach((id) =>
+                                this.pendingRequests.delete(id),
+                            );
                         };
 
                         const onSuccess = (payload) => {
-                            if (resolved) return;  // Already resolved
+                            if (resolved) return; // Already resolved
                             resolved = true;
                             cleanup();
                             resolve(payload);
@@ -188,7 +239,9 @@
                             if (resolved) return;
 
                             attemptCount++;
-                            console.log(`[SWM] Handshake attempt ${attemptCount}...`);
+                            console.log(
+                                `[SWM] Handshake attempt ${attemptCount}...`,
+                            );
 
                             const messageId = this.generateMessageId();
                             attemptMessageIds.push(messageId);
@@ -196,20 +249,21 @@
                             // All attempts share the same success handler
                             this.pendingRequests.set(messageId, {
                                 resolve: onSuccess,
-                                reject: () => {}  // Individual timeouts don't reject
+                                reject: () => {}, // Individual timeouts don't reject
                             });
 
                             this.sendMessage({
                                 messageId,
                                 messagingHandle: this.messagingHandle,
-                                messageType: 'status.handshake',
-                                payload: {}
+                                messageType: "status.handshake",
+                                payload: {},
                             });
 
                             // Schedule next attempt (keep old messageId active)
                             setTimeout(() => {
                                 if (!resolved) {
-                                    const remaining = timeoutMs - (Date.now() - startTime);
+                                    const remaining =
+                                        timeoutMs - (Date.now() - startTime);
                                     if (remaining > 0) {
                                         attempt();
                                     }
@@ -221,7 +275,11 @@
                         setTimeout(() => {
                             if (!resolved) {
                                 cleanup();
-                                reject(new Error(`Handshake timeout after ${attemptCount} attempts`));
+                                reject(
+                                    new Error(
+                                        `Handshake timeout after ${attemptCount} attempts`,
+                                    ),
+                                );
                             }
                         }, timeoutMs);
 
@@ -231,51 +289,103 @@
 
                 // Handle incoming message from host
                 handleMessage(message) {
-                    console.log('[SWM] Received:', message.messageType || 'response', message);
+                    console.log(
+                        "[SWM] Received:",
+                        message.messageType || "response",
+                        message,
+                    );
 
-                    // Handle response to our request
-                    if (message.responseToMessageId) {
-                        const pending = this.pendingRequests.get(message.responseToMessageId);
-                        if (pending) {
-                            if (message.payload && message.payload.$type === 'error') {
-                                pending.reject(new Error(message.payload.errorMessage));
-                            } else {
-                                pending.resolve(message.payload);
+                    const doHandle = () => {
+                        // Handle response to our request
+                        if (message.responseToMessageId) {
+                            const pending = this.pendingRequests.get(
+                                message.responseToMessageId,
+                            );
+                            if (pending) {
+                                if (
+                                    message.payload &&
+                                    message.payload.$type === "error"
+                                ) {
+                                    pending.reject(
+                                        new Error(message.payload.errorMessage),
+                                    );
+                                } else {
+                                    pending.resolve(message.payload);
+                                }
+                                if (!message.additionalResponsesExpected) {
+                                    this.pendingRequests.delete(
+                                        message.responseToMessageId,
+                                    );
+                                }
                             }
-                            if (!message.additionalResponsesExpected) {
-                                this.pendingRequests.delete(message.responseToMessageId);
-                            }
+                            return;
                         }
-                        return;
-                    }
 
-                    // Handle host-initiated messages
-                    if (message.messageType) {
-                        this.handleHostMessage(message);
+                        // Handle host-initiated messages
+                        if (message.messageType) {
+                            this.handleHostMessage(message);
+                        }
+                    };
+
+                    // Wrap in Sentry span if available
+                    if (
+                        typeof Sentry !== "undefined" &&
+                        typeof Sentry.startSpan === "function"
+                    ) {
+                        Sentry.startSpan(
+                            {
+                                op: "swm.receive",
+                                name: message.messageType || "response",
+                            },
+                            (span) => {
+                                span.setAttribute(
+                                    "swm.messageId",
+                                    message.messageId ||
+                                        message.responseToMessageId,
+                                );
+                                span.setAttribute(
+                                    "swm.messageType",
+                                    message.messageType || null,
+                                );
+                                span.setAttribute(
+                                    "swm.isResponse",
+                                    !!message.responseToMessageId,
+                                );
+                                doHandle();
+                            },
+                        );
+                    } else {
+                        doHandle();
                     }
                 },
 
                 // Handle messages initiated by host
                 handleHostMessage(message) {
                     const handlers = {
-                        'sdc.configure': () => this.handleConfigure(message),
-                        'sdc.configureContext': () => this.handleConfigureContext(message),
-                        'sdc.displayQuestionnaire': () => this.handleDisplayQuestionnaire(message),
-                        'ui.form.requestSubmit': () => this.handleRequestSubmit(message),
-                        'ui.form.persist': () => this.handlePersist(message)
+                        "sdc.configure": () => this.handleConfigure(message),
+                        "sdc.configureContext": () =>
+                            this.handleConfigureContext(message),
+                        "sdc.displayQuestionnaire": () =>
+                            this.handleDisplayQuestionnaire(message),
+                        "ui.form.requestSubmit": () =>
+                            this.handleRequestSubmit(message),
+                        "ui.form.persist": () => this.handlePersist(message),
                     };
 
                     const handler = handlers[message.messageType];
                     if (handler) {
                         handler();
                         // Send acknowledgment response
-                        this.sendResponse(message.messageId, { $type: 'base' });
+                        this.sendResponse(message.messageId, { $type: "base" });
                     } else {
-                        console.warn('[SWM] Unknown message type:', message.messageType);
+                        console.warn(
+                            "[SWM] Unknown message type:",
+                            message.messageType,
+                        );
                         this.sendResponse(message.messageId, {
-                            $type: 'error',
+                            $type: "error",
                             errorMessage: `Unknown message type: ${message.messageType}`,
-                            errorType: 'UnknownMessageTypeException'
+                            errorType: "UnknownMessageTypeException",
                         });
                     }
                 },
@@ -286,57 +396,67 @@
                         messageId: this.generateMessageId(),
                         responseToMessageId,
                         additionalResponsesExpected: false,
-                        payload
+                        payload,
                     });
                 },
 
                 // Handle sdc.configure
                 handleConfigure(message) {
                     this.config = message.payload;
-                    console.log('[SWM] Configuration received:', this.config);
-                    updateStatus('connected', 'Configuration received');
+                    console.log("[SWM] Configuration received:", this.config);
+                    updateStatus("connected", "Configuration received");
                     checkReadyToInitialize();
                 },
 
                 // Handle sdc.configureContext
                 handleConfigureContext(message) {
                     this.context = message.payload;
-                    console.log('[SWM] Context received:', this.context);
+                    console.log("[SWM] Context received:", this.context);
                     checkReadyToInitialize();
                 },
 
                 // Handle sdc.displayQuestionnaire
                 handleDisplayQuestionnaire(message) {
-                    console.log('[SWM] Full displayQuestionnaire message:', JSON.stringify(message, null, 2));
-                    
-                    const { questionnaire, questionnaireResponse, context } = message.payload;
+                    console.log(
+                        "[SWM] Full displayQuestionnaire message:",
+                        JSON.stringify(message, null, 2),
+                    );
+
+                    const { questionnaire, questionnaireResponse, context } =
+                        message.payload;
 
                     // Merge context if provided
                     if (context) {
                         this.context = { ...this.context, ...context };
                     }
 
-                    console.log('[SWM] Display questionnaire:', questionnaire);
-                    console.log('[SWM] QuestionnaireResponse:', questionnaireResponse);
-                    console.log('[SWM] Context:', context);
-                    
+                    console.log("[SWM] Display questionnaire:", questionnaire);
+                    console.log(
+                        "[SWM] QuestionnaireResponse:",
+                        questionnaireResponse,
+                    );
+                    console.log("[SWM] Context:", context);
+
                     if (!questionnaire) {
-                        console.error('[SWM] No questionnaire found in payload:', message.payload);
+                        console.error(
+                            "[SWM] No questionnaire found in payload:",
+                            message.payload,
+                        );
                         return;
                     }
-                    
+
                     initializeSDK(questionnaire, questionnaireResponse);
                 },
 
                 // Handle ui.form.requestSubmit
                 handleRequestSubmit(message) {
-                    console.log('[SWM] Submit requested by host');
+                    console.log("[SWM] Submit requested by host");
                     handleSubmit();
                 },
 
                 // Handle ui.form.persist
                 handlePersist(message) {
-                    console.log('[SWM] Persist requested by host');
+                    console.log("[SWM] Persist requested by host");
                     // TODO: Implement persist logic if SDK supports it
                 },
 
@@ -346,36 +466,54 @@
 
                     if (this.isWebView2()) {
                         // WebView2 mode
-                        window.chrome.webview.addEventListener('message', (event) => {
-                            self.handleMessage(event.data);
-                        });
-                        console.log('[SWM] WebView2 message listener initialized');
+                        window.chrome.webview.addEventListener(
+                            "message",
+                            (event) => {
+                                self.handleMessage(event.data);
+                            },
+                        );
+                        console.log(
+                            "[SWM] WebView2 message listener initialized",
+                        );
                     } else if (this.isIframe()) {
                         // Iframe mode - listen for postMessage from parent
-                        window.addEventListener('message', (event) => {
+                        window.addEventListener("message", (event) => {
                             // Accept messages from parent window
                             if (event.source === window.parent) {
                                 self.handleMessage(event.data);
                             }
                         });
-                        console.log('[SWM] Iframe message listener initialized');
+                        console.log(
+                            "[SWM] Iframe message listener initialized",
+                        );
                     } else {
-                        console.warn('[SWM] No host detected - running in standalone mode');
-                        updateStatus('error', 'No host detected - embed in WebView2 or iframe');
+                        console.warn(
+                            "[SWM] No host detected - running in standalone mode",
+                        );
+                        updateStatus(
+                            "error",
+                            "No host detected - embed in WebView2 or iframe",
+                        );
                         return;
                     }
 
                     // Send handshake with retry (every 1 second, timeout after 30 seconds)
                     this.retryHandshake(1000, 30000)
                         .then(() => {
-                            console.log('[SWM] Handshake successful');
-                            updateStatus('waiting', 'Connected - waiting for configuration...');
+                            console.log("[SWM] Handshake successful");
+                            updateStatus(
+                                "waiting",
+                                "Connected - waiting for configuration...",
+                            );
                         })
                         .catch((err) => {
-                            console.error('[SWM] Handshake failed:', err);
-                            updateStatus('error', 'Handshake failed - host not responding');
+                            console.error("[SWM] Handshake failed:", err);
+                            updateStatus(
+                                "error",
+                                "Handshake failed - host not responding",
+                            );
                         });
-                }
+                },
             };
 
             // ===========================================
@@ -389,52 +527,66 @@
                 // Auto-initialize is handled by sdc.displayQuestionnaire
                 // This function can be used for status updates
                 if (SmartWebMessaging.config) {
-                    updateStatus('connected', 'Ready - waiting for questionnaire...');
+                    updateStatus(
+                        "connected",
+                        "Ready - waiting for questionnaire...",
+                    );
                 }
             }
 
             function initializeSDK(questionnaire, questionnaireResponse) {
                 // Cleanup existing components
-                if (filler && typeof filler.unmount === 'function') {
+                if (filler && typeof filler.unmount === "function") {
                     filler.unmount();
                 }
-                if (narrative && typeof narrative.unmount === 'function') {
+                if (narrative && typeof narrative.unmount === "function") {
                     narrative.unmount();
                 }
-                if (launchContext && typeof launchContext.unmount === 'function') {
+                if (
+                    launchContext &&
+                    typeof launchContext.unmount === "function"
+                ) {
                     launchContext.unmount();
                 }
 
                 // Build endpoint configuration
                 const sdcEndpoint = {
-                    address: SmartWebMessaging.config?.dataServer ||
-                             'https://sdc-service-staging-wkrcomcqfq-ew.a.run.app/fhir/r5'
+                    address:
+                        SmartWebMessaging.config?.dataServer ||
+                        "https://sdc-service-staging-wkrcomcqfq-ew.a.run.app/fhir/r5",
                 };
 
                 const dataEndpoint = {
-                    resourceType: 'Endpoint',
-                    address: SmartWebMessaging.config?.dataServer ||
-                             'https://fhir-candle-35032072625.europe-west1.run.app/fhir/r4'
+                    resourceType: "Endpoint",
+                    address:
+                        SmartWebMessaging.config?.dataServer ||
+                        "https://fhir-candle-35032072625.europe-west1.run.app/fhir/r4",
                 };
 
                 // Determine questionnaire source
                 let questionnaireConfig;
-                if (typeof questionnaire === 'string') {
+                if (typeof questionnaire === "string") {
                     // URL reference
                     questionnaireConfig = questionnaire;
-                } else if (questionnaire && questionnaire.resourceType === 'Questionnaire') {
+                } else if (
+                    questionnaire &&
+                    questionnaire.resourceType === "Questionnaire"
+                ) {
                     // Inline Questionnaire resource
                     questionnaireConfig = questionnaire;
                 } else {
-                    console.error('[SDK] Invalid questionnaire:', questionnaire);
-                    updateStatus('error', 'Invalid questionnaire received');
+                    console.error(
+                        "[SDK] Invalid questionnaire:",
+                        questionnaire,
+                    );
+                    updateStatus("error", "Invalid questionnaire received");
                     return;
                 }
 
                 // Initialize FormFiller
                 const fillerOptions = {
                     questionnaire: questionnaireConfig,
-                    sdcEndpoint
+                    sdcEndpoint,
                 };
 
                 // Add pre-populated response if provided
@@ -445,22 +597,33 @@
                 // Add context from host (subject, author, encounter, launchContext)
                 if (SmartWebMessaging.context) {
                     if (SmartWebMessaging.context.subject) {
-                        fillerOptions.subject = SmartWebMessaging.context.subject;
+                        fillerOptions.subject =
+                            SmartWebMessaging.context.subject;
                     }
                     if (SmartWebMessaging.context.author) {
                         fillerOptions.author = SmartWebMessaging.context.author;
                     }
                     if (SmartWebMessaging.context.encounter) {
-                        fillerOptions.encounter = SmartWebMessaging.context.encounter;
+                        fillerOptions.encounter =
+                            SmartWebMessaging.context.encounter;
                     }
                     // Pass full resources via launchContext - convert array format to key-value object
-                    if (SmartWebMessaging.context.launchContext && Array.isArray(SmartWebMessaging.context.launchContext) && SmartWebMessaging.context.launchContext.length > 0) {
+                    if (
+                        SmartWebMessaging.context.launchContext &&
+                        Array.isArray(
+                            SmartWebMessaging.context.launchContext,
+                        ) &&
+                        SmartWebMessaging.context.launchContext.length > 0
+                    ) {
                         const launchContextObj = {};
-                        SmartWebMessaging.context.launchContext.forEach(item => {
-                            if (item.name && item.contentResource) {
-                                launchContextObj[item.name] = item.contentResource;
-                            }
-                        });
+                        SmartWebMessaging.context.launchContext.forEach(
+                            (item) => {
+                                if (item.name && item.contentResource) {
+                                    launchContextObj[item.name] =
+                                        item.contentResource;
+                                }
+                            },
+                        );
                         if (Object.keys(launchContextObj).length > 0) {
                             fillerOptions.launchContext = launchContextObj;
                         }
@@ -475,44 +638,62 @@
                 // Initialize LaunchContextProvider with context from host
                 const launchContextOptions = {
                     dataEndpoint,
-                    filler
+                    filler,
                 };
 
                 // Apply context from host (subject, author, encounter, launchContext)
                 if (SmartWebMessaging.context) {
                     if (SmartWebMessaging.context.subject) {
-                        launchContextOptions.subject = SmartWebMessaging.context.subject;
+                        launchContextOptions.subject =
+                            SmartWebMessaging.context.subject;
                     }
                     if (SmartWebMessaging.context.author) {
-                        launchContextOptions.author = SmartWebMessaging.context.author;
+                        launchContextOptions.author =
+                            SmartWebMessaging.context.author;
                     }
                     if (SmartWebMessaging.context.encounter) {
-                        launchContextOptions.encounter = SmartWebMessaging.context.encounter;
+                        launchContextOptions.encounter =
+                            SmartWebMessaging.context.encounter;
                     }
                     // Pass full resources via launchContext - convert array format to key-value object
-                    if (SmartWebMessaging.context.launchContext && Array.isArray(SmartWebMessaging.context.launchContext) && SmartWebMessaging.context.launchContext.length > 0) {
+                    if (
+                        SmartWebMessaging.context.launchContext &&
+                        Array.isArray(
+                            SmartWebMessaging.context.launchContext,
+                        ) &&
+                        SmartWebMessaging.context.launchContext.length > 0
+                    ) {
                         const launchContextObj = {};
-                        SmartWebMessaging.context.launchContext.forEach(item => {
-                            if (item.name && item.contentResource) {
-                                launchContextObj[item.name] = item.contentResource;
-                            }
-                        });
+                        SmartWebMessaging.context.launchContext.forEach(
+                            (item) => {
+                                if (item.name && item.contentResource) {
+                                    launchContextObj[item.name] =
+                                        item.contentResource;
+                                }
+                            },
+                        );
                         if (Object.keys(launchContextObj).length > 0) {
-                            launchContextOptions.launchContext = launchContextObj;
+                            launchContextOptions.launchContext =
+                                launchContextObj;
                         }
                     }
-                    console.log('[SDK] Using context from host:', SmartWebMessaging.context);
+                    console.log(
+                        "[SDK] Using context from host:",
+                        SmartWebMessaging.context,
+                    );
                 }
 
-                launchContext = new TiroWebSDK.LaunchContextProvider(launchContextOptions);
+                launchContext = new TiroWebSDK.LaunchContextProvider(
+                    launchContextOptions,
+                );
 
                 // Mount components
-                filler.mount(document.getElementById('form-filler'));
-                narrative.mount(document.getElementById('narrative'));
-                launchContext.mount(document.getElementById('launch-context'));
+                filler.mount(document.getElementById("form-filler"));
+                narrative.mount(document.getElementById("narrative"));
+                launchContext.mount(document.getElementById("launch-context"));
 
-                updateStatus('connected', 'Questionnaire loaded');
-                console.log('[SDK] Tiro Web SDK initialized successfully');
+                updateStatus("connected", "Questionnaire loaded");
+                console.log("[SDK] Tiro Web SDK initialized successfully");
             }
 
             // ===========================================
@@ -520,7 +701,7 @@
             // ===========================================
             async function handleSubmit() {
                 if (!filler) {
-                    console.warn('[Action] No form to submit');
+                    console.warn("[Action] No form to submit");
                     return;
                 }
 
@@ -529,124 +710,143 @@
                     // Note: The SDK API method may vary - check SDK documentation
                     let questionnaireResponse = null;
 
-                    if (typeof filler.getQuestionnaireResponse === 'function') {
-                        questionnaireResponse = await filler.getQuestionnaireResponse();
-                    } else if (typeof filler.getValue === 'function') {
+                    if (typeof filler.getQuestionnaireResponse === "function") {
+                        questionnaireResponse =
+                            await filler.getQuestionnaireResponse();
+                    } else if (typeof filler.getValue === "function") {
                         questionnaireResponse = await filler.getValue();
                     } else if (filler.questionnaireResponse) {
                         questionnaireResponse = filler.questionnaireResponse;
                     } else {
-                        console.warn('[Action] Unable to extract QuestionnaireResponse - SDK API not found');
+                        console.warn(
+                            "[Action] Unable to extract QuestionnaireResponse - SDK API not found",
+                        );
                         // Create a placeholder response
                         questionnaireResponse = {
-                            resourceType: 'QuestionnaireResponse',
-                            status: 'completed',
-                            questionnaire: 'Questionnaire/placeholder',
+                            resourceType: "QuestionnaireResponse",
+                            status: "completed",
+                            questionnaire: "Questionnaire/placeholder",
                             text: {
-                                status: 'generated',
-                                div: '<div xmlns="http://www.w3.org/1999/xhtml">' +
-                                     '<h3>Specimen Information</h3>' +
-                                     '<p>Specimen type and collection details not available</p>' +
-                                     '<h3>Gross Description</h3>' +
-                                     '<p>Macroscopic examination findings pending</p>' +
-                                     '<h3>Microscopic Findings</h3>' +
-                                     '<p>Histological analysis data could not be extracted</p>' +
-                                     '<h3>Diagnosis</h3>' +
-                                     '<p>Final pathological diagnosis pending form data extraction</p>' +
-                                     '</div>',
+                                status: "generated",
+                                div:
+                                    '<div xmlns="http://www.w3.org/1999/xhtml">' +
+                                    "<h3>Specimen Information</h3>" +
+                                    "<p>Specimen type and collection details not available</p>" +
+                                    "<h3>Gross Description</h3>" +
+                                    "<p>Macroscopic examination findings pending</p>" +
+                                    "<h3>Microscopic Findings</h3>" +
+                                    "<p>Histological analysis data could not be extracted</p>" +
+                                    "<h3>Diagnosis</h3>" +
+                                    "<p>Final pathological diagnosis pending form data extraction</p>" +
+                                    "</div>",
                                 extension: [
                                     {
-                                        url: 'http://fhir.tiro.health/StructureDefinition/narrative-alternative-format',
+                                        url: "http://fhir.tiro.health/StructureDefinition/narrative-alternative-format",
                                         valueAttachment: {
-                                            contentType: 'text/rtf',
+                                            contentType: "text/rtf",
                                             data: btoa(
-                                                '{\\rtf1\\ansi\\deff0' +
-                                                '{\\fonttbl{\\f0 Arial;}}' +
-                                                '\\f0\\fs24' +
-                                                '\\b Specimen Information\\b0\\par' +
-                                                'Specimen type and collection details not available\\par\\par' +
-                                                '\\b Gross Description\\b0\\par' +
-                                                'Macroscopic examination findings pending\\par\\par' +
-                                                '\\b Microscopic Findings\\b0\\par' +
-                                                'Histological analysis data could not be extracted\\par\\par' +
-                                                '\\b Diagnosis\\b0\\par' +
-                                                'Final pathological diagnosis pending form data extraction\\par' +
-                                                '}'
-                                            )
-                                        }
-                                    }
-                                ]
+                                                "{\\rtf1\\ansi\\deff0" +
+                                                    "{\\fonttbl{\\f0 Arial;}}" +
+                                                    "\\f0\\fs24" +
+                                                    "\\b Specimen Information\\b0\\par" +
+                                                    "Specimen type and collection details not available\\par\\par" +
+                                                    "\\b Gross Description\\b0\\par" +
+                                                    "Macroscopic examination findings pending\\par\\par" +
+                                                    "\\b Microscopic Findings\\b0\\par" +
+                                                    "Histological analysis data could not be extracted\\par\\par" +
+                                                    "\\b Diagnosis\\b0\\par" +
+                                                    "Final pathological diagnosis pending form data extraction\\par" +
+                                                    "}",
+                                            ),
+                                        },
+                                    },
+                                ],
                             },
                             item: [
                                 {
-                                    linkId: 'diagnosis',
-                                    text: 'Diagnosis',
+                                    linkId: "diagnosis",
+                                    text: "Diagnosis",
                                     answer: [
                                         {
                                             valueCoding: {
-                                                system: 'http://snomed.info/sct',
-                                                code: '254637007',
-                                                display: 'Non-small cell lung cancer'
-                                            }
-                                        }
+                                                system: "http://snomed.info/sct",
+                                                code: "254637007",
+                                                display:
+                                                    "Non-small cell lung cancer",
+                                            },
+                                        },
                                     ],
                                     item: [
                                         {
-                                            linkId: 'diagnosis-codap',
-                                            text: 'CODAP Code',
+                                            linkId: "diagnosis-codap",
+                                            text: "CODAP Code",
                                             answer: [
                                                 {
                                                     valueCoding: {
-                                                        system: 'http://codap.be',
-                                                        code: '8140/3',
-                                                        display: 'Adenocarcinoma, NOS'
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                }
-                            ]
+                                                        system: "http://codap.be",
+                                                        code: "8140/3",
+                                                        display:
+                                                            "Adenocarcinoma, NOS",
+                                                    },
+                                                },
+                                            ],
+                                        },
+                                    ],
+                                },
+                            ],
                         };
                     }
 
                     // Mark as completed
                     if (questionnaireResponse) {
-                        questionnaireResponse.status = 'completed';
+                        questionnaireResponse.status = "completed";
                     }
 
                     // Create a minimal OperationOutcome (required by SMARTWebEHR)
                     const operationOutcome = {
-                        resourceType: 'OperationOutcome',
-                        issue: [{
-                            severity: 'information',
-                            code: 'informational',
-                            diagnostics: 'Form submitted successfully'
-                        }]
+                        resourceType: "OperationOutcome",
+                        issue: [
+                            {
+                                severity: "information",
+                                code: "informational",
+                                diagnostics: "Form submitted successfully",
+                            },
+                        ],
                     };
 
                     // Send form.submitted event
-                    SmartWebMessaging.sendRequest('form.submitted', {
+                    SmartWebMessaging.sendRequest("form.submitted", {
                         response: questionnaireResponse,
-                        outcome: operationOutcome
-                    }).then(() => {
-                        console.log('[Action] Form submitted successfully');
-                        updateStatus('connected', 'Form submitted');
-                    }).catch((err) => {
-                        console.error('[Action] Form submission failed:', err);
-                        updateStatus('error', 'Submission failed: ' + err.message);
-                    });
+                        outcome: operationOutcome,
+                    })
+                        .then(() => {
+                            console.log("[Action] Form submitted successfully");
+                            updateStatus("connected", "Form submitted");
+                        })
+                        .catch((err) => {
+                            console.error(
+                                "[Action] Form submission failed:",
+                                err,
+                            );
+                            updateStatus(
+                                "error",
+                                "Submission failed: " + err.message,
+                            );
+                        });
                 } catch (err) {
-                    console.error('[Action] Failed to get QuestionnaireResponse:', err);
-                    updateStatus('error', 'Failed to get form data');
+                    console.error(
+                        "[Action] Failed to get QuestionnaireResponse:",
+                        err,
+                    );
+                    updateStatus("error", "Failed to get form data");
                 }
             }
 
             function handleDone() {
                 // Send ui.done event
-                SmartWebMessaging.sendEvent('ui.done', {});
-                console.log('[Action] Done signal sent');
-                updateStatus('connected', 'Done - closing...');
+                SmartWebMessaging.sendEvent("ui.done", {});
+                console.log("[Action] Done signal sent");
+                updateStatus("connected", "Done - closing...");
             }
 
             // ===========================================
@@ -659,7 +859,7 @@
             // ===========================================
             // Initialize
             // ===========================================
-            document.addEventListener('DOMContentLoaded', () => {
+            document.addEventListener("DOMContentLoaded", () => {
                 SmartWebMessaging.init();
             });
         </script>
