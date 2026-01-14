@@ -577,6 +577,31 @@
                 // Mark as completed
                 questionnaireResponse.status = "completed";
 
+                // Clean up null definition fields recursively
+                function removeNullDefinitions(obj) {
+                    if (!obj || typeof obj !== "object") return;
+
+                    // Remove null definition from current object
+                    if (obj.definition === null) {
+                        delete obj.definition;
+                    }
+
+                    // Recursively process nested items
+                    if (Array.isArray(obj.item)) {
+                        obj.item.forEach((item) => removeNullDefinitions(item));
+                    }
+
+                    // Process all object properties
+                    Object.values(obj).forEach((value) => {
+                        if (typeof value === "object" && value !== null) {
+                            removeNullDefinitions(value);
+                        }
+                    });
+                }
+
+                removeNullDefinitions(questionnaireResponse);
+                console.log("[Action] Cleaned QuestionnaireResponse");
+
                 // Generate narrative using SDCClient from form-filler
                 const formFiller = document.getElementById("form-filler");
                 try {
