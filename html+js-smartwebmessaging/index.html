@@ -572,35 +572,56 @@
                 formFiller.submit();
             }
 
+            // ===========================================
+            // Sanitization Utilities
+            // ===========================================
+
+            /**
+             * Recursively sanitizes a plain object by removing properties with null values.
+             * Handles arrays, nested objects, and all JSON primitive types.
+             * Returns a new object - does not mutate the original.
+             *
+             * @param {*} value - Any JSON-compatible value (object, array, string, number, boolean, null)
+             * @returns {*} - Sanitized value with null properties removed
+             */
+            function sanitizeObject(value) {
+                // Handle null - return undefined to signal removal
+                if (value === null) {
+                    return undefined;
+                }
+
+                // Handle primitives (string, number, boolean, undefined)
+                if (typeof value !== "object") {
+                    return value;
+                }
+
+                // Handle arrays - recursively sanitize each element, filter out undefined
+                if (Array.isArray(value)) {
+                    return value
+                        .map(sanitizeObject)
+                        .filter((item) => item !== undefined);
+                }
+
+                // Handle objects - recursively sanitize each property
+                const result = {};
+                for (const [key, val] of Object.entries(value)) {
+                    const sanitized = sanitizeObject(val);
+                    // Only include non-undefined values (null values become undefined)
+                    if (sanitized !== undefined) {
+                        result[key] = sanitized;
+                    }
+                }
+                return result;
+            }
+
             // Called from the tiro-submit event listener
             async function sendFormSubmission(questionnaireResponse) {
                 // Mark as completed
                 questionnaireResponse.status = "completed";
 
-                // Clean up null definition fields recursively
-                function removeNullDefinitions(obj) {
-                    if (!obj || typeof obj !== "object") return;
-
-                    // Remove null definition from current object
-                    if (obj.definition === null) {
-                        delete obj.definition;
-                    }
-
-                    // Recursively process nested items
-                    if (Array.isArray(obj.item)) {
-                        obj.item.forEach((item) => removeNullDefinitions(item));
-                    }
-
-                    // Process all object properties
-                    Object.values(obj).forEach((value) => {
-                        if (typeof value === "object" && value !== null) {
-                            removeNullDefinitions(value);
-                        }
-                    });
-                }
-
-                removeNullDefinitions(questionnaireResponse);
-                console.log("[Action] Cleaned QuestionnaireResponse");
+                // Sanitize response before sending
+                questionnaireResponse = sanitizeObject(questionnaireResponse);
+                console.log("[Action] Sanitized QuestionnaireResponse");
 
                 // Generate narrative using SDCClient from form-filler
                 const formFiller = document.getElementById("form-filler");
