@@ -40,6 +40,54 @@
     </head>
     <body class="px-4 w-full">
         <main>
+            <!-- Magic Clipboard Popover -->
+            <div id="magic-clipboard-popover" popover>
+                <div class="popover-header">
+                    <h2>Magic Clipboard</h2>
+                    <button
+                        class="popover-close"
+                        popovertarget="magic-clipboard-popover"
+                        popovertargetaction="hide"
+                    >
+                        ×
+                    </button>
+                </div>
+                <div class="popover-content">
+                    <tiro-magic-clipboard
+                        for="report-form"
+                    ></tiro-magic-clipboard>
+                </div>
+            </div>
+            <div class="flex justify-end mb-3 gap-2">
+                <button
+                    popovertarget="magic-clipboard-popover"
+                    class="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md bg-blue-600 hover:bg-blue-700 text-white transition-colors"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path
+                            d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72"
+                        />
+                        <path d="m14 7 3 3" />
+                        <path d="M5 6v4" />
+                        <path d="M19 14v4" />
+                        <path d="M10 2v2" />
+                        <path d="M7 8H3" />
+                        <path d="M21 16h-4" />
+                        <path d="M11 3H9" />
+                    </svg>
+                    Autofill
+                </button>
+            </div>
             <tiro-form-filler
                 id="form-filler"
                 sdc-endpoint-address="https://sdc-service-dev-wkrcomcqfq-ew.a.run.app/fhir/r5"
