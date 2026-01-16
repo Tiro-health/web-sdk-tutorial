@@ -8,6 +8,7 @@
             rel="stylesheet"
             href="https://atticus-assets.tiro.health/sdk-dev/latest/tiro-web-sdk.css"
         />
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
         <script
             src="https://browser.sentry-cdn.com/10.33.0/bundle.tracing.min.js"
             crossorigin="anonymous"
@@ -19,42 +20,37 @@
                 integrations: [Sentry.browserTracingIntegration()],
             });
         </script>
-        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-        <style>
-            /* Basic page layout */
-            body {
-                margin: 0;
-                padding: 0;
-                font-family:
-                    system-ui,
-                    -apple-system,
-                    sans-serif;
-            }
-
-            main {
-                max-width: 1200px;
-                margin: 0 auto;
-                padding: 2rem;
-            }
-        </style>
     </head>
-    <body class="px-4 w-full">
-        <main>
+    <body class="m-0 p-0 font-sans">
+        <main class="max-w-5xl mx-auto p-8">
             <!-- Magic Clipboard Popover -->
-            <div id="magic-clipboard-popover" popover>
-                <div class="popover-header">
-                    <h2>Magic Clipboard</h2>
+            <div
+                id="magic-clipboard-popover"
+                popover
+                class="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg p-0 overflow-hidden w-[min(500px,90vw)] max-h-[80vh] backdrop:bg-black/50"
+            >
+                <div
+                    class="flex justify-between items-center py-3 px-4 border-b border-neutral-200 dark:border-neutral-800"
+                >
+                    <h2
+                        class="m-0 text-base font-semibold text-neutral-900 dark:text-neutral-200"
+                    >
+                        Magic Clipboard
+                    </h2>
                     <button
-                        class="popover-close"
+                        class="bg-transparent border-none text-neutral-500 text-xl cursor-pointer p-1 leading-none hover:text-neutral-900 dark:hover:text-neutral-200"
                         popovertarget="magic-clipboard-popover"
                         popovertargetaction="hide"
                     >
                         ×
                     </button>
                 </div>
-                <div class="popover-content">
+                <div
+                    class="pr-4 -pl-2 pb-2 overflow-y-auto max-h-[calc(80vh-3rem)]"
+                >
                     <tiro-magic-clipboard
-                        for="report-form"
+                        for="form-filler"
+                        class="block"
                     ></tiro-magic-clipboard>
                 </div>
             </div>
@@ -90,6 +86,7 @@
             </div>
             <tiro-form-filler
                 id="form-filler"
+                class="block h-full"
                 sdc-endpoint-address="https://sdc-service-dev-wkrcomcqfq-ew.a.run.app/fhir/r5"
             ></tiro-form-filler>
         </main>
