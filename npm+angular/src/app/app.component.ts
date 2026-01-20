@@ -1,6 +1,6 @@
-import { Component, type OnInit, type OnDestroy, ElementRef, ViewChild, type AfterViewInit } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, type ElementRef, ViewChild, type AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormFiller, Narrative, LaunchContextProvider } from "@tiro-health/web-sdk";
+import '@tiro-health/web-sdk';
 
 const QUESTIONNAIRE_URI = "https://templates.tiro.health/templates/2630b8675c214707b1f86d1fbd4deb87";
 const BACKEND_URL = "https://sdc-service-staging-wkrcomcqfq-ew.a.run.app/fhir/r5";
@@ -10,88 +10,38 @@ const DATA_SERVER_URL = "https://fhir-candle-35032072625.europe-west1.run.app/fh
   selector: 'app-root',
   standalone: true,
   imports: [CommonModule],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild('launchContext', { static: true }) launchContextElement!: ElementRef;
-  @ViewChild('formFiller', { static: true }) formFillerElement!: ElementRef;
-  @ViewChild('narrative', { static: true }) narrativeElement!: ElementRef;
+export class AppComponent implements AfterViewInit {
+  @ViewChild('formFiller', { static: true }) formFillerRef!: ElementRef<HTMLElement>;
 
-  private launchContextProvider: any;
-  private filler: any;
-  private narrative: any;
-
-  constructor() { }
-
-  ngOnInit(): void {
-    // Component initialization
-  }
+  questionnaireUrl = QUESTIONNAIRE_URI;
+  sdcUrl = BACKEND_URL;
+  dataUrl = DATA_SERVER_URL;
 
   ngAfterViewInit(): void {
-    this.initializeTiroSDK();
-  }
+    const formFiller = this.formFillerRef.nativeElement;
 
-  ngOnDestroy(): void {
-    if (this.launchContextProvider && typeof this.launchContextProvider.unmount === 'function') {
-      this.launchContextProvider.unmount();
-    }
-    if (this.filler && typeof this.filler.unmount === 'function') {
-      this.filler.unmount();
-    }
-    if (this.narrative && typeof this.narrative.unmount === 'function') {
-      this.narrative.unmount();
-    }
-  }
+    formFiller.addEventListener('tiro-ready', (event: Event) => {
+      console.log('Questionnaire loaded:', (event as CustomEvent).detail.questionnaire);
+    });
 
-  private async initializeTiroSDK(): Promise<void> {
-    try {
-      this.filler = new FormFiller({
-        questionnaire: QUESTIONNAIRE_URI,
-        sdcEndpoint: {
-          resourceType: "Endpoint",
-          address: BACKEND_URL,
-        },
-      });
+    formFiller.addEventListener('tiro-submit', (event: Event) => {
+      console.log('Form submitted:', (event as CustomEvent).detail.response);
+    });
 
-      this.launchContextProvider = new LaunchContextProvider({
-        dataEndpoint: {
-          resourceType: "Endpoint",
-          address: DATA_SERVER_URL,
-        },
-        filler: this.filler,
-      });
+    formFiller.addEventListener('tiro-error', (event: Event) => {
+      console.error('Error:', (event as CustomEvent).detail.error);
+    });
 
-      this.narrative = new Narrative({ filler: this.filler });
+    formFiller.addEventListener('tiro-validate', (event: Event) => {
+      const detail = (event as CustomEvent).detail;
+      console.log('Validation result:', detail.isValid);
+      console.log('OperationOutcome:', detail.operationOutcome);
+    });
 
-      const launchContextElement = this.launchContextElement.nativeElement;
-      const formFillerElement = this.formFillerElement.nativeElement;
-      const narrativeElement = this.narrativeElement.nativeElement;
-
-      if (launchContextElement) {
-        this.launchContextProvider.mount(launchContextElement);
-        console.log('Launch context provider mounted successfully');
-      } else {
-        console.error('Launch context element not found');
-      }
-
-      if (formFillerElement) {
-        this.filler.mount(formFillerElement);
-        console.log('Form filler mounted successfully');
-      } else {
-        console.error('Form filler element not found');
-      }
-
-      if (narrativeElement) {
-        this.narrative.mount(narrativeElement);
-        console.log('Narrative mounted successfully');
-      } else {
-        console.error('Narrative element not found');
-      }
-
-      console.log('Tiro Web SDK initialized successfully');
-    } catch (error) {
-      console.error('Failed to initialize Tiro Web SDK:', error);
-    }
+    console.log('Tiro Web SDK initialized');
   }
 }

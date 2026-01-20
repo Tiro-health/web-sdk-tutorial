@@ -2,7 +2,10 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { AppComponent } from './app/app.component';
 import 'zone.js';
 
-// Import global styles so custom classes and Tiro SDK CSS (via @import) are applied
+// Import Tiro Web SDK CSS
+import '@tiro-health/web-sdk/style.css';
+
+// Import global styles
 import './styles.css';
 
 bootstrapApplication(AppComponent)

@@ -6,17 +6,28 @@
     </h1>
   </div>
   <main class="main-content">
-    <div #launchContext id="launch-context" class="sdk-component-wrapper">
-      <span class="sdk-component-badge">SDK: LaunchContextProvider</span>
+    <div class="sdk-component-wrapper">
+      <span class="sdk-component-badge">SDK: PatientSelector</span>
+      <tiro-patient-selector
+        for="form-filler"
+        [attr.data-endpoint-address]="dataUrl">
+      </tiro-patient-selector>
     </div>
-    <div #formFiller id="form-filler" class="sdk-component-wrapper">
+    <div class="sdk-component-wrapper">
       <span class="sdk-component-badge">SDK: FormFiller</span>
+      <tiro-form-filler
+        #formFiller
+        id="form-filler"
+        [attr.questionnaire]="questionnaireUrl"
+        [attr.sdc-endpoint-address]="sdcUrl">
+      </tiro-form-filler>
     </div>
-    <div #narrative id="narrative" class="sdk-component-wrapper">
+    <div class="sdk-component-wrapper">
       <span class="sdk-component-badge">SDK: Narrative</span>
+      <tiro-narrative for="form-filler"></tiro-narrative>
     </div>
   </main>
-  
+
   <div class="sdk-legend">
     <h3>Component Legend</h3>
     <div class="legend-item">
