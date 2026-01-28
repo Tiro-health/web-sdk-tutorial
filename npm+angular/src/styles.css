@@ -1,7 +1,4 @@
-/* Import Tiro SDK styles */
-@import url('https://atticus-assets.tiro.health/sdk/latest/style.css');
-
-/* Custom styles replacing Tailwind classes */
+/* Custom styles */
 .container {
     padding: 0 1rem;
 }

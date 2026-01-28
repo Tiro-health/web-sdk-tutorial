@@ -24,7 +24,7 @@
     "@angular/platform-browser": "^20.3.2",
     "@angular/platform-browser-dynamic": "^20.3.2",
     "@angular/router": "^20.3.2",
-    "@tiro-health/web-sdk": "0.1.9",
+    "@tiro-health/web-sdk": "0.2.0-dev.24",
     "lucide-react": "^0.330.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
