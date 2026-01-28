@@ -1,9 +1,10 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, type ElementRef, ViewChild, type AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import '@tiro-health/web-sdk';
+import { SDCClient } from '@tiro-health/web-sdk';
 
 const QUESTIONNAIRE_URI = "https://templates.tiro.health/templates/2630b8675c214707b1f86d1fbd4deb87";
-const BACKEND_URL = "https://sdc-service-staging-wkrcomcqfq-ew.a.run.app/fhir/r5";
+const BACKEND_URL = "https://sdc-service-dev-wkrcomcqfq-ew.a.run.app/fhir/r5";
 const DATA_SERVER_URL = "https://fhir-candle-35032072625.europe-west1.run.app/fhir/r4";
 
 @Component({
@@ -18,11 +19,19 @@ export class AppComponent implements AfterViewInit {
   @ViewChild('formFiller', { static: true }) formFillerRef!: ElementRef<HTMLElement>;
 
   questionnaireUrl = QUESTIONNAIRE_URI;
-  sdcUrl = BACKEND_URL;
   dataUrl = DATA_SERVER_URL;
 
+  // Create SDCClient instance
+  private sdcClient = new SDCClient({
+    baseUrl: BACKEND_URL,
+    dataEndpoint: DATA_SERVER_URL,
+  });
+
   ngAfterViewInit(): void {
-    const formFiller = this.formFillerRef.nativeElement;
+    const formFiller = this.formFillerRef.nativeElement as HTMLElement & { sdcClient: SDCClient };
+
+    // Inject SDCClient imperatively
+    formFiller.sdcClient = this.sdcClient;
 
     formFiller.addEventListener('tiro-ready', (event: Event) => {
       console.log('Questionnaire loaded:', (event as CustomEvent).detail.questionnaire);
@@ -42,6 +51,6 @@ export class AppComponent implements AfterViewInit {
       console.log('OperationOutcome:', detail.operationOutcome);
     });
 
-    console.log('Tiro Web SDK initialized');
+    console.log('Tiro Web SDK initialized with SDCClient');
   }
 }
