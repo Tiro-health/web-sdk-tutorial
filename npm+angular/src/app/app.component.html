@@ -7,18 +7,12 @@
   </div>
   <main class="main-content">
     <div class="sdk-component-wrapper">
-      <span class="sdk-component-badge">SDK: PatientSelector</span>
-      <tiro-patient-selector
-        for="form-filler"
-        [attr.data-endpoint-address]="dataUrl">
-      </tiro-patient-selector>
-    </div>
-    <div class="sdk-component-wrapper">
       <span class="sdk-component-badge">SDK: FormFiller</span>
       <tiro-form-filler
         #formFiller
         id="form-filler"
-        [attr.questionnaire]="questionnaireUrl">
+        [attr.questionnaire]="questionnaireUrl"
+        [attr.data-endpoint-address]="dataUrl">
       </tiro-form-filler>
     </div>
     <div class="sdk-component-wrapper">

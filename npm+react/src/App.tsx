@@ -1,56 +1,32 @@
-import { useEffect, useRef } from "react";
-import { FormFiller, Narrative, LaunchContextProvider } from "@tiro-health/web-sdk";
+import "@tiro-health/web-sdk";
 import "./App.css";
 
 const QUESTIONNAIRE_URI = import.meta.env.VITE_QUESTIONNAIRE_URI;
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 const DATA_SERVER_URL = import.meta.env.VITE_DATA_SERVER_URL;
 
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      "tiro-form-filler": React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          questionnaire?: string;
+          "sdc-endpoint-address"?: string;
+          "data-endpoint-address"?: string;
+        },
+        HTMLElement
+      >;
+      "tiro-narrative": React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          for?: string;
+        },
+        HTMLElement
+      >;
+    }
+  }
+}
+
 function App() {
-  const launchContextRef = useRef<HTMLDivElement>(null);
-  const formFillerRef = useRef<HTMLDivElement>(null);
-  const narrativeRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!launchContextRef.current || !formFillerRef.current || !narrativeRef.current) return;
-
-    const filler = new FormFiller({
-      questionnaire: QUESTIONNAIRE_URI,
-      sdcEndpoint: {
-        resourceType: "Endpoint",
-        address: BACKEND_URL,
-      },
-    });
-
-    const launchContextProvider = new LaunchContextProvider({
-      dataEndpoint: {
-        resourceType: "Endpoint",
-        address: DATA_SERVER_URL,
-      },
-      filler,
-    });
-
-    const narrative = new Narrative({ filler });
-
-    launchContextProvider.mount(launchContextRef.current);
-    filler.mount(formFillerRef.current);
-    narrative.mount(narrativeRef.current);
-
-    console.log("Tiro Web SDK initialized successfully");
-
-    return () => {
-      if (typeof launchContextProvider.unmount === "function") {
-        launchContextProvider.unmount();
-      }
-      if (typeof filler.unmount === "function") {
-        filler.unmount();
-      }
-      if (typeof narrative.unmount === "function") {
-        narrative.unmount();
-      }
-    };
-  }, []);
-
   return (
     <div className="container">
       <div className="app-code-section">
@@ -60,17 +36,21 @@ function App() {
         </h1>
       </div>
       <main className="main-content">
-        <div ref={launchContextRef} id="launch-context" className="sdk-component-wrapper">
-          <span className="sdk-component-badge">SDK: LaunchContextProvider</span>
-        </div>
-        <div ref={formFillerRef} id="form-filler" className="sdk-component-wrapper">
+        <div className="sdk-component-wrapper">
           <span className="sdk-component-badge">SDK: FormFiller</span>
+          <tiro-form-filler
+            id="form-filler"
+            questionnaire={QUESTIONNAIRE_URI}
+            sdc-endpoint-address={BACKEND_URL}
+            data-endpoint-address={DATA_SERVER_URL}
+          />
         </div>
-        <div ref={narrativeRef} id="narrative" className="sdk-component-wrapper">
+        <div className="sdk-component-wrapper">
           <span className="sdk-component-badge">SDK: Narrative</span>
+          <tiro-narrative for="form-filler" />
         </div>
       </main>
-      
+
       <div className="sdk-legend">
         <h3>Component Legend</h3>
         <div className="legend-item">
