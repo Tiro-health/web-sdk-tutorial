@@ -6,7 +6,7 @@
         <title>Tiro Web SDK Demo</title>
         <link
             rel="stylesheet"
-            href="https://atticus-assets.tiro.health/sdk/latest/style.css"
+            href="https://cdn.tiro.health/sdk/next/style.css"
         />
         <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
         <style>
@@ -115,14 +115,18 @@
             </h1>
         </div>
         <main class="py-2">
-            <div id="launch-context" class="sdk-component-wrapper">
-                <span class="sdk-component-badge">SDK: LaunchContextProvider</span>
-            </div>
-            <div id="form-filler" class="sdk-component-wrapper">
+            <div class="sdk-component-wrapper">
                 <span class="sdk-component-badge">SDK: FormFiller</span>
+                <tiro-form-filler
+                    id="form-filler"
+                    questionnaire="http://templates.tiro.health/templates/2630b8675c214707b1f86d1fbd4deb87"
+                    sdc-endpoint-address="https://sdc-service-staging-wkrcomcqfq-ew.a.run.app/fhir/r5"
+                    data-endpoint-address="https://fhir-candle-35032072625.europe-west1.run.app/fhir/r4">
+                </tiro-form-filler>
             </div>
-            <div id="narrative" class="sdk-component-wrapper">
+            <div class="sdk-component-wrapper">
                 <span class="sdk-component-badge">SDK: Narrative</span>
+                <tiro-narrative for="form-filler"></tiro-narrative>
             </div>
             <script
                 crossorigin
@@ -132,43 +136,9 @@
                 crossorigin
                 src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
             ></script>
-            <script src="https://atticus-assets.tiro.health/sdk/latest/tiro-web-sdk.iife.js"></script>
-
-            <script>
-                const QUESTIONNAIRE_URI = "http://templates.tiro.health/templates/2630b8675c214707b1f86d1fbd4deb87";
-                const BACKEND_URL = "https://sdc-service-staging-wkrcomcqfq-ew.a.run.app/fhir/r5";
-                const DATA_SERVER_URL = "https://fhir-candle-35032072625.europe-west1.run.app/fhir/r4";
-
-                function initializeApp() {
-                    const filler = new TiroWebSDK.FormFiller({
-                        questionnaire: QUESTIONNAIRE_URI,
-                        sdcEndpoint: {
-                            resourceType: "Endpoint",
-                            address: BACKEND_URL,
-                        },
-                    });
-
-                    const launchContextProvider = new TiroWebSDK.LaunchContextProvider({
-                        dataEndpoint: {
-                            resourceType: "Endpoint",
-                            address: DATA_SERVER_URL,
-                        },
-                        filler,
-                    });
-
-                    const narrative = new TiroWebSDK.Narrative({ filler });
-
-                    launchContextProvider.mount(document.getElementById("launch-context"));
-                    filler.mount(document.getElementById("form-filler"));
-                    narrative.mount(document.getElementById("narrative"));
-                    
-                    console.log("Tiro Web SDK initialized successfully");
-                }
-
-                initializeApp();
-            </script>
+            <script src="https://cdn.tiro.health/sdk/next/tiro-web-sdk.iife.js"></script>
         </main>
-        
+
         <div class="sdk-legend">
             <h3>Component Legend</h3>
             <div class="legend-item">
