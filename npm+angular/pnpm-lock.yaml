@@ -42,8 +42,8 @@ importers:
         specifier: ^20.3.2
         version: 20.3.16(@angular/common@20.3.16(@angular/core@20.3.16(@angular/compiler@20.3.16)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@20.3.16(@angular/compiler@20.3.16)(rxjs@7.8.2)(zone.js@0.15.1))(@angular/platform-browser@20.3.16(@angular/animations@20.3.16(@angular/core@20.3.16(@angular/compiler@20.3.16)(rxjs@7.8.2)(zone.js@0.15.1)))(@angular/common@20.3.16(@angular/core@20.3.16(@angular/compiler@20.3.16)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@20.3.16(@angular/compiler@20.3.16)(rxjs@7.8.2)(zone.js@0.15.1)))(rxjs@7.8.2)
       '@tiro-health/web-sdk':
-        specifier: 0.2.0-rc.7
-        version: 0.2.0-rc.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: 0.2.0-rc.10
+        version: 0.2.0-rc.10(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       lucide-react:
         specifier: ^0.330.0
         version: 0.330.0(react@18.3.1)
@@ -1795,16 +1795,11 @@ packages:
     resolution: {integrity: sha512-mNe0Iigql08YupSOGv197YdHpPPr+EzDZmfCgMc7RPNaZTw5aLN01nBl6CHJOh3BGtnMIj83EeN4butBchc8Ag==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  '@tiro-health/web-sdk@0.2.0-rc.7':
-    resolution: {integrity: sha512-zQh84cqHrzYEJwuV6NQ3Sx0Hqy2EzdwmcNJ9NGbF2xNHw9lj2Z7sJ3gB76W0aV12yR4SNV1OB5/EY9AYStdMww==, tarball: https://europe-npm.pkg.dev/tiroapp-4cb17/npm-ext/@tiro-health/web-sdk/-/@tiro-health/web-sdk-0.2.0-rc.7.tgz}
+  '@tiro-health/web-sdk@0.2.0-rc.10':
+    resolution: {integrity: sha512-pRnN2YVBWzhm0z462c9/dDXkZQ774yljD53q8WudJ5ap9XYSAnJbJFiZyaIf4N/zDv3HZsx9sTIHnuSlMAo3Gg==, tarball: https://npm.pkg.github.com/download/@tiro-health/web-sdk/0.2.0-rc.10/3b08815f8d534601bd25702c4c461d3aa96cf95d}
     peerDependencies:
       react: ^18.0.0
       react-dom: ^18.0.0
-    peerDependenciesMeta:
-      react:
-        optional: true
-      react-dom:
-        optional: true
 
   '@tufjs/canonical-json@2.0.0':
     resolution: {integrity: sha512-yVtV8zsdo8qFHe+/3kw81dSLyF7D576A5cCFCi4X7B39tWT7SekaEFUnvnWJHz+9qO7qJTah1JbrDjWKqFtdWA==}
@@ -6018,8 +6013,8 @@ snapshots:
       '@sigstore/core': 3.1.0
       '@sigstore/protobuf-specs': 0.5.0
 
-  '@tiro-health/web-sdk@0.2.0-rc.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
-    optionalDependencies:
+  '@tiro-health/web-sdk@0.2.0-rc.10(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
