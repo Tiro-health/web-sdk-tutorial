@@ -27,8 +27,22 @@
                 margin-bottom: 1rem;
             }
 
-            .clipboard-header {
+            .section-header {
+                margin-top: 2rem;
                 margin-bottom: 0.5rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .section-header:first-child {
+                margin-top: 0;
+            }
+
+            .section-title {
+                font-size: 0.85rem;
+                font-weight: 600;
+                color: #3f3f46;
             }
 
             .beta-badge {
@@ -40,11 +54,6 @@
                 font-weight: 600;
                 text-transform: uppercase;
                 letter-spacing: 0.05em;
-            }
-
-            .section-header {
-                margin-top: 2rem;
-                margin-bottom: 0.5rem;
             }
 
             .ga-badge {
@@ -63,11 +72,13 @@
         <div class="container">
             <h1 class="title">Tiro Web SDK Demo</h1>
             <main>
-                <div class="clipboard-header">
+                <div class="section-header">
+                    <span class="section-title">Magic Clipboard</span>
                     <span class="beta-badge">Beta</span>
                 </div>
                 <tiro-magic-clipboard for="form-filler"></tiro-magic-clipboard>
                 <div class="section-header">
+                    <span class="section-title">Form Filler</span>
                     <span class="ga-badge">GA</span>
                 </div>
                 <tiro-form-filler
@@ -77,6 +88,7 @@
                     data-endpoint-address="https://fhir-candle-35032072625.europe-west1.run.app/fhir/r4">
                 </tiro-form-filler>
                 <div class="section-header">
+                    <span class="section-title">Narrative</span>
                     <span class="ga-badge">GA</span>
                 </div>
                 <tiro-narrative for="form-filler"></tiro-narrative>

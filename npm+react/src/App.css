@@ -10,8 +10,22 @@
   margin-bottom: 1rem;
 }
 
-.clipboard-header {
+.section-header {
+  margin-top: 2rem;
   margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.section-header:first-child {
+  margin-top: 0;
+}
+
+.section-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #3f3f46;
 }
 
 .beta-badge {
@@ -23,11 +37,6 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-}
-
-.section-header {
-  margin-top: 2rem;
-  margin-bottom: 0.5rem;
 }
 
 .ga-badge {

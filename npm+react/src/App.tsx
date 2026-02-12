@@ -99,7 +99,8 @@ function App() {
     <div className="container">
       <h1 className="title">Tiro Web SDK Demo</h1>
       <main>
-        <div className="clipboard-header">
+        <div className="section-header">
+          <span className="section-title">Magic Clipboard</span>
           <span className="beta-badge">Beta</span>
         </div>
         <tiro-magic-clipboard
@@ -107,6 +108,7 @@ function App() {
           for="form-filler"
         />
         <div className="section-header">
+          <span className="section-title">Form Filler</span>
           <span className="ga-badge">GA</span>
         </div>
         <tiro-form-filler
@@ -117,6 +119,7 @@ function App() {
           data-endpoint-address={DATA_SERVER_URL}
         />
         <div className="section-header">
+          <span className="section-title">Narrative</span>
           <span className="ga-badge">GA</span>
         </div>
         <tiro-narrative for="form-filler" />
