@@ -1,41 +1,23 @@
 <div class="container">
-  <div class="app-code-section">
-    <h1 class="title">
-      Tiro Web SDK Demo
-      <span class="app-code-badge">Your App</span>
-    </h1>
-  </div>
-  <main class="main-content">
-    <div class="sdk-component-wrapper">
-      <span class="sdk-component-badge">SDK: PatientSelector</span>
-      <tiro-patient-selector
-        for="form-filler"
-        [attr.data-endpoint-address]="dataUrl">
-      </tiro-patient-selector>
+  <h1 class="title">Tiro Web SDK Demo</h1>
+  <main>
+    <div class="clipboard-header">
+      <span class="beta-badge">Beta</span>
     </div>
-    <div class="sdk-component-wrapper">
-      <span class="sdk-component-badge">SDK: FormFiller</span>
-      <tiro-form-filler
-        #formFiller
-        id="form-filler"
-        [attr.questionnaire]="questionnaireUrl">
-      </tiro-form-filler>
+    <tiro-magic-clipboard #magicClipboard for="form-filler"></tiro-magic-clipboard>
+    <div class="section-header">
+      <span class="ga-badge">GA</span>
     </div>
-    <div class="sdk-component-wrapper">
-      <span class="sdk-component-badge">SDK: Narrative</span>
-      <tiro-narrative for="form-filler"></tiro-narrative>
+    <tiro-form-filler
+      #formFiller
+      id="form-filler"
+      questionnaire="http://templates.tiro.health/templates/example|1.0.0"
+      sdc-endpoint-address="https://sdc-staging.tiro.health/fhir/r5"
+      data-endpoint-address="https://fhir-candle-35032072625.europe-west1.run.app/fhir/r4">
+    </tiro-form-filler>
+    <div class="section-header">
+      <span class="ga-badge">GA</span>
     </div>
+    <tiro-narrative for="form-filler"></tiro-narrative>
   </main>
-
-  <div class="sdk-legend">
-    <h3>Component Legend</h3>
-    <div class="legend-item">
-      <div class="legend-box sdk"></div>
-      <span class="legend-label">SDK Component</span>
-    </div>
-    <div class="legend-item">
-      <div class="legend-box app"></div>
-      <span class="legend-label">Your Application</span>
-    </div>
-  </div>
 </div>
