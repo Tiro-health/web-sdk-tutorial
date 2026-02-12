@@ -3,242 +3,447 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tiro Health Web SDK Tutorials</title>
+    <title>Tiro Health Web SDK</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+            height: 100vh;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            width: 100%;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 60px;
-        }
-
-        h1 {
-            color: white;
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 15px;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .subtitle {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 1.25rem;
-            font-weight: 300;
-        }
-
-        .tutorials-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-            margin-bottom: 40px;
-        }
-
-        .tutorial-card {
-            background: white;
-            border-radius: 16px;
-            padding: 35px;
-            text-decoration: none;
-            color: inherit;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            position: relative;
+            background: #fff;
             overflow: hidden;
+            color: #18181b;
         }
 
-        .tutorial-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
+        /* ── Sidebar ── */
+        .sidebar {
+            width: 260px;
+            min-width: 260px;
+            background: #fafafa;
+            border-right: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
         }
 
-        .tutorial-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        .sidebar-header {
+            padding: 24px 24px 20px;
         }
 
-        .tutorial-card:hover::before {
-            transform: scaleX(1);
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .tutorial-icon {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 12px;
+        .brand-mark {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .brand-mark svg {
+            height: 20px;
+            width: auto;
+        }
+
+        .brand-text {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #18181b;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-section {
+            padding: 0 12px;
+        }
+
+        .nav-section-label {
+            padding: 20px 12px 6px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #71717a;
+        }
+
+        .nav-list {
+            list-style: none;
+        }
+
+        .nav-item button {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            color: #52525b;
+            font-size: 0.8rem;
+            font-family: inherit;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-align: left;
+        }
+
+        .nav-item button:hover {
+            background: #f4f4f5;
+            color: #3f3f46;
+        }
+
+        .nav-item button:focus-visible {
+            outline: 2px solid #3b82f6;
+            outline-offset: -2px;
+        }
+
+        .nav-item button.active {
+            background: #eff6ff;
+            color: #1d4ed8;
+        }
+
+        .nav-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 20px;
-            font-size: 24px;
+            flex-shrink: 0;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            transition: all 0.15s ease;
         }
 
-        .tutorial-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #2d3748;
-            margin-bottom: 12px;
+        .nav-icon svg {
+            width: 14px;
+            height: 14px;
+            color: #a1a1aa;
+            transition: color 0.15s ease;
         }
 
-        .tutorial-description {
-            color: #718096;
-            line-height: 1.6;
-            font-size: 0.95rem;
+        .nav-item button:hover .nav-icon {
+            border-color: #d4d4d8;
         }
 
-        .tutorial-tech {
+        .nav-item button:hover .nav-icon svg {
+            color: #52525b;
+        }
+
+        .nav-item button.active .nav-icon {
+            background: #dbeafe;
+            border-color: #bfdbfe;
+        }
+
+        .nav-item button.active .nav-icon svg {
+            color: #3b82f6;
+        }
+
+        .sidebar-spacer {
+            flex: 1;
+        }
+
+        .sidebar-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .sidebar-footer a {
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #a1a1aa;
+            text-decoration: none;
+            transition: color 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .sidebar-footer a:hover {
+            color: #52525b;
+        }
+
+        .sidebar-footer svg {
+            width: 13px;
+            height: 13px;
+        }
+
+        /* ── Main ── */
+        .main {
+            flex: 1;
             display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 15px;
+            flex-direction: column;
+            min-width: 0;
+            background: #fff;
         }
 
-        .tech-badge {
-            background: #f7fafc;
-            color: #667eea;
-            padding: 4px 12px;
-            border-radius: 12px;
+        .topbar {
+            height: 48px;
+            min-height: 48px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            gap: 12px;
+        }
+
+        .topbar-title {
             font-size: 0.8rem;
             font-weight: 500;
+            color: #3f3f46;
         }
 
-        footer {
-            text-align: center;
-            color: rgba(255, 255, 255, 0.8);
-            margin-top: 40px;
-        }
-
-        footer a {
-            color: white;
-            text-decoration: none;
+        .topbar-link {
+            margin-left: auto;
+            font-size: 0.7rem;
             font-weight: 500;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
-            transition: border-color 0.3s ease;
+            color: #3b82f6;
+            text-decoration: none;
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
         }
 
-        footer a:hover {
-            border-bottom-color: white;
+        .topbar-link:hover {
+            background: #f4f4f5;
+            border-color: #d4d4d8;
         }
 
+        .topbar-link svg {
+            width: 11px;
+            height: 11px;
+        }
+
+        /* ── Loading ── */
+        .loading-bar {
+            height: 1px;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 0.15s ease;
+        }
+
+        .loading-bar.active { opacity: 1; }
+
+        .loading-bar::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            left: -40%;
+            width: 40%;
+            background: linear-gradient(90deg, transparent, #3b82f6, transparent);
+            animation: slide 1s ease-in-out infinite;
+        }
+
+        @keyframes slide {
+            to { left: 100%; }
+        }
+
+        /* ── Frame ── */
+        .content-frame {
+            flex: 1;
+            border: none;
+            background: #fff;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        .content-frame.loaded { opacity: 1; }
+
+        /* ── Welcome ── */
+        .welcome {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .welcome-inner {
+            max-width: 320px;
+            opacity: 0;
+            animation: fadeIn 0.4s ease 0.1s forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .welcome h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #18181b;
+            margin-bottom: 6px;
+            letter-spacing: -0.01em;
+        }
+
+        .welcome p {
+            font-size: 0.8rem;
+            line-height: 1.6;
+            color: #71717a;
+        }
+
+        /* ── Mobile ── */
         @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
+            .sidebar {
+                width: 52px;
+                min-width: 52px;
             }
 
-            .subtitle {
-                font-size: 1rem;
+            .brand-text,
+            .nav-section-label,
+            .sidebar-footer {
+                display: none;
             }
 
-            .tutorials-grid {
-                grid-template-columns: 1fr;
+            .sidebar-header {
+                padding: 16px 0;
+                display: flex;
+                justify-content: center;
+            }
+
+            .brand { justify-content: center; }
+            .nav-section { padding: 0 4px; }
+
+            .nav-item button {
+                justify-content: center;
+                padding: 8px;
+            }
+
+            .nav-item button span:not(.nav-icon) {
+                display: none;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🏥 Tiro Health Web SDK</h1>
-            <p class="subtitle">Choose your preferred framework to get started</p>
-        </header>
-
-        <div class="tutorials-grid">
-            <a href="npm-react/" class="tutorial-card">
-                <div class="tutorial-icon">⚛️</div>
-                <h2 class="tutorial-title">React + TypeScript</h2>
-                <p class="tutorial-description">
-                    Build modern web applications with React and TypeScript using Vite for fast development.
-                </p>
-                <div class="tutorial-tech">
-                    <span class="tech-badge">React</span>
-                    <span class="tech-badge">TypeScript</span>
-                    <span class="tech-badge">Vite</span>
+    <nav class="sidebar" role="navigation" aria-label="Tutorial navigation">
+        <div class="sidebar-header">
+            <div class="brand">
+                <div class="brand-mark" aria-hidden="true">
+                    <svg viewBox="0 0 424 424"><path d="M79.7754 399.059V424H240.303V399.059H233.132C220.996 399.059 210.331 396.881 201.137 392.527C192.31 387.776 187.897 376.691 187.897 359.272V68.8852C187.897 51.4659 192.494 40.381 201.688 35.6303C210.515 30.8796 220.996 28.5042 233.132 28.5042C264.392 28.5042 278.734 35.2343 291.606 48.6947C304.478 62.155 310.913 84.7208 310.913 116.392C310.913 147.272 304.845 170.431 292.709 185.871C280.941 201.311 266.047 209.031 233.684 209.031V236.941L308.155 370.555C316.614 385.599 324.704 397.079 332.427 404.997C340.15 412.519 350.264 417.666 362.768 420.437C375.639 422.812 393.476 424 416.277 424H424V399.059H422.345C410.945 399.059 400.831 395.1 392.005 387.182C383.179 379.264 373.985 367.387 364.423 351.552L288.848 222.689C302.087 217.938 314.775 211.208 326.911 202.499C339.415 193.789 349.712 182.308 357.803 168.056C365.894 153.408 369.939 135.593 369.939 114.611C369.939 38.2036 322.682 0 228.167 0H0V78.3865H28.6854C30.1564 65.3221 34.0179 52.8516 40.2699 43.3502C46.5218 33.4529 57.7385 28.5042 73.92 28.5042H86.9468C99.0829 28.5042 109.564 30.8796 118.39 35.6303C127.584 40.381 132.181 51.4659 132.181 68.8852V359.272C132.181 376.691 127.584 387.776 118.39 392.527C109.564 396.881 99.0829 399.059 86.9468 399.059H79.7754Z" fill="#232D5B"/></svg>
                 </div>
+                <span class="brand-text">Tiro Health</span>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-label">Frameworks</div>
+            <ul class="nav-list" role="list">
+                <li class="nav-item">
+                    <button onclick="loadApp(this, 'html+js/', 'HTML + JavaScript')" aria-label="HTML + JavaScript" title="HTML + JavaScript">
+                        <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
+                        <span>HTML + JS</span>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button onclick="loadApp(this, 'npm+react/', 'React')" aria-label="React" title="React">
+                        <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg></span>
+                        <span>React</span>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button onclick="loadApp(this, 'npm+vanillajs/', 'Vanilla JS')" aria-label="Vanilla JavaScript" title="Vanilla JavaScript">
+                        <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
+                        <span>Vanilla JS</span>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button onclick="loadApp(this, 'npm+angular/', 'Angular')" aria-label="Angular" title="Angular">
+                        <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 4 17 12 22 20 17 22 7 12 2"/><line x1="12" y1="22" x2="12" y2="2"/><path d="M7 12h10"/></svg></span>
+                        <span>Angular</span>
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-label">Integrations</div>
+            <ul class="nav-list" role="list">
+                <li class="nav-item">
+                    <button onclick="loadApp(this, 'html+js-smartwebmessaging/test-harness.html', 'SMART Web Messaging')" aria-label="SMART Web Messaging" title="SMART Web Messaging">
+                        <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span>
+                        <span>SMART Messaging</span>
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-spacer"></div>
+
+        <div class="sidebar-footer">
+            <a href="https://github.com/Tiro-health/web-sdk-tutorial" target="_blank" rel="noopener noreferrer">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 17.07 3.633 16.7 3.633 16.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.605-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12z"/></svg>
+                GitHub
             </a>
+        </div>
+    </nav>
 
-            <a href="npm-vanillajs/" class="tutorial-card">
-                <div class="tutorial-icon">⚡</div>
-                <h2 class="tutorial-title">Vanilla JavaScript</h2>
-                <p class="tutorial-description">
-                    Get started quickly with plain JavaScript and Vite for a lightweight, framework-free experience.
-                </p>
-                <div class="tutorial-tech">
-                    <span class="tech-badge">JavaScript</span>
-                    <span class="tech-badge">Vite</span>
-                    <span class="tech-badge">ES Modules</span>
-                </div>
-            </a>
-
-            <a href="npm-angular/" class="tutorial-card">
-                <div class="tutorial-icon">🅰️</div>
-                <h2 class="tutorial-title">Angular + TypeScript</h2>
-                <p class="tutorial-description">
-                    Leverage Angular's powerful features with TypeScript and modern tooling for enterprise applications.
-                </p>
-                <div class="tutorial-tech">
-                    <span class="tech-badge">Angular</span>
-                    <span class="tech-badge">TypeScript</span>
-                    <span class="tech-badge">Vite</span>
-                </div>
-            </a>
-
-            <a href="html-js/" class="tutorial-card">
-                <div class="tutorial-icon">📄</div>
-                <h2 class="tutorial-title">HTML + JavaScript</h2>
-                <p class="tutorial-description">
-                    Simple setup with just HTML and JavaScript - no build tools required. Perfect for quick prototypes.
-                </p>
-                <div class="tutorial-tech">
-                    <span class="tech-badge">HTML</span>
-                    <span class="tech-badge">JavaScript</span>
-                    <span class="tech-badge">No Build</span>
-                </div>
-            </a>
-
-            <a href="html+js-smartwebmessaging/test-harness.html" class="tutorial-card">
-                <div class="tutorial-icon">🔗</div>
-                <h2 class="tutorial-title">SMART Web Messaging</h2>
-                <p class="tutorial-description">
-                    Integration example for WebView2/.NET hosts using SMART Web Messaging protocol. Includes test harness.
-                </p>
-                <div class="tutorial-tech">
-                    <span class="tech-badge">WebView2</span>
-                    <span class="tech-badge">postMessage</span>
-                    <span class="tech-badge">FHIR SDC</span>
-                </div>
+    <main class="main" role="main">
+        <div class="topbar">
+            <span class="topbar-title" id="topbar-title">Examples</span>
+            <a class="topbar-link" id="topbar-link" href="#" target="_blank" rel="noopener noreferrer" style="display: none;">
+                Open
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
             </a>
         </div>
 
-        <footer>
-            <p>
-                Need help? Check out the 
-                <a href="https://github.com/Tiro-health/web-sdk-tutorial" target="_blank">GitHub Repository</a>
-            </p>
-        </footer>
-    </div>
+        <div class="loading-bar" id="loading-bar"></div>
+
+        <div class="welcome" id="welcome">
+            <div class="welcome-inner">
+                <h2>Select a tutorial</h2>
+                <p>Choose a framework from the sidebar to preview the SDK integration.</p>
+            </div>
+        </div>
+
+        <iframe class="content-frame" id="content-frame" style="display: none;" title="Tutorial content"></iframe>
+    </main>
+
+    <script>
+        var buttons = document.querySelectorAll('.nav-item button');
+
+        function loadApp(button, url, title) {
+            buttons.forEach(function(b) { b.classList.remove('active'); });
+            button.classList.add('active');
+
+            document.getElementById('topbar-title').textContent = title;
+
+            var link = document.getElementById('topbar-link');
+            link.href = url;
+            link.style.display = '';
+
+            document.getElementById('welcome').style.display = 'none';
+
+            var bar = document.getElementById('loading-bar');
+            bar.classList.add('active');
+
+            var frame = document.getElementById('content-frame');
+            frame.classList.remove('loaded');
+            frame.style.display = '';
+            frame.src = url;
+
+            frame.onload = function() {
+                bar.classList.remove('active');
+                frame.classList.add('loaded');
+            };
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+            var idx = parseInt(e.key, 10);
+            if (idx >= 1 && idx <= buttons.length) {
+                buttons[idx - 1].click();
+            }
+        });
+    </script>
 </body>
 </html>
