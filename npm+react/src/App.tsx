@@ -5,27 +5,6 @@ const QUESTIONNAIRE_URI = import.meta.env.VITE_QUESTIONNAIRE_URI;
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 const DATA_SERVER_URL = import.meta.env.VITE_DATA_SERVER_URL;
 
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      "tiro-form-filler": React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement> & {
-          questionnaire?: string;
-          "sdc-endpoint-address"?: string;
-          "data-endpoint-address"?: string;
-        },
-        HTMLElement
-      >;
-      "tiro-narrative": React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement> & {
-          for?: string;
-        },
-        HTMLElement
-      >;
-    }
-  }
-}
-
 function App() {
   return (
     <div className="container">
