@@ -17,6 +17,12 @@ declare module "react" {
         },
         HTMLElement
       >;
+      "tiro-magic-clipboard": React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          for?: string;
+        },
+        HTMLElement
+      >;
     }
   }
 }

@@ -8,30 +8,22 @@
   <link rel="stylesheet" href="./src/style.css" />
 </head>
 <body>
-<main>
-  <section class="app-code">
-    <h1>Tiro Web SDK Demo</h1>
-  </section>
-
-  <section class="sdk-component">
+<div class="container">
+  <h1 class="title">Tiro Web SDK Demo</h1>
+  <main>
+    <div class="clipboard-header">
+      <span class="beta-badge">Beta</span>
+    </div>
+    <tiro-magic-clipboard id="magic-clipboard" for="form-filler"></tiro-magic-clipboard>
+    <div class="section-header">
+      <span class="ga-badge">GA</span>
+    </div>
     <tiro-form-filler id="form-filler"></tiro-form-filler>
-  </section>
-
-  <section class="sdk-component">
+    <div class="section-header">
+      <span class="ga-badge">GA</span>
+    </div>
     <tiro-narrative for="form-filler"></tiro-narrative>
-  </section>
-</main>
-
-<div class="legend">
-  <h3>Legend</h3>
-  <div class="legend-item">
-    <div class="legend-box sdk"></div>
-    <span class="legend-label">SDK Component</span>
-  </div>
-  <div class="legend-item">
-    <div class="legend-box app"></div>
-    <span class="legend-label">Your App Code</span>
-  </div>
+  </main>
 </div>
 
 <script type="module" src="./src/main.js"></script>

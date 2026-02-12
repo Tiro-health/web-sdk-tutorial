@@ -1,113 +1,51 @@
 /* Import Tiro SDK styles */
 @import url('https://atticus-assets.tiro.health/sdk/latest/style.css');
 
-/* Basic page layout */
 body {
     margin: 0;
     padding: 0;
     font-family: system-ui, -apple-system, sans-serif;
 }
 
-main {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
+.container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
 }
 
-section {
-    margin: 2rem 0;
-    padding: 1.5rem;
-    position: relative;
+.title {
+    font-size: 1.125rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
 }
 
-/* SDK Components - Green borders */
-section.sdk-component {
-    border: 2px solid #10b981;
-    border-radius: 8px;
-    background: rgba(16, 185, 129, 0.05);
+.clipboard-header {
+    margin-bottom: 0.5rem;
 }
 
-section.sdk-component::after {
-    content: "SDK Component";
-    position: absolute;
-    top: -12px;
-    right: 12px;
-    background: linear-gradient(135deg, #10b981, #059669);
+.beta-badge {
+    background: #f59e0b;
     color: white;
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-/* App Code - Blue borders */
-section.app-code {
-    border: 2px dashed #3b82f6;
-    border-radius: 8px;
-    background: rgba(59, 130, 246, 0.05);
-}
-
-section.app-code::after {
-    content: "Your App Code";
-    position: absolute;
-    top: -12px;
-    right: 12px;
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
-    color: white;
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-/* Legend */
-.legend {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    padding: 12px 16px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    z-index: 1001;
-    font-size: 0.875rem;
-}
-
-.legend h3 {
-    margin: 0 0 8px 0;
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #111827;
-}
-
-.legend-item {
-    display: flex;
-    align-items: center;
-    margin: 6px 0;
-    gap: 8px;
-}
-
-.legend-box {
-    width: 20px;
-    height: 20px;
+    padding: 2px 8px;
     border-radius: 4px;
-    flex-shrink: 0;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
-.legend-box.sdk {
-    border: 2px solid #10b981;
-    background: rgba(16, 185, 129, 0.1);
+.section-header {
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
 }
 
-.legend-box.app {
-    border: 2px dashed #3b82f6;
-    background: rgba(59, 130, 246, 0.1);
-}
-
-.legend-label {
-    color: #374151;
-    font-size: 0.8rem;
+.ga-badge {
+    background: #10b981;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }

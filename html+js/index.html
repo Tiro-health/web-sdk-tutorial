@@ -8,147 +8,89 @@
             rel="stylesheet"
             href="https://cdn.tiro.health/sdk/next/style.css"
         />
-        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
         <style>
-            /* SDK Component Visualization Styles */
-            .sdk-component-wrapper {
-                position: relative;
-                margin: 1rem 0;
-                border: 2px solid #10b981;
-                padding: 1rem;
-                background: rgba(16, 185, 129, 0.05);
-                border-radius: 8px;
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: system-ui, -apple-system, sans-serif;
             }
 
-            .sdk-component-badge {
-                position: absolute;
-                top: 8px;
-                right: 8px;
-                background: linear-gradient(135deg, #10b981, #059669);
-                color: white;
-                padding: 4px 10px;
-                border-radius: 12px;
-                font-size: 0.7rem;
-                font-weight: 600;
-                z-index: 1000;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            .container {
+                max-width: 800px;
+                margin: 2rem auto;
+                padding: 0 1rem;
             }
 
-            .app-code-section {
-                position: relative;
-                border: 2px dashed #3b82f6;
-                padding: 1rem;
-                background: rgba(59, 130, 246, 0.05);
-                border-radius: 8px;
+            .title {
+                font-size: 1.125rem;
+                font-weight: bold;
                 margin-bottom: 1rem;
             }
 
-            .app-code-badge {
-                display: inline-block;
-                background: linear-gradient(135deg, #3b82f6, #2563eb);
+            .clipboard-header {
+                margin-bottom: 0.5rem;
+            }
+
+            .beta-badge {
+                background: #f59e0b;
                 color: white;
-                padding: 4px 10px;
-                border-radius: 12px;
+                padding: 2px 8px;
+                border-radius: 4px;
                 font-size: 0.7rem;
                 font-weight: 600;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                margin-left: 0.5rem;
-                vertical-align: middle;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
             }
 
-            /* Legend styles */
-            .sdk-legend {
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                background: white;
-                border: 1px solid #e5e7eb;
-                border-radius: 8px;
-                padding: 12px 16px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-                z-index: 1001;
-                font-size: 0.875rem;
+            .section-header {
+                margin-top: 2rem;
+                margin-bottom: 0.5rem;
             }
 
-            .sdk-legend h3 {
-                margin: 0 0 8px 0;
-                font-size: 0.875rem;
-                font-weight: 600;
-                color: #111827;
-            }
-
-            .legend-item {
-                display: flex;
-                align-items: center;
-                margin: 6px 0;
-                gap: 8px;
-            }
-
-            .legend-box {
-                width: 20px;
-                height: 20px;
+            .ga-badge {
+                background: #10b981;
+                color: white;
+                padding: 2px 8px;
                 border-radius: 4px;
-                flex-shrink: 0;
-            }
-
-            .legend-box.sdk {
-                border: 2px solid #10b981;
-                background: rgba(16, 185, 129, 0.1);
-            }
-
-            .legend-box.app {
-                border: 2px dashed #3b82f6;
-                background: rgba(59, 130, 246, 0.1);
-            }
-
-            .legend-label {
-                color: #374151;
-                font-size: 0.8rem;
+                font-size: 0.7rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
             }
         </style>
     </head>
-    <body class="px-4">
-        <div class="app-code-section">
-            <h1 class="text-lg">
-                Tiro Web SDK Demo
-                <span class="app-code-badge">Your App</span>
-            </h1>
-        </div>
-        <main class="py-2">
-            <div class="sdk-component-wrapper">
-                <span class="sdk-component-badge">SDK: FormFiller</span>
+    <body>
+        <div class="container">
+            <h1 class="title">Tiro Web SDK Demo</h1>
+            <main>
+                <div class="clipboard-header">
+                    <span class="beta-badge">Beta</span>
+                </div>
+                <tiro-magic-clipboard for="form-filler"></tiro-magic-clipboard>
+                <div class="section-header">
+                    <span class="ga-badge">GA</span>
+                </div>
                 <tiro-form-filler
                     id="form-filler"
-                    questionnaire="http://templates.tiro.health/templates/2630b8675c214707b1f86d1fbd4deb87"
-                    sdc-endpoint-address="https://sdc-service-staging-wkrcomcqfq-ew.a.run.app/fhir/r5"
+                    questionnaire="http://templates.tiro.health/templates/example|1.0.0"
+                    sdc-endpoint-address="https://sdc-staging.tiro.health/fhir/r5"
                     data-endpoint-address="https://fhir-candle-35032072625.europe-west1.run.app/fhir/r4">
                 </tiro-form-filler>
-            </div>
-            <div class="sdk-component-wrapper">
-                <span class="sdk-component-badge">SDK: Narrative</span>
+                <div class="section-header">
+                    <span class="ga-badge">GA</span>
+                </div>
                 <tiro-narrative for="form-filler"></tiro-narrative>
-            </div>
-            <script
-                crossorigin
-                src="https://unpkg.com/react@18/umd/react.production.min.js"
-            ></script>
-            <script
-                crossorigin
-                src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
-            ></script>
-            <script src="https://cdn.tiro.health/sdk/next/tiro-web-sdk.iife.js"></script>
-        </main>
-
-        <div class="sdk-legend">
-            <h3>Component Legend</h3>
-            <div class="legend-item">
-                <div class="legend-box sdk"></div>
-                <span class="legend-label">SDK Component</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-box app"></div>
-                <span class="legend-label">Your Application</span>
-            </div>
+            </main>
         </div>
+
+        <script
+            crossorigin
+            src="https://unpkg.com/react@18/umd/react.production.min.js"
+        ></script>
+        <script
+            crossorigin
+            src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+        ></script>
+        <script src="https://cdn.tiro.health/sdk/next/tiro-web-sdk.iife.js"></script>
     </body>
 </html>
