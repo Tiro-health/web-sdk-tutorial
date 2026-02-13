@@ -4,10 +4,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Tiro Web SDK Demo</title>
-        <link
-            rel="stylesheet"
-            href="https://cdn.tiro.health/sdk/next/style.css"
-        />
+
         <style>
             body {
                 margin: 0;
@@ -84,7 +81,7 @@
                 <tiro-form-filler
                     id="form-filler"
                     questionnaire="http://templates.tiro.health/templates/example|1.0.0"
-                    sdc-endpoint-address="https://sdc-staging.tiro.health/fhir/r5"
+                    sdc-endpoint-address="https://sdc.tiro.health/fhir/r5"
                     data-endpoint-address="https://fhir-candle-35032072625.europe-west1.run.app/fhir/r4">
                 </tiro-form-filler>
                 <div class="section-header">
@@ -103,6 +100,6 @@
             crossorigin
             src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
         ></script>
-        <script src="https://cdn.tiro.health/sdk/next/tiro-web-sdk.iife.js"></script>
+        <script src="https://cdn.tiro.health/sdk/v0.2.0/tiro-web-sdk.iife.js"></script>
     </body>
 </html>
