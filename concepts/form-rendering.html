@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Form Rendering</title>
+
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: system-ui, -apple-system, sans-serif;
+            }
+
+            .container {
+                margin: 2rem;
+            }
+
+            .title {
+                font-size: 1.125rem;
+                font-weight: bold;
+                margin-bottom: 1rem;
+            }
+
+            .example-title {
+                font-size: 0.95rem;
+                font-weight: 600;
+                margin-top: 2rem;
+                margin-bottom: 0.75rem;
+                color: #18181b;
+            }
+
+            .example-title:first-of-type {
+                margin-top: 0;
+            }
+
+            .example-desc {
+                font-size: 0.85rem;
+                line-height: 1.6;
+                color: #52525b;
+                margin-bottom: 1rem;
+            }
+
+            .columns {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1.5rem;
+            }
+
+            .column-header {
+                font-size: 0.75rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: #71717a;
+                margin-bottom: 0.75rem;
+            }
+
+            .source-wrapper {
+                position: relative;
+            }
+
+            .copy-btn {
+                position: absolute;
+                top: 0.5rem;
+                right: 0.5rem;
+                background: #313244;
+                border: 1px solid #45475a;
+                color: #cdd6f4;
+                border-radius: 6px;
+                padding: 4px 8px;
+                font-size: 0.7rem;
+                font-family: inherit;
+                cursor: pointer;
+                transition: all 0.15s ease;
+            }
+
+            .copy-btn:hover {
+                background: #45475a;
+            }
+
+            .source-code {
+                background: #1e1e2e;
+                color: #cdd6f4;
+                border-radius: 8px;
+                padding: 1rem 1.25rem;
+                font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+                font-size: 0.8rem;
+                line-height: 1.7;
+                overflow-x: auto;
+                white-space: pre-wrap;
+                word-break: break-all;
+                margin: 0;
+            }
+
+            .source-code .tag { color: #89b4fa; }
+            .source-code .attr { color: #f9e2af; }
+            .source-code .val { color: #a6e3a1; }
+            .source-code .comment { color: #6c7086; font-style: italic; }
+
+            @media (max-width: 700px) {
+                .columns {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1 class="title">Form Rendering</h1>
+
+            <h2 class="example-title">From URL</h2>
+            <p class="example-desc">Load a questionnaire by referencing its canonical URL. The SDK fetches the definition from the server and renders the form automatically.</p>
+            <div class="columns">
+                <div>
+                    <div class="column-header">Preview</div>
+                    <tiro-form-filler
+                        id="form-filler"
+                        questionnaire="http://templates.tiro.health/templates/example|1.0.0">
+                    </tiro-form-filler>
+                </div>
+                <div>
+                    <div class="column-header">Source</div>
+                    <div class="source-wrapper">
+                        <button class="copy-btn" onclick="copySource(this)">Copy</button>
+                        <pre class="source-code"><span class="comment">&lt;!-- Load the Tiro Web SDK --&gt;</span>
+<span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="val" title="https://cdn.tiro.health/sdk/v0.2.0/tiro-web-sdk.iife.js">"https://cdn.tiro.health/.../tiro-web-sdk.iife.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
+
+<span class="comment">&lt;!-- Reference a questionnaire by canonical URL --&gt;</span>
+<span class="tag">&lt;tiro-form-filler</span>
+    <span class="attr">questionnaire</span>=<span class="val" title="http://templates.tiro.health/templates/example|1.0.0">"http://templates.tiro.health/.../example|1.0.0"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;/tiro-form-filler&gt;</span></pre>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="example-title">Inline Questionnaire</h2>
+            <p class="example-desc">Embed a FHIR Questionnaire directly in the page as JSON. This is useful for static forms or when you want full control over the questionnaire definition.</p>
+            <div class="columns">
+                <div>
+                    <div class="column-header">Preview</div>
+                    <tiro-form-filler id="form-filler-inline">
+                        <script type="application/fhir+json" slot="questionnaire">
+{
+    "resourceType": "Questionnaire",
+    "status": "active",
+    "item": [
+        {
+            "linkId": "019c0e3d-e51e-7ff3-896e-44ddd62ec309",
+            "type": "group",
+            "text": "Congratulations setting up the SDK!",
+            "extension": [
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+                    "valueCodeableConcept": {
+                        "text": "block",
+                        "coding": [{ "system": "http://fhir.tiro.health/CodeSystem/tiro-questionnaire-item-control", "code": "block" }]
+                    }
+                }
+            ],
+            "item": [
+                {
+                    "linkId": "019c0e3e-41bd-7ff3-8978-0a080fa2c314",
+                    "type": "string",
+                    "text": "Example question (text)"
+                },
+                {
+                    "linkId": "019c0e3e-7f5d-7ff3-897f-4aff152bc5cc",
+                    "type": "decimal",
+                    "text": "Example question (decimal)"
+                },
+                {
+                    "linkId": "019c0e3e-a33a-7ff3-8983-e6ab744125ce",
+                    "type": "coding",
+                    "text": "Example question (coding)",
+                    "extension": [
+                        {
+                            "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+                            "valueCodeableConcept": {
+                                "text": "chips",
+                                "coding": [{ "system": "http://fhir.tiro.health/CodeSystem/tiro-questionnaire-item-control", "code": "chips" }]
+                            }
+                        }
+                    ],
+                    "answerOption": [
+                        { "valueCoding": { "system": "system-stub-1", "code": "code-stub-1", "display": "Option 1" } },
+                        { "valueCoding": { "system": "system-stub-2", "code": "code-stub-2", "display": "Option 2" } },
+                        { "valueCoding": { "system": "system-stub-3", "code": "code-stub-3", "display": "Option 3" } }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+                        </script>
+                    </tiro-form-filler>
+                </div>
+                <div>
+                    <div class="column-header">Source</div>
+                    <div class="source-wrapper">
+                        <button class="copy-btn" onclick="copyInlineSource(this)">Copy</button>
+                        <pre class="source-code"><span class="comment">&lt;!-- Load the Tiro Web SDK --&gt;</span>
+<span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="val" title="https://cdn.tiro.health/sdk/v0.2.0/tiro-web-sdk.iife.js">"https://cdn.tiro.health/.../tiro-web-sdk.iife.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
+
+<span class="comment">&lt;!-- Provide a FHIR Questionnaire inline --&gt;</span>
+<span class="tag">&lt;tiro-form-filler&gt;</span>
+  <span class="tag">&lt;script <span class="attr">type</span>=<span class="val">"application/fhir+json"</span>
+          <span class="attr">slot</span>=<span class="val">"questionnaire"</span>&gt;</span>
+  {
+    <span class="attr">"resourceType"</span>: <span class="val">"Questionnaire"</span>,
+    <span class="attr">"status"</span>: <span class="val">"active"</span>,
+    <span class="attr">"item"</span>: [{ <span class="comment">...</span> }]
+  }
+  <span class="tag">&lt;/script&gt;</span>
+<span class="tag">&lt;/tiro-form-filler&gt;</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div><!-- .container -->
+
+        <script>
+            function copySource(btn) {
+                var text = '<script src="https://cdn.tiro.health/sdk/v0.2.0/tiro-web-sdk.iife.js"><\/script>\n'
+                    + '\n'
+                    + '<tiro-form-filler\n'
+                    + '    questionnaire="http://templates.tiro.health/templates/example|1.0.0">\n'
+                    + '<\/tiro-form-filler>';
+                navigator.clipboard.writeText(text).then(function() {
+                    btn.textContent = 'Copied!';
+                    setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+                });
+            }
+
+            function copyInlineSource(btn) {
+                var json = document.querySelector('#form-filler-inline script[type="application/fhir+json"]').textContent.trim();
+                var text = '<tiro-form-filler>\n'
+                    + '  <script type="application/fhir+json" slot="questionnaire">\n'
+                    + '  ' + json.split('\n').join('\n  ') + '\n'
+                    + '  <\/script>\n'
+                    + '<\/tiro-form-filler>';
+                navigator.clipboard.writeText(text).then(function() {
+                    btn.textContent = 'Copied!';
+                    setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+                });
+            }
+        </script>
+
+        <script
+            crossorigin
+            src="https://unpkg.com/react@18/umd/react.production.min.js"
+        ></script>
+        <script
+            crossorigin
+            src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+        ></script>
+        <script src="https://cdn.tiro.health/sdk/v0.2.0/tiro-web-sdk.iife.js"></script>
+    </body>
+</html>
