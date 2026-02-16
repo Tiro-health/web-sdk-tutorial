@@ -196,8 +196,14 @@
             color: #3f3f46;
         }
 
-        .topbar-link {
+        .topbar-links {
             margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .topbar-link {
             font-size: 0.7rem;
             font-weight: 500;
             color: #3b82f6;
@@ -351,25 +357,25 @@
             <div class="nav-section-label">Frameworks</div>
             <ul class="nav-list" role="list">
                 <li class="nav-item">
-                    <button onclick="loadApp(this, 'html-js/', 'HTML + JavaScript')" aria-label="HTML + JavaScript" title="HTML + JavaScript">
+                    <button onclick="loadApp(this, 'html-js/', 'HTML + JavaScript', 'https://github.com/Tiro-health/web-sdk-tutorial/tree/main/html%2Bjs')" aria-label="HTML + JavaScript" title="HTML + JavaScript">
                         <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
                         <span>HTML + JS</span>
                     </button>
                 </li>
                 <li class="nav-item">
-                    <button onclick="loadApp(this, 'npm-react/', 'React')" aria-label="React" title="React">
+                    <button onclick="loadApp(this, 'npm-react/', 'React', 'https://github.com/Tiro-health/web-sdk-tutorial/tree/main/npm%2Breact/src')" aria-label="React" title="React">
                         <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg></span>
                         <span>React</span>
                     </button>
                 </li>
                 <li class="nav-item">
-                    <button onclick="loadApp(this, 'npm-vanillajs/', 'Vanilla JS')" aria-label="Vanilla JavaScript" title="Vanilla JavaScript">
+                    <button onclick="loadApp(this, 'npm-vanillajs/', 'Vanilla JS', 'https://github.com/Tiro-health/web-sdk-tutorial/tree/main/npm%2Bvanillajs/src')" aria-label="Vanilla JavaScript" title="Vanilla JavaScript">
                         <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
                         <span>Vanilla JS</span>
                     </button>
                 </li>
                 <li class="nav-item">
-                    <button onclick="loadApp(this, 'npm-angular/', 'Angular')" aria-label="Angular" title="Angular">
+                    <button onclick="loadApp(this, 'npm-angular/', 'Angular', 'https://github.com/Tiro-health/web-sdk-tutorial/tree/main/npm%2Bangular/src/app')" aria-label="Angular" title="Angular">
                         <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 4 17 12 22 20 17 22 7 12 2"/><line x1="12" y1="22" x2="12" y2="2"/><path d="M7 12h10"/></svg></span>
                         <span>Angular</span>
                     </button>
@@ -381,7 +387,7 @@
             <div class="nav-section-label">Integrations</div>
             <ul class="nav-list" role="list">
                 <li class="nav-item">
-                    <button onclick="loadApp(this, 'html+js-smartwebmessaging/test-harness.html', 'SMART Web Messaging')" aria-label="SMART Web Messaging" title="SMART Web Messaging">
+                    <button onclick="loadApp(this, 'html+js-smartwebmessaging/test-harness.html', 'SMART Web Messaging', 'https://github.com/Tiro-health/web-sdk-tutorial/tree/main/html%2Bjs-smartwebmessaging')" aria-label="SMART Web Messaging" title="SMART Web Messaging">
                         <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span>
                         <span>SMART Messaging</span>
                     </button>
@@ -402,10 +408,16 @@
     <main class="main" role="main">
         <div class="topbar">
             <span class="topbar-title" id="topbar-title">Examples</span>
-            <a class="topbar-link" id="topbar-link" href="#" target="_blank" rel="noopener noreferrer" style="display: none;">
-                Open
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            </a>
+            <div class="topbar-links">
+                <a class="topbar-link" id="topbar-source" href="#" target="_blank" rel="noopener noreferrer" style="display: none;">
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="width:14px;height:14px"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 17.07 3.633 16.7 3.633 16.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.605-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12z"/></svg>
+                    Source
+                </a>
+                <a class="topbar-link" id="topbar-link" href="#" target="_blank" rel="noopener noreferrer" style="display: none;">
+                    Open
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                </a>
+            </div>
         </div>
 
         <div class="loading-bar" id="loading-bar"></div>
@@ -423,7 +435,7 @@
     <script>
         var buttons = document.querySelectorAll('.nav-item button');
 
-        function loadApp(button, url, title) {
+        function loadApp(button, url, title, sourceUrl) {
             buttons.forEach(function(b) { b.classList.remove('active'); });
             button.classList.add('active');
 
@@ -432,6 +444,14 @@
             var link = document.getElementById('topbar-link');
             link.href = url;
             link.style.display = '';
+
+            var source = document.getElementById('topbar-source');
+            if (sourceUrl) {
+                source.href = sourceUrl;
+                source.style.display = '';
+            } else {
+                source.style.display = 'none';
+            }
 
             document.getElementById('welcome').style.display = 'none';
 
