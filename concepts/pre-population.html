@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Pre-population</title>
+
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: system-ui, -apple-system, sans-serif;
+            }
+
+            .container {
+                margin: 2rem;
+            }
+
+            .title {
+                font-size: 1.125rem;
+                font-weight: bold;
+                margin-bottom: 1rem;
+            }
+
+            .example-title {
+                font-size: 0.95rem;
+                font-weight: 600;
+                margin-top: 2rem;
+                margin-bottom: 0.75rem;
+                color: #18181b;
+            }
+
+            .example-title:first-of-type {
+                margin-top: 0;
+            }
+
+            .example-desc {
+                font-size: 0.85rem;
+                line-height: 1.6;
+                color: #52525b;
+                margin-bottom: 1rem;
+            }
+
+            .columns {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1.5rem;
+            }
+
+            .column-header {
+                font-size: 0.75rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: #71717a;
+                margin-bottom: 0.75rem;
+            }
+
+            .source-wrapper {
+                position: relative;
+            }
+
+            .copy-btn {
+                position: absolute;
+                top: 0.5rem;
+                right: 0.5rem;
+                background: #313244;
+                border: 1px solid #45475a;
+                color: #cdd6f4;
+                border-radius: 6px;
+                padding: 4px 8px;
+                font-size: 0.7rem;
+                font-family: inherit;
+                cursor: pointer;
+                transition: all 0.15s ease;
+            }
+
+            .copy-btn:hover {
+                background: #45475a;
+            }
+
+            .source-code {
+                background: #1e1e2e;
+                color: #cdd6f4;
+                border-radius: 8px;
+                padding: 1rem 1.25rem;
+                font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+                font-size: 0.8rem;
+                line-height: 1.7;
+                overflow-x: auto;
+                white-space: pre-wrap;
+                word-break: break-all;
+                margin: 0;
+            }
+
+            .source-code .tag { color: #89b4fa; }
+            .source-code .attr { color: #f9e2af; }
+            .source-code .val { color: #a6e3a1; }
+            .source-code .comment { color: #6c7086; font-style: italic; }
+            .source-code .kw { color: #cba6f7; }
+            .source-code .fn { color: #89b4fa; }
+            .source-code .str { color: #a6e3a1; }
+            .source-code .prop { color: #f9e2af; }
+
+            @media (max-width: 700px) {
+                .columns {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1 class="title">Pre-population with x-fhir-query</h1>
+
+            <h2 class="example-title">Fetching the latest PSA observation</h2>
+            <p class="example-desc">
+                Use a <code>variable</code> extension with an <code>x-fhir-query</code> expression at the questionnaire root to fetch related FHIR resources from the data server.
+                The query can reference launch context variables (e.g. <code>{{%patient.id}}</code>). The result is a FHIR Bundle that you can extract values from using <code>initialExpression</code>.
+            </p>
+            <div class="columns">
+                <div>
+                    <div class="column-header">Preview</div>
+                    <tiro-form-filler
+                        id="query-form"
+                        data-endpoint-address="https://fhir-candle-35032072625.europe-west1.run.app/fhir/r5"
+                        launch-context='{"patient":{"resourceType":"Patient","id":"patient-001","name":[{"given":["Jane"],"family":"Doe"}],"birthDate":"1990-03-15"}}'>
+                        <script type="application/fhir+json" slot="questionnaire">
+{
+    "resourceType": "Questionnaire",
+    "status": "active",
+    "extension": [
+        {
+            "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-launchContext",
+            "extension": [
+                { "url": "name", "valueCoding": { "system": "http://hl7.org/fhir/uv/sdc/CodeSystem/launchContext", "code": "patient" } },
+                { "url": "type", "valueCode": "Patient" }
+            ]
+        },
+        {
+            "url": "http://hl7.org/fhir/StructureDefinition/variable",
+            "valueExpression": {
+                "name": "latestPSA",
+                "language": "application/x-fhir-query",
+                "expression": "Observation?patient={{%patient.id}}&code=2857-1&_sort=-date&_count=1"
+            }
+        }
+    ],
+    "item": [
+        {
+            "linkId": "group-psa",
+            "type": "group",
+            "text": "Latest PSA Result",
+            "extension": [
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+                    "valueCodeableConcept": {
+                        "text": "block",
+                        "coding": [{ "system": "http://fhir.tiro.health/CodeSystem/tiro-questionnaire-item-control", "code": "block" }]
+                    }
+                }
+            ],
+            "item": [
+                {
+                    "linkId": "psa-value",
+                    "type": "decimal",
+                    "text": "PSA value (ng/mL)",
+                    "extension": [
+                        {
+                            "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression",
+                            "valueExpression": {
+                                "language": "text/fhirpath",
+                                "expression": "%latestPSA.value.value"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "linkId": "psa-date",
+                    "type": "date",
+                    "text": "Date measured",
+                    "extension": [
+                        {
+                            "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression",
+                            "valueExpression": {
+                                "language": "text/fhirpath",
+                                "expression": "%latestPSA.effective"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+                        </script>
+                    </tiro-form-filler>
+                </div>
+                <div>
+                    <div class="column-header">Source</div>
+                    <div class="source-wrapper">
+                        <button class="copy-btn" onclick="copySource(this)">Copy</button>
+                        <pre class="source-code"><span class="comment">&lt;!-- Point to a FHIR data server --&gt;</span>
+<span class="tag">&lt;tiro-form-filler</span>
+    <span class="attr">data-endpoint-address</span>=<span class="val">"https://fhir-server.example/fhir/r5"</span>
+    <span class="attr">launch-context</span>=<span class="val">'{"patient":{"resourceType":"Patient","id":"patient-001",...}}'</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;script</span> <span class="attr">type</span>=<span class="val">"application/fhir+json"</span>
+          <span class="attr">slot</span>=<span class="val">"questionnaire"</span><span class="tag">&gt;</span>
+  {
+    <span class="attr">"resourceType"</span>: <span class="val">"Questionnaire"</span>,
+    <span class="attr">"extension"</span>: [
+      { <span class="comment">/* launchContext for patient */</span> },
+      {
+        <span class="comment">// Query the latest PSA observation</span>
+        <span class="attr">"url"</span>: <span class="val">"http://hl7.org/fhir/StructureDefinition/variable"</span>,
+        <span class="attr">"valueExpression"</span>: {
+          <span class="attr">"name"</span>: <span class="val">"latestPSA"</span>,
+          <span class="attr">"language"</span>: <span class="val">"application/x-fhir-query"</span>,
+          <span class="attr">"expression"</span>: <span class="val">"Observation?patient={{%patient.id}}&amp;code=2857-1&amp;_sort=-date&amp;_count=1"</span>
+        }
+      }
+    ],
+    <span class="attr">"item"</span>: [{
+      <span class="attr">"linkId"</span>: <span class="val">"psa-value"</span>,
+      <span class="attr">"type"</span>: <span class="val">"decimal"</span>,
+      <span class="attr">"text"</span>: <span class="val">"PSA value (ng/mL)"</span>,
+      <span class="comment">// Extract value from the query result Bundle</span>
+      <span class="attr">"extension"</span>: [{
+        <span class="attr">"url"</span>: <span class="val">"...sdc-questionnaire-initialExpression"</span>,
+        <span class="attr">"valueExpression"</span>: {
+          <span class="attr">"language"</span>: <span class="val">"text/fhirpath"</span>,
+          <span class="attr">"expression"</span>: <span class="val">"%latestPSA.value.value"</span>
+        }
+      }]
+    }]
+  }
+  <span class="tag">&lt;/script&gt;</span>
+<span class="tag">&lt;/tiro-form-filler&gt;</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div><!-- .container -->
+
+        <script>
+            function copySource(btn) {
+                var text = '<tiro-form-filler\n'
+                    + '    data-endpoint-address="https://fhir-server.example/fhir/r5"\n'
+                    + '    launch-context=\'{"patient":{"resourceType":"Patient","id":"patient-001","name":[{"given":["Jane"],"family":"Doe"}],"birthDate":"1990-03-15"}}\'>\n'
+                    + '  <script type="application/fhir+json" slot="questionnaire">\n'
+                    + '  {\n'
+                    + '    "resourceType": "Questionnaire",\n'
+                    + '    "status": "active",\n'
+                    + '    "extension": [\n'
+                    + '      {\n'
+                    + '        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-launchContext",\n'
+                    + '        "extension": [\n'
+                    + '          { "url": "name", "valueCoding": { "system": "http://hl7.org/fhir/uv/sdc/CodeSystem/launchContext", "code": "patient" } },\n'
+                    + '          { "url": "type", "valueCode": "Patient" }\n'
+                    + '        ]\n'
+                    + '      },\n'
+                    + '      {\n'
+                    + '        "url": "http://hl7.org/fhir/StructureDefinition/variable",\n'
+                    + '        "valueExpression": {\n'
+                    + '          "name": "latestPSA",\n'
+                    + '          "language": "application/x-fhir-query",\n'
+                    + '          "expression": "Observation?patient={{%patient.id}}&code=2857-1&_sort=-date&_count=1"\n'
+                    + '        }\n'
+                    + '      }\n'
+                    + '    ],\n'
+                    + '    "item": [{\n'
+                    + '      "linkId": "psa-value",\n'
+                    + '      "type": "decimal",\n'
+                    + '      "text": "PSA value (ng/mL)",\n'
+                    + '      "extension": [{\n'
+                    + '        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression",\n'
+                    + '        "valueExpression": {\n'
+                    + '          "language": "text/fhirpath",\n'
+                    + '          "expression": "%latestPSA.value.value"\n'
+                    + '        }\n'
+                    + '      }]\n'
+                    + '    }, {\n'
+                    + '      "linkId": "psa-date",\n'
+                    + '      "type": "date",\n'
+                    + '      "text": "Date measured",\n'
+                    + '      "extension": [{\n'
+                    + '        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression",\n'
+                    + '        "valueExpression": {\n'
+                    + '          "language": "text/fhirpath",\n'
+                    + '          "expression": "%latestPSA.effective"\n'
+                    + '        }\n'
+                    + '      }]\n'
+                    + '    }]\n'
+                    + '  }\n'
+                    + '  <\/script>\n'
+                    + '<\/tiro-form-filler>';
+                navigator.clipboard.writeText(text).then(function() {
+                    btn.textContent = 'Copied!';
+                    setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+                });
+            }
+        </script>
+
+        <script
+            crossorigin
+            src="https://unpkg.com/react@18/umd/react.production.min.js"
+        ></script>
+        <script
+            crossorigin
+            src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+        ></script>
+        <script src="https://cdn.tiro.health/sdk/v0.2.0/tiro-web-sdk.iife.js"></script>
+    </body>
+</html>

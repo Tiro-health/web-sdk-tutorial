@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Launch Context</title>
+
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: system-ui, -apple-system, sans-serif;
+            }
+
+            .container {
+                margin: 2rem;
+            }
+
+            .title {
+                font-size: 1.125rem;
+                font-weight: bold;
+                margin-bottom: 1rem;
+            }
+
+            .example-title {
+                font-size: 0.95rem;
+                font-weight: 600;
+                margin-top: 2rem;
+                margin-bottom: 0.75rem;
+                color: #18181b;
+            }
+
+            .example-title:first-of-type {
+                margin-top: 0;
+            }
+
+            .example-desc {
+                font-size: 0.85rem;
+                line-height: 1.6;
+                color: #52525b;
+                margin-bottom: 1rem;
+            }
+
+            .columns {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1.5rem;
+            }
+
+            .column-header {
+                font-size: 0.75rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: #71717a;
+                margin-bottom: 0.75rem;
+            }
+
+            .source-wrapper {
+                position: relative;
+            }
+
+            .copy-btn {
+                position: absolute;
+                top: 0.5rem;
+                right: 0.5rem;
+                background: #313244;
+                border: 1px solid #45475a;
+                color: #cdd6f4;
+                border-radius: 6px;
+                padding: 4px 8px;
+                font-size: 0.7rem;
+                font-family: inherit;
+                cursor: pointer;
+                transition: all 0.15s ease;
+            }
+
+            .copy-btn:hover {
+                background: #45475a;
+            }
+
+            .source-code {
+                background: #1e1e2e;
+                color: #cdd6f4;
+                border-radius: 8px;
+                padding: 1rem 1.25rem;
+                font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+                font-size: 0.8rem;
+                line-height: 1.7;
+                overflow-x: auto;
+                white-space: pre-wrap;
+                word-break: break-all;
+                margin: 0;
+            }
+
+            .source-code .tag { color: #89b4fa; }
+            .source-code .attr { color: #f9e2af; }
+            .source-code .val { color: #a6e3a1; }
+            .source-code .comment { color: #6c7086; font-style: italic; }
+            .source-code .kw { color: #cba6f7; }
+            .source-code .fn { color: #89b4fa; }
+            .source-code .str { color: #a6e3a1; }
+            .source-code .prop { color: #f9e2af; }
+
+            @media (max-width: 700px) {
+                .columns {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1 class="title">Launch Context</h1>
+
+            <h2 class="example-title">Setting the patient context</h2>
+            <p class="example-desc">
+                The <code>&lt;tiro-form-filler&gt;</code> element accepts a <code>launch-context</code> attribute containing a JSON string.
+                Keys are context variable names (<code>patient</code>, <code>user</code>) and values are full FHIR resources.
+                This allows the form to use patient data for pre-population and display.
+            </p>
+            <div class="columns">
+                <div>
+                    <div class="column-header">Preview</div>
+                    <tiro-form-filler
+                        id="context-form"
+                        launch-context='{"patient":{"resourceType":"Patient","id":"patient-001","name":[{"given":["Jane"],"family":"Doe"}],"birthDate":"1990-03-15"}}'>
+                        <script type="application/fhir+json" slot="questionnaire">
+{
+    "resourceType": "Questionnaire",
+    "status": "active",
+    "extension": [
+        {
+            "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-launchContext",
+            "extension": [
+                { "url": "name", "valueCoding": { "system": "http://hl7.org/fhir/uv/sdc/CodeSystem/launchContext", "code": "patient" } },
+                { "url": "type", "valueCode": "Patient" }
+            ]
+        }
+    ],
+    "item": [
+        {
+            "linkId": "group-1",
+            "type": "group",
+            "text": "Patient Information",
+            "extension": [
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+                    "valueCodeableConcept": {
+                        "text": "block",
+                        "coding": [{ "system": "http://fhir.tiro.health/CodeSystem/tiro-questionnaire-item-control", "code": "block" }]
+                    }
+                }
+            ],
+            "item": [
+                {
+                    "linkId": "patient-name",
+                    "type": "string",
+                    "text": "Patient name",
+                    "extension": [
+                        {
+                            "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression",
+                            "valueExpression": {
+                                "language": "text/fhirpath",
+                                "expression": "%patient.name.first().given.join(' ') + ' ' + %patient.name.first().family"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "linkId": "patient-birthdate",
+                    "type": "date",
+                    "text": "Date of birth",
+                    "extension": [
+                        {
+                            "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression",
+                            "valueExpression": {
+                                "language": "text/fhirpath",
+                                "expression": "%patient.birthDate"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+                        </script>
+                    </tiro-form-filler>
+                </div>
+                <div>
+                    <div class="column-header">Source</div>
+                    <div class="source-wrapper">
+                        <button class="copy-btn" onclick="copySource(this)">Copy</button>
+                        <pre class="source-code"><span class="comment">&lt;!-- Set patient context via the launch-context attribute --&gt;</span>
+<span class="tag">&lt;tiro-form-filler</span>
+    <span class="attr">launch-context</span>=<span class="val">'{"patient":{"resourceType":"Patient",...}}'</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;script</span> <span class="attr">type</span>=<span class="val">"application/fhir+json"</span>
+          <span class="attr">slot</span>=<span class="val">"questionnaire"</span><span class="tag">&gt;</span>
+  {
+    <span class="attr">"resourceType"</span>: <span class="val">"Questionnaire"</span>,
+    <span class="comment">// Declare the patient launch context</span>
+    <span class="attr">"extension"</span>: [{
+      <span class="attr">"url"</span>: <span class="val">"...sdc-questionnaire-launchContext"</span>,
+      <span class="attr">"extension"</span>: [
+        { <span class="attr">"url"</span>: <span class="val">"name"</span>,
+          <span class="attr">"valueCoding"</span>: { <span class="attr">"code"</span>: <span class="val">"patient"</span> } },
+        { <span class="attr">"url"</span>: <span class="val">"type"</span>,
+          <span class="attr">"valueCode"</span>: <span class="val">"Patient"</span> }
+      ]
+    }],
+    <span class="attr">"item"</span>: [{
+      <span class="attr">"linkId"</span>: <span class="val">"patient-name"</span>,
+      <span class="attr">"type"</span>: <span class="val">"string"</span>,
+      <span class="attr">"text"</span>: <span class="val">"Patient name"</span>,
+      <span class="comment">// Pre-populate from patient context</span>
+      <span class="attr">"extension"</span>: [{
+        <span class="attr">"url"</span>: <span class="val">"...sdc-questionnaire-initialExpression"</span>,
+        <span class="attr">"valueExpression"</span>: {
+          <span class="attr">"language"</span>: <span class="val">"text/fhirpath"</span>,
+          <span class="attr">"expression"</span>: <span class="val">"%patient.name.first().given.join(' ') + ' ' + %patient.name.first().family"</span>
+        }
+      }]
+    }]
+  }
+  <span class="tag">&lt;/script&gt;</span>
+<span class="tag">&lt;/tiro-form-filler&gt;</span>
+
+<span class="comment">&lt;!-- Or set it programmatically --&gt;</span>
+<span class="tag">&lt;script&gt;</span>
+  <span class="kw">const</span> form = document.<span class="fn">querySelector</span>(<span class="str">"tiro-form-filler"</span>);
+  form.<span class="fn">setAttribute</span>(<span class="str">"launch-context"</span>, JSON.<span class="fn">stringify</span>({
+    <span class="prop">patient</span>: {
+      <span class="prop">resourceType</span>: <span class="str">"Patient"</span>,
+      <span class="prop">id</span>: <span class="str">"patient-001"</span>,
+      <span class="prop">name</span>: [{ <span class="prop">given</span>: [<span class="str">"Jane"</span>], <span class="prop">family</span>: <span class="str">"Doe"</span> }],
+      <span class="prop">birthDate</span>: <span class="str">"1990-03-15"</span>
+    }
+  }));
+<span class="tag">&lt;/script&gt;</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div><!-- .container -->
+
+        <script>
+            function copySource(btn) {
+                var text = '<tiro-form-filler\n'
+                    + '    launch-context=\'{"patient":{"resourceType":"Patient","id":"patient-001","name":[{"given":["Jane"],"family":"Doe"}],"birthDate":"1990-03-15"}}\'>\n'
+                    + '  <script type="application/fhir+json" slot="questionnaire">\n'
+                    + '  {\n'
+                    + '    "resourceType": "Questionnaire",\n'
+                    + '    "status": "active",\n'
+                    + '    "extension": [{\n'
+                    + '      "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-launchContext",\n'
+                    + '      "extension": [\n'
+                    + '        { "url": "name", "valueCoding": { "system": "http://hl7.org/fhir/uv/sdc/CodeSystem/launchContext", "code": "patient" } },\n'
+                    + '        { "url": "type", "valueCode": "Patient" }\n'
+                    + '      ]\n'
+                    + '    }],\n'
+                    + '    "item": [{\n'
+                    + '      "linkId": "patient-name",\n'
+                    + '      "type": "string",\n'
+                    + '      "text": "Patient name",\n'
+                    + '      "extension": [{\n'
+                    + '        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression",\n'
+                    + '        "valueExpression": {\n'
+                    + '          "language": "text/fhirpath",\n'
+                    + '          "expression": "%patient.name.first().given.join(\' \') + \' \' + %patient.name.first().family"\n'
+                    + '        }\n'
+                    + '      }]\n'
+                    + '    }]\n'
+                    + '  }\n'
+                    + '  <\/script>\n'
+                    + '<\/tiro-form-filler>\n'
+                    + '\n'
+                    + '<!-- Or set launch-context programmatically -->\n'
+                    + '<script>\n'
+                    + '  const form = document.querySelector("tiro-form-filler");\n'
+                    + '  form.setAttribute("launch-context", JSON.stringify({\n'
+                    + '    patient: {\n'
+                    + '      resourceType: "Patient",\n'
+                    + '      id: "patient-001",\n'
+                    + '      name: [{ given: ["Jane"], family: "Doe" }],\n'
+                    + '      birthDate: "1990-03-15"\n'
+                    + '    }\n'
+                    + '  }));\n'
+                    + '<\/script>';
+                navigator.clipboard.writeText(text).then(function() {
+                    btn.textContent = 'Copied!';
+                    setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+                });
+            }
+        </script>
+
+        <script
+            crossorigin
+            src="https://unpkg.com/react@18/umd/react.production.min.js"
+        ></script>
+        <script
+            crossorigin
+            src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+        ></script>
+        <script src="https://cdn.tiro.health/sdk/v0.2.0/tiro-web-sdk.iife.js"></script>
+    </body>
+</html>
