@@ -89,6 +89,9 @@ jobs:
           mkdir -p final-dist/html+js-smartwebmessaging
           cp -r html+js-smartwebmessaging/* final-dist/html+js-smartwebmessaging/
 
+      - name: Copy concepts
+        run: cp -r concepts final-dist/
+
       - name: Copy landing page
         run: cp index.html final-dist/
 
