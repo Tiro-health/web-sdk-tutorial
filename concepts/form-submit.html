@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Form Submit</title>
+
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: system-ui, -apple-system, sans-serif;
+            }
+
+            .container {
+                margin: 2rem;
+            }
+
+            .title {
+                font-size: 1.125rem;
+                font-weight: bold;
+                margin-bottom: 1rem;
+            }
+
+            .example-title {
+                font-size: 0.95rem;
+                font-weight: 600;
+                margin-top: 2rem;
+                margin-bottom: 0.75rem;
+                color: #18181b;
+            }
+
+            .example-title:first-of-type {
+                margin-top: 0;
+            }
+
+            .example-desc {
+                font-size: 0.85rem;
+                line-height: 1.6;
+                color: #52525b;
+                margin-bottom: 1rem;
+            }
+
+            .columns {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1.5rem;
+            }
+
+            .column-header {
+                font-size: 0.75rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: #71717a;
+                margin-bottom: 0.75rem;
+            }
+
+            .source-wrapper {
+                position: relative;
+            }
+
+            .copy-btn {
+                position: absolute;
+                top: 0.5rem;
+                right: 0.5rem;
+                background: #313244;
+                border: 1px solid #45475a;
+                color: #cdd6f4;
+                border-radius: 6px;
+                padding: 4px 8px;
+                font-size: 0.7rem;
+                font-family: inherit;
+                cursor: pointer;
+                transition: all 0.15s ease;
+            }
+
+            .copy-btn:hover {
+                background: #45475a;
+            }
+
+            .source-code {
+                background: #1e1e2e;
+                color: #cdd6f4;
+                border-radius: 8px;
+                padding: 1rem 1.25rem;
+                font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+                font-size: 0.8rem;
+                line-height: 1.7;
+                overflow-x: auto;
+                white-space: pre-wrap;
+                word-break: break-all;
+                margin: 0;
+            }
+
+            .source-code .tag { color: #89b4fa; }
+            .source-code .attr { color: #f9e2af; }
+            .source-code .val { color: #a6e3a1; }
+            .source-code .comment { color: #6c7086; font-style: italic; }
+            .source-code .kw { color: #cba6f7; }
+            .source-code .fn { color: #89b4fa; }
+            .source-code .str { color: #a6e3a1; }
+            .source-code .prop { color: #f9e2af; }
+            .source-code .num { color: #fab387; }
+
+            .event-log {
+                background: #1e1e2e;
+                border-radius: 8px;
+                padding: 1rem 1.25rem;
+                font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+                font-size: 0.8rem;
+                line-height: 1.7;
+                min-height: 120px;
+                max-height: 260px;
+                overflow-y: auto;
+                color: #6c7086;
+                margin-top: 0.75rem;
+            }
+
+            .event-log .log-entry {
+                padding: 2px 0;
+            }
+
+            .event-log .submitted {
+                color: #a6e3a1;
+            }
+
+            .event-log .detail-toggle {
+                background: none;
+                border: none;
+                color: #6c7086;
+                font-family: inherit;
+                font-size: 0.75rem;
+                cursor: pointer;
+                padding: 0 0 0 1rem;
+                text-decoration: underline;
+                text-decoration-style: dotted;
+            }
+
+            .event-log .detail-toggle:hover {
+                color: #cdd6f4;
+            }
+
+            .event-log .detail-content {
+                display: none;
+                padding: 0.25rem 0 0.25rem 1.5rem;
+                color: #a6adc8;
+                font-size: 0.75rem;
+                white-space: pre-wrap;
+                word-break: break-all;
+            }
+
+            .event-log .detail-content.open {
+                display: block;
+            }
+
+            .event-log .detail-content .json-key { color: #89b4fa; }
+            .event-log .detail-content .json-string { color: #a6e3a1; }
+            .event-log .detail-content .json-bool { color: #fab387; }
+            .event-log .detail-content .json-null { color: #6c7086; }
+            .event-log .detail-content .json-bracket { color: #cdd6f4; }
+
+            .log-label {
+                font-size: 0.75rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: #71717a;
+                margin-top: 0.75rem;
+                margin-bottom: 0;
+            }
+
+            .submit-btn {
+                margin-top: 0.75rem;
+                padding: 0.5rem 1.25rem;
+                background: #18181b;
+                color: #fff;
+                border: none;
+                border-radius: 6px;
+                font-size: 0.85rem;
+                font-family: inherit;
+                cursor: pointer;
+                transition: background 0.15s ease;
+            }
+
+            .submit-btn:hover {
+                background: #3f3f46;
+            }
+
+            @media (max-width: 700px) {
+                .columns {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1 class="title">Form Submit</h1>
+
+            <h2 class="example-title">Listening for <code>tiro-submit</code></h2>
+            <p class="example-desc">
+                The <code>&lt;tiro-form-filler&gt;</code> element emits a <code>tiro-submit</code> CustomEvent when the user clicks the submit button.
+                The event's <code>detail</code> contains <code>response</code> &mdash; a FHIR QuestionnaireResponse resource with the user's answers.
+            </p>
+            <div class="columns">
+                <div>
+                    <div class="column-header">Preview</div>
+                    <tiro-form-filler id="submit-form">
+                        <script type="application/fhir+json" slot="questionnaire">
+{
+    "resourceType": "Questionnaire",
+    "status": "active",
+    "item": [
+        {
+            "linkId": "group-1",
+            "type": "group",
+            "text": "Patient Information",
+            "extension": [
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+                    "valueCodeableConcept": {
+                        "text": "block",
+                        "coding": [{ "system": "http://fhir.tiro.health/CodeSystem/tiro-questionnaire-item-control", "code": "block" }]
+                    }
+                }
+            ],
+            "item": [
+                {
+                    "linkId": "patient-name",
+                    "type": "string",
+                    "text": "Patient name",
+                    "required": true
+                },
+                {
+                    "linkId": "patient-age",
+                    "type": "decimal",
+                    "text": "Age"
+                },
+                {
+                    "linkId": "patient-sex",
+                    "type": "coding",
+                    "text": "Sex",
+                    "extension": [
+                        {
+                            "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+                            "valueCodeableConcept": {
+                                "text": "chips",
+                                "coding": [{ "system": "http://fhir.tiro.health/CodeSystem/tiro-questionnaire-item-control", "code": "chips" }]
+                            }
+                        }
+                    ],
+                    "answerOption": [
+                        { "valueCoding": { "system": "http://hl7.org/fhir/administrative-gender", "code": "male", "display": "Male" } },
+                        { "valueCoding": { "system": "http://hl7.org/fhir/administrative-gender", "code": "female", "display": "Female" } },
+                        { "valueCoding": { "system": "http://hl7.org/fhir/administrative-gender", "code": "other", "display": "Other" } }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+                        </script>
+                    </tiro-form-filler>
+                    <button class="submit-btn" onclick="document.getElementById('submit-form').requestSubmit()">Submit</button>
+
+                    <div class="log-label">Event Log</div>
+                    <div class="event-log" id="event-log">
+                        <span style="color: #6c7086; font-style: italic;">Fill in the form and click submit&hellip;</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="column-header">Source</div>
+                    <div class="source-wrapper">
+                        <button class="copy-btn" onclick="copySource(this)">Copy</button>
+                        <pre class="source-code"><span class="comment">&lt;!-- A form with fields to fill in --&gt;</span>
+<span class="tag">&lt;tiro-form-filler</span> <span class="attr">id</span>=<span class="val">"my-form"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;script</span> <span class="attr">type</span>=<span class="val">"application/fhir+json"</span>
+          <span class="attr">slot</span>=<span class="val">"questionnaire"</span><span class="tag">&gt;</span>
+  {
+    <span class="attr">"resourceType"</span>: <span class="val">"Questionnaire"</span>,
+    <span class="attr">"status"</span>: <span class="val">"active"</span>,
+    <span class="attr">"item"</span>: [{
+      <span class="attr">"linkId"</span>: <span class="val">"name"</span>,
+      <span class="attr">"type"</span>: <span class="val">"string"</span>,
+      <span class="attr">"text"</span>: <span class="val">"Patient name"</span>,
+      <span class="attr">"required"</span>: <span class="num">true</span>
+    }]
+  }
+  <span class="tag">&lt;/script&gt;</span>
+<span class="tag">&lt;/tiro-form-filler&gt;</span>
+
+<span class="comment">&lt;!-- Listen for the submit event --&gt;</span>
+<span class="tag">&lt;script&gt;</span>
+  <span class="kw">const</span> form = document.<span class="fn">getElementById</span>(<span class="str">"my-form"</span>);
+
+  form.<span class="fn">addEventListener</span>(<span class="str">"tiro-submit"</span>, (e) =&gt; {
+    <span class="kw">const</span> { <span class="prop">response</span> } = e.detail;
+
+    <span class="comment">// The response is a FHIR QuestionnaireResponse</span>
+    console.<span class="fn">log</span>(response);
+
+    <span class="comment">// Send it to your server</span>
+    <span class="fn">fetch</span>(<span class="str">"/QuestionnaireResponse"</span>, {
+      <span class="prop">method</span>: <span class="str">"POST"</span>,
+      <span class="prop">headers</span>: { <span class="str">"Content-Type"</span>: <span class="str">"application/fhir+json"</span> },
+      <span class="prop">body</span>: JSON.<span class="fn">stringify</span>(response),
+    });
+  });
+<span class="tag">&lt;/script&gt;</span></pre>
+                    </div>
+                </div>
+            </div>
+            <h2 class="example-title">Triggering submit with <code>requestSubmit()</code></h2>
+            <p class="example-desc">
+                You can trigger form submission programmatically by calling <code>requestSubmit()</code> on the <code>&lt;tiro-form-filler&gt;</code> element.
+                This lets you use your own button outside the form to control when submission happens.
+            </p>
+            <div class="columns">
+                <div>
+                    <div class="column-header">Preview</div>
+                    <tiro-form-filler id="external-submit-form">
+                        <script type="application/fhir+json" slot="questionnaire">
+{
+    "resourceType": "Questionnaire",
+    "status": "active",
+    "item": [
+        {
+            "linkId": "group-2",
+            "type": "group",
+            "text": "Contact Details",
+            "extension": [
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+                    "valueCodeableConcept": {
+                        "text": "block",
+                        "coding": [{ "system": "http://fhir.tiro.health/CodeSystem/tiro-questionnaire-item-control", "code": "block" }]
+                    }
+                }
+            ],
+            "item": [
+                {
+                    "linkId": "contact-email",
+                    "type": "string",
+                    "text": "Email address",
+                    "required": true
+                },
+                {
+                    "linkId": "contact-phone",
+                    "type": "string",
+                    "text": "Phone number"
+                }
+            ]
+        }
+    ]
+}
+                        </script>
+                    </tiro-form-filler>
+                    <button class="submit-btn" onclick="document.getElementById('external-submit-form').requestSubmit()">Submit from external button</button>
+
+                    <div class="log-label">Event Log</div>
+                    <div class="event-log" id="event-log-2">
+                        <span style="color: #6c7086; font-style: italic;">Fill in the form and click the button above&hellip;</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="column-header">Source</div>
+                    <div class="source-wrapper">
+                        <button class="copy-btn" onclick="copyExternalSource(this)">Copy</button>
+                        <pre class="source-code"><span class="comment">&lt;!-- The form --&gt;</span>
+<span class="tag">&lt;tiro-form-filler</span> <span class="attr">id</span>=<span class="val">"my-form"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;script</span> <span class="attr">type</span>=<span class="val">"application/fhir+json"</span>
+          <span class="attr">slot</span>=<span class="val">"questionnaire"</span><span class="tag">&gt;</span>
+  { <span class="comment">...</span> }
+  <span class="tag">&lt;/script&gt;</span>
+<span class="tag">&lt;/tiro-form-filler&gt;</span>
+
+<span class="comment">&lt;!-- Your own submit button --&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">onclick</span>=<span class="val">"submitForm()"</span><span class="tag">&gt;</span>Submit<span class="tag">&lt;/button&gt;</span>
+
+<span class="tag">&lt;script&gt;</span>
+  <span class="kw">const</span> form = document.<span class="fn">getElementById</span>(<span class="str">"my-form"</span>);
+
+  <span class="kw">function</span> <span class="fn">submitForm</span>() {
+    <span class="comment">// Triggers validation + tiro-submit event</span>
+    form.<span class="fn">requestSubmit</span>();
+  }
+
+  form.<span class="fn">addEventListener</span>(<span class="str">"tiro-submit"</span>, (e) =&gt; {
+    <span class="kw">const</span> { <span class="prop">response</span> } = e.detail;
+    console.<span class="fn">log</span>(response);
+  });
+<span class="tag">&lt;/script&gt;</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div><!-- .container -->
+
+        <script>
+            var log1 = document.getElementById('event-log');
+            var log1First = true;
+            var log2 = document.getElementById('event-log-2');
+            var log2First = true;
+
+            function syntaxHighlight(json) {
+                return json
+                    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                    .replace(/("(\\u[\da-fA-F]{4}|\\[^u]|[^\\"])*")\s*:/g, '<span class="json-key">$1</span>:')
+                    .replace(/:\s*("(\\u[\da-fA-F]{4}|\\[^u]|[^\\"])*")/g, ': <span class="json-string">$1</span>')
+                    .replace(/:\s*(true|false)/g, ': <span class="json-bool">$1</span>')
+                    .replace(/:\s*(null)/g, ': <span class="json-null">$1</span>')
+                    .replace(/[{}\[\]]/g, '<span class="json-bracket">$&</span>');
+            }
+
+            function appendSubmitEntry(log, isFirst, qr) {
+                if (isFirst) { log.innerHTML = ''; }
+                var id = 'qr-' + Date.now();
+                var entry = document.createElement('div');
+                entry.className = 'log-entry';
+                entry.innerHTML = '<span class="submitted">\u2713 Submitted</span>'
+                    + '<button class="detail-toggle" onclick="toggleDetail(\'' + id + '\')">response</button>'
+                    + '<div class="detail-content" id="' + id + '">'
+                    + syntaxHighlight(JSON.stringify(qr, null, 2))
+                    + '</div>';
+                log.appendChild(entry);
+                log.scrollTop = log.scrollHeight;
+            }
+
+            function toggleDetail(id) {
+                var el = document.getElementById(id);
+                if (el) el.classList.toggle('open');
+            }
+
+            document.getElementById('submit-form').addEventListener('tiro-submit', function(e) {
+                appendSubmitEntry(log1, log1First, e.detail.response);
+                log1First = false;
+            });
+
+            document.getElementById('external-submit-form').addEventListener('tiro-submit', function(e) {
+                appendSubmitEntry(log2, log2First, e.detail.response);
+                log2First = false;
+            });
+
+            function copyExternalSource(btn) {
+                var text = '<tiro-form-filler id="my-form">\n'
+                    + '  <script type="application/fhir+json" slot="questionnaire">\n'
+                    + '  { ... }\n'
+                    + '  <\/script>\n'
+                    + '<\/tiro-form-filler>\n'
+                    + '\n'
+                    + '<button onclick="submitForm()">Submit<\/button>\n'
+                    + '\n'
+                    + '<script>\n'
+                    + '  const form = document.getElementById("my-form");\n'
+                    + '\n'
+                    + '  function submitForm() {\n'
+                    + '    // Triggers validation + tiro-submit event\n'
+                    + '    form.requestSubmit();\n'
+                    + '  }\n'
+                    + '\n'
+                    + '  form.addEventListener("tiro-submit", (e) => {\n'
+                    + '    const { response } = e.detail;\n'
+                    + '    console.log(response);\n'
+                    + '  });\n'
+                    + '<\/script>';
+                navigator.clipboard.writeText(text).then(function() {
+                    btn.textContent = 'Copied!';
+                    setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+                });
+            }
+
+            function copySource(btn) {
+                var text = '<tiro-form-filler id="my-form">\n'
+                    + '  <script type="application/fhir+json" slot="questionnaire">\n'
+                    + '  {\n'
+                    + '    "resourceType": "Questionnaire",\n'
+                    + '    "status": "active",\n'
+                    + '    "item": [{\n'
+                    + '      "linkId": "name",\n'
+                    + '      "type": "string",\n'
+                    + '      "text": "Patient name",\n'
+                    + '      "required": true\n'
+                    + '    }]\n'
+                    + '  }\n'
+                    + '  <\/script>\n'
+                    + '<\/tiro-form-filler>\n'
+                    + '\n'
+                    + '<script>\n'
+                    + '  const form = document.getElementById("my-form");\n'
+                    + '\n'
+                    + '  form.addEventListener("tiro-submit", (e) => {\n'
+                    + '    const { response } = e.detail;\n'
+                    + '\n'
+                    + '    // The response is a FHIR QuestionnaireResponse\n'
+                    + '    console.log(response);\n'
+                    + '\n'
+                    + '    // Send it to your server\n'
+                    + '    fetch("/QuestionnaireResponse", {\n'
+                    + '      method: "POST",\n'
+                    + '      headers: { "Content-Type": "application/fhir+json" },\n'
+                    + '      body: JSON.stringify(response),\n'
+                    + '    });\n'
+                    + '  });\n'
+                    + '<\/script>';
+                navigator.clipboard.writeText(text).then(function() {
+                    btn.textContent = 'Copied!';
+                    setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+                });
+            }
+        </script>
+
+        <script
+            crossorigin
+            src="https://unpkg.com/react@18/umd/react.production.min.js"
+        ></script>
+        <script
+            crossorigin
+            src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+        ></script>
+        <script src="https://cdn.tiro.health/sdk/v0.2.0/tiro-web-sdk.iife.js"></script>
+    </body>
+</html>
