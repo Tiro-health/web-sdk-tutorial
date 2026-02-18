@@ -102,6 +102,43 @@
             .source-code .str { color: #a6e3a1; }
             .source-code .prop { color: #f9e2af; }
 
+            .status-badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.4rem;
+                font-size: 0.75rem;
+                padding: 0.2rem 0.6rem;
+                border-radius: 999px;
+                border: 1px solid #e4e4e7;
+                color: #71717a;
+                background: #fafafa;
+            }
+
+            .status-dot {
+                width: 7px;
+                height: 7px;
+                border-radius: 50%;
+                background: #a1a1aa;
+            }
+
+            .status-badge[data-status="online"] {
+                color: #166534;
+                background: #f0fdf4;
+                border-color: #bbf7d0;
+            }
+            .status-badge[data-status="online"] .status-dot {
+                background: #22c55e;
+            }
+
+            .status-badge[data-status="offline"] {
+                color: #991b1b;
+                background: #fef2f2;
+                border-color: #fecaca;
+            }
+            .status-badge[data-status="offline"] .status-dot {
+                background: #ef4444;
+            }
+
             @media (max-width: 700px) {
                 .columns {
                     grid-template-columns: 1fr;
@@ -112,6 +149,15 @@
     <body>
         <div class="container">
             <h1 class="title">Pre-population with x-fhir-query</h1>
+
+            <p style="margin-bottom: 1.25rem; font-size: 0.85rem; color: #52525b;">
+                Data server:
+                <span class="status-badge" id="fhir-status">
+                    <span class="status-dot"></span>
+                    Checking…
+                </span>
+                <a href="#" id="fhir-ping" style="font-size: 0.75rem; color: #71717a; margin-left: 0.25rem;">ping</a>
+            </p>
 
             <h2 class="example-title">Fetching the latest PSA observation</h2>
             <p class="example-desc">
@@ -298,6 +344,44 @@
                     setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
                 });
             }
+        </script>
+
+        <script>
+            (function () {
+                var badge = document.getElementById("fhir-status");
+                var url = "https://fhir-candle-35032072625.europe-west1.run.app/fhir/r5/metadata";
+
+                function checkStatus() {
+                    delete badge.dataset.status;
+                    badge.innerHTML = '<span class="status-dot"></span>Checking\u2026';
+                    var controller = new AbortController();
+                    setTimeout(function () { controller.abort(); }, 8000);
+                    fetch(url, { signal: controller.signal })
+                        .then(function (res) {
+                            if (!res.ok) throw new Error(res.status);
+                            return res.json();
+                        })
+                        .then(function (data) {
+                            if (data.resourceType === "CapabilityStatement") {
+                                badge.dataset.status = "online";
+                                badge.innerHTML = '<span class="status-dot"></span>Online';
+                            } else {
+                                throw new Error("unexpected resourceType");
+                            }
+                        })
+                        .catch(function () {
+                            badge.dataset.status = "offline";
+                            badge.innerHTML = '<span class="status-dot"></span>Unreachable';
+                        });
+                }
+
+                document.getElementById("fhir-ping").addEventListener("click", function (e) {
+                    e.preventDefault();
+                    checkStatus();
+                });
+
+                checkStatus();
+            })();
         </script>
 
         <script
