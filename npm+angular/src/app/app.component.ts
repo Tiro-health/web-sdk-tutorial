@@ -8,8 +8,6 @@ import {
 import "@tiro-health/web-sdk";
 import { SDCClient } from "@tiro-health/web-sdk";
 
-const QUESTIONNAIRE_URI =
-  "http://templates.tiro.health/templates/example|1.0.0";
 const BACKEND_URL = "https://sdc.tiro.health/fhir/r5";
 const DATA_SERVER_URL =
   "https://fhir-candle-35032072625.europe-west1.run.app/fhir/r4";
