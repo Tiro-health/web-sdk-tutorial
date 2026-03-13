@@ -142,8 +142,10 @@
             color: #3b82f6;
         }
 
-        .sidebar-spacer {
+        .sidebar-nav {
             flex: 1;
+            overflow-y: auto;
+            min-height: 0;
         }
 
         .sidebar-footer {
@@ -344,6 +346,7 @@
             </div>
         </div>
 
+        <div class="sidebar-nav">
         <div class="nav-section">
             <div class="nav-section-label">Basic Concepts</div>
             <ul class="nav-list" role="list">
@@ -363,6 +366,18 @@
                     <button onclick="loadApp(this, 'concepts/form-submit.html', 'Form Submit')" aria-label="Form Submit" title="Form Submit">
                         <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg></span>
                         <span>Form Submit</span>
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-label">Logic</div>
+            <ul class="nav-list" role="list">
+                <li class="nav-item">
+                    <button onclick="loadApp(this, 'concepts/calculations.html', 'Calculations')" aria-label="Calculations" title="Calculations">
+                        <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="14" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="16" y2="18"/></svg></span>
+                        <span>Calculations</span>
                     </button>
                 </li>
             </ul>
@@ -428,7 +443,7 @@
             </ul>
         </div>
 
-        <div class="sidebar-spacer"></div>
+        </div><!-- .sidebar-nav -->
 
         <div class="sidebar-footer">
             <a href="https://sdk.tiro.health" target="_blank" rel="noopener noreferrer">
