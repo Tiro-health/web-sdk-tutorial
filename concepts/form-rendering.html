@@ -116,6 +116,7 @@
                     <div class="column-header">Preview</div>
                     <tiro-form-filler
                         id="form-filler"
+                        sdc-endpoint-address="https://sdc-dev.tiro.health/fhir/r5"
                         questionnaire="http://templates.tiro.health/templates/example|1.0.0">
                     </tiro-form-filler>
                 </div>
@@ -139,7 +140,7 @@
             <div class="columns">
                 <div>
                     <div class="column-header">Preview</div>
-                    <tiro-form-filler id="form-filler-inline">
+                    <tiro-form-filler id="form-filler-inline" sdc-endpoint-address="https://sdc-dev.tiro.health/fhir/r5">
                         <script type="application/fhir+json" slot="questionnaire">
 {
     "resourceType": "Questionnaire",
