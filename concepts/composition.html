@@ -1,0 +1,668 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Composition</title>
+
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: system-ui, -apple-system, sans-serif;
+            }
+
+            .container {
+                margin: 2rem;
+            }
+
+            .title {
+                font-size: 1.125rem;
+                font-weight: bold;
+                margin-bottom: 1rem;
+            }
+
+            .intro {
+                font-size: 0.85rem;
+                line-height: 1.6;
+                color: #52525b;
+                margin-bottom: 1.5rem;
+                max-width: 65ch;
+            }
+
+            .example-title {
+                font-size: 0.95rem;
+                font-weight: 600;
+                margin-top: 2.5rem;
+                margin-bottom: 0.75rem;
+                color: #18181b;
+                padding-top: 1.5rem;
+                border-top: 1px solid #f0f0f1;
+            }
+
+            .example-title:first-of-type {
+                margin-top: 0;
+                padding-top: 0;
+                border-top: none;
+            }
+
+            .example-desc {
+                font-size: 0.85rem;
+                line-height: 1.6;
+                color: #52525b;
+                margin-bottom: 1rem;
+                max-width: 70ch;
+            }
+
+            .columns {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1.5rem;
+            }
+
+            .column-header {
+                font-size: 0.75rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: #71717a;
+                margin-bottom: 0.75rem;
+            }
+
+            .source-wrapper {
+                position: relative;
+            }
+
+            .copy-btn {
+                position: absolute;
+                top: 0.5rem;
+                right: 0.5rem;
+                background: #313244;
+                border: 1px solid #45475a;
+                color: #cdd6f4;
+                border-radius: 6px;
+                padding: 4px 8px;
+                font-size: 0.7rem;
+                font-family: inherit;
+                cursor: pointer;
+                transition: all 0.15s ease;
+            }
+
+            .copy-btn:hover {
+                background: #45475a;
+            }
+
+            .source-code {
+                background: #1e1e2e;
+                color: #cdd6f4;
+                border-radius: 8px;
+                padding: 1rem 1.25rem;
+                font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+                font-size: 0.8rem;
+                line-height: 1.7;
+                overflow-x: auto;
+                white-space: pre-wrap;
+                word-break: break-all;
+                margin: 0;
+            }
+
+            .source-code .tag { color: #89b4fa; }
+            .source-code .attr { color: #f9e2af; }
+            .source-code .val { color: #a6e3a1; }
+            .source-code .comment { color: #6c7086; font-style: italic; }
+            .source-code .kw { color: #cba6f7; }
+            .source-code .fn { color: #89b4fa; }
+            .source-code .str { color: #a6e3a1; }
+            .source-code .prop { color: #f9e2af; }
+            .source-code .num { color: #fab387; }
+
+            .run-btn {
+                margin-top: 0.75rem;
+                padding: 0.5rem 1.25rem;
+                background: #18181b;
+                color: #fff;
+                border: none;
+                border-radius: 6px;
+                font-size: 0.85rem;
+                font-family: inherit;
+                cursor: pointer;
+                transition: background 0.15s ease;
+            }
+
+            .run-btn:hover {
+                background: #3f3f46;
+            }
+
+            .run-btn:disabled {
+                opacity: 0.6;
+                cursor: default;
+            }
+
+            .doc-label {
+                font-size: 0.75rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: #71717a;
+                margin-top: 1.25rem;
+                margin-bottom: 0.5rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .pill {
+                font-size: 0.65rem;
+                font-weight: 600;
+                letter-spacing: 0.03em;
+                color: #3730a3;
+                background: #eef2ff;
+                border: 1px solid #c7d2fe;
+                border-radius: 999px;
+                padding: 1px 7px;
+                text-transform: none;
+            }
+
+            /* The resulting Composition, styled like a clinical document */
+            .document-card {
+                border: 1px solid #e4e4e7;
+                border-radius: 8px;
+                background: #fff;
+                padding: 1.25rem 1.5rem;
+                min-height: 90px;
+                font-size: 0.85rem;
+                line-height: 1.6;
+                color: #27272a;
+            }
+
+            .document-card .placeholder {
+                color: #a1a1aa;
+                font-style: italic;
+            }
+
+            .document-card .doc-title {
+                font-size: 1rem;
+                font-weight: 700;
+                margin: 0 0 0.25rem;
+            }
+
+            .document-card .doc-type {
+                font-size: 0.7rem;
+                color: #71717a;
+                margin: 0 0 0.75rem;
+            }
+
+            .document-card .section-title {
+                font-size: 0.8rem;
+                font-weight: 600;
+                color: #3f3f46;
+                margin: 0.9rem 0 0.2rem;
+                padding-bottom: 0.15rem;
+                border-bottom: 1px solid #f0f0f1;
+            }
+
+            .document-card .section-code {
+                font-size: 0.62rem;
+                font-weight: 500;
+                color: #4338ca;
+                background: #eef2ff;
+                border: 1px solid #e0e7ff;
+                border-radius: 4px;
+                padding: 1px 5px;
+                margin-left: 0.4rem;
+                font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+                vertical-align: middle;
+                cursor: help;
+            }
+
+            .document-card .section-body p { margin: 0.2rem 0; }
+
+            .json-toggle {
+                background: none;
+                border: none;
+                color: #6366f1;
+                font-family: inherit;
+                font-size: 0.75rem;
+                cursor: pointer;
+                padding: 0.5rem 0 0;
+                text-decoration: underline;
+                text-decoration-style: dotted;
+            }
+
+            .json-view {
+                display: none;
+                background: #1e1e2e;
+                color: #cdd6f4;
+                border-radius: 8px;
+                padding: 1rem 1.25rem;
+                font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+                font-size: 0.75rem;
+                line-height: 1.6;
+                overflow-x: auto;
+                white-space: pre-wrap;
+                word-break: break-all;
+                margin-top: 0.5rem;
+                max-height: 320px;
+                overflow-y: auto;
+            }
+
+            .json-view.open { display: block; }
+            .json-view .json-key { color: #89b4fa; }
+            .json-view .json-string { color: #a6e3a1; }
+            .json-view .json-bracket { color: #cdd6f4; }
+
+            .note {
+                margin-top: 2.5rem;
+                padding: 1rem 1.25rem;
+                background: #fafafa;
+                border: 1px solid #e4e4e7;
+                border-radius: 8px;
+                font-size: 0.82rem;
+                line-height: 1.65;
+                color: #52525b;
+                max-width: 72ch;
+            }
+
+            .note strong { color: #18181b; }
+
+            .note code,
+            .intro code,
+            .example-desc code {
+                background: #f4f4f5;
+                border-radius: 4px;
+                padding: 0.05rem 0.3rem;
+                font-size: 0.85em;
+                font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+            }
+
+            @media (max-width: 700px) {
+                .columns {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1 class="title">Composition</h1>
+
+            <p class="intro">
+                A form produces a <strong>QuestionnaireResponse</strong> &mdash; a list of answers. To turn those answers
+                into a structured clinical document, you send them to the SDC server's <code>$extract</code> operation
+                together with a <strong>Composition template</strong>. The server evaluates the FHIRPath embedded in each
+                section and returns a finished <strong>Composition</strong> resource. The two examples below &mdash; a short
+                radiology note and a multi-section pathology report &mdash; use the exact same <code>$extract</code> call;
+                only the template differs.
+            </p>
+
+            <!-- ============================ Example 1: Radiology ============================ -->
+            <h2 class="example-title">Example 1 &mdash; A radiology note</h2>
+            <p class="example-desc">
+                Two sections. Each uses a <code>templateExtractContext</code> FHIRPath expression to pick the relevant
+                answer, and a <code>text.div</code> with a <code>{{%context.answer.valueString}}</code> placeholder. After
+                extraction the placeholders hold real values, returned inside a transaction Bundle.
+            </p>
+            <div class="columns">
+                <div>
+                    <div class="column-header">Preview</div>
+                    <tiro-form-filler id="radiology-form"
+                        initial-response='{"resourceType":"QuestionnaireResponse","status":"in-progress","item":[{"linkId":"report","item":[{"linkId":"findings","answer":[{"valueString":"Normal chest X-ray. No acute abnormality."}]},{"linkId":"impression","answer":[{"valueString":"No evidence of acute disease."}]}]}]}'>
+                        <script type="application/fhir+json" slot="questionnaire">
+{
+    "resourceType": "Questionnaire",
+    "id": "radiology-note",
+    "url": "http://example.org/Questionnaire/radiology-note",
+    "version": "1.0.0",
+    "status": "active",
+    "item": [
+        {
+            "linkId": "report",
+            "type": "group",
+            "text": "Radiology Report",
+            "extension": [
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+                    "valueCodeableConcept": {
+                        "text": "block",
+                        "coding": [{ "system": "http://fhir.tiro.health/CodeSystem/tiro-questionnaire-item-control", "code": "block" }]
+                    }
+                }
+            ],
+            "item": [
+                { "linkId": "findings", "type": "text", "text": "Findings" },
+                { "linkId": "impression", "type": "text", "text": "Impression" }
+            ]
+        }
+    ]
+}
+                        </script>
+                    </tiro-form-filler>
+                    <button class="run-btn" id="radiology-run" onclick="runExtract('radiology')">Submit</button>
+
+                    <div class="doc-label">
+                        Resulting Composition
+                        <span class="pill">$extract response</span>
+                    </div>
+                    <div class="document-card" id="radiology-doc">
+                        <span class="placeholder">Click &ldquo;Submit&rdquo; to generate the Composition&hellip;</span>
+                    </div>
+                    <button class="json-toggle" id="radiology-json-toggle" onclick="toggleJson('radiology')" hidden>View Composition JSON</button>
+                    <pre class="json-view" id="radiology-json"></pre>
+                </div>
+                <div>
+                    <div class="column-header">Source</div>
+                    <div class="source-wrapper">
+                        <button class="copy-btn" onclick="copySource(this)">Copy</button>
+                        <pre class="source-code"><span class="comment">&lt;!-- The SDK renders this Questionnaire as a form --&gt;</span>
+<span class="tag">&lt;tiro-form-filler</span> <span class="attr">id</span>=<span class="val">"radiology-form"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;script</span> <span class="attr">type</span>=<span class="val">"application/fhir+json"</span>
+          <span class="attr">slot</span>=<span class="val">"questionnaire"</span><span class="tag">&gt;</span>
+  {
+    <span class="attr">"resourceType"</span>: <span class="val">"Questionnaire"</span>,
+    <span class="attr">"url"</span>: <span class="val">"http://example.org/Questionnaire/radiology-note"</span>,
+    <span class="attr">"version"</span>: <span class="val">"1.0.0"</span>,
+    <span class="attr">"status"</span>: <span class="val">"active"</span>,
+    <span class="attr">"item"</span>: [{
+      <span class="attr">"linkId"</span>: <span class="val">"report"</span>,
+      <span class="attr">"type"</span>: <span class="val">"group"</span>,
+      <span class="attr">"text"</span>: <span class="val">"Radiology Report"</span>,
+      <span class="attr">"item"</span>: [
+        { <span class="attr">"linkId"</span>: <span class="val">"findings"</span>,   <span class="attr">"type"</span>: <span class="val">"text"</span>, <span class="attr">"text"</span>: <span class="val">"Findings"</span> },
+        { <span class="attr">"linkId"</span>: <span class="val">"impression"</span>, <span class="attr">"type"</span>: <span class="val">"text"</span>, <span class="attr">"text"</span>: <span class="val">"Impression"</span> }
+      ]
+    }]
+  }
+  <span class="tag">&lt;/script&gt;</span>
+<span class="tag">&lt;/tiro-form-filler&gt;</span></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================ Example 2: Pathology ============================ -->
+            <h2 class="example-title">Example 2 &mdash; A multi-section pathology report</h2>
+            <p class="example-desc">
+                The same call scales to a full document. This template has five sections &mdash; Specimen, Clinical History,
+                Gross Description, Microscopic Description and Diagnosis &mdash; each pulling a different answer by
+                <code>linkId</code>. Each section also carries its standard <strong>LOINC</strong> section code (shown next to
+                the title), and the Diagnosis section wraps its value in <code>&lt;strong&gt;</code> to make the headline
+                finding stand out. Edit any field and re-run to watch the report regenerate.
+            </p>
+            <div class="columns">
+                <div>
+                    <div class="column-header">Preview</div>
+                    <tiro-form-filler id="pathology-form"
+                        initial-response='{"resourceType":"QuestionnaireResponse","status":"in-progress","item":[{"linkId":"report","item":[{"linkId":"specimen","answer":[{"valueString":"Skin, left forearm - excisional biopsy."}]},{"linkId":"clinical-history","answer":[{"valueString":"55-year-old with a changing pigmented lesion; rule out melanoma."}]},{"linkId":"gross","answer":[{"valueString":"An ellipse of skin 12 x 6 x 4 mm with a central pigmented lesion measuring 5 mm. Margins inked; serially sectioned and entirely submitted (A1-A3)."}]},{"linkId":"microscopic","answer":[{"valueString":"Asymmetric melanocytic proliferation with nests of atypical melanocytes at the dermo-epidermal junction and pagetoid upward scatter. No dermal invasion identified."}]},{"linkId":"diagnosis","answer":[{"valueString":"Melanoma in situ, lentiginous type. Peripheral and deep margins are clear."}]}]}]}'>
+                        <script type="application/fhir+json" slot="questionnaire">
+{
+    "resourceType": "Questionnaire",
+    "id": "pathology-report",
+    "url": "http://example.org/Questionnaire/pathology-report",
+    "version": "1.0.0",
+    "status": "active",
+    "item": [
+        {
+            "linkId": "report",
+            "type": "group",
+            "text": "Surgical Pathology Report",
+            "extension": [
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+                    "valueCodeableConcept": {
+                        "text": "block",
+                        "coding": [{ "system": "http://fhir.tiro.health/CodeSystem/tiro-questionnaire-item-control", "code": "block" }]
+                    }
+                }
+            ],
+            "item": [
+                { "linkId": "specimen", "type": "text", "text": "Specimen" },
+                { "linkId": "clinical-history", "type": "text", "text": "Clinical history" },
+                { "linkId": "gross", "type": "text", "text": "Gross description" },
+                { "linkId": "microscopic", "type": "text", "text": "Microscopic description" },
+                { "linkId": "diagnosis", "type": "text", "text": "Diagnosis" }
+            ]
+        }
+    ]
+}
+                        </script>
+                    </tiro-form-filler>
+                    <button class="run-btn" id="pathology-run" onclick="runExtract('pathology')">Submit</button>
+
+                    <div class="doc-label">
+                        Resulting Composition
+                        <span class="pill">$extract response</span>
+                    </div>
+                    <div class="document-card" id="pathology-doc">
+                        <span class="placeholder">Click &ldquo;Submit&rdquo; to generate the Composition&hellip;</span>
+                    </div>
+                    <button class="json-toggle" id="pathology-json-toggle" onclick="toggleJson('pathology')" hidden>View Composition JSON</button>
+                    <pre class="json-view" id="pathology-json"></pre>
+                </div>
+                <div>
+                    <div class="column-header">Source</div>
+                    <div class="source-wrapper">
+                        <button class="copy-btn" onclick="copySource(this)">Copy</button>
+                        <pre class="source-code"><span class="comment">&lt;!-- Same SDK element, a five-field Questionnaire --&gt;</span>
+<span class="tag">&lt;tiro-form-filler</span> <span class="attr">id</span>=<span class="val">"pathology-form"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;script</span> <span class="attr">type</span>=<span class="val">"application/fhir+json"</span>
+          <span class="attr">slot</span>=<span class="val">"questionnaire"</span><span class="tag">&gt;</span>
+  {
+    <span class="attr">"resourceType"</span>: <span class="val">"Questionnaire"</span>,
+    <span class="attr">"url"</span>: <span class="val">"http://example.org/Questionnaire/pathology-report"</span>,
+    <span class="attr">"version"</span>: <span class="val">"1.0.0"</span>,
+    <span class="attr">"status"</span>: <span class="val">"active"</span>,
+    <span class="attr">"item"</span>: [{
+      <span class="attr">"linkId"</span>: <span class="val">"report"</span>,
+      <span class="attr">"type"</span>: <span class="val">"group"</span>,
+      <span class="attr">"text"</span>: <span class="val">"Surgical Pathology Report"</span>,
+      <span class="attr">"item"</span>: [
+        { <span class="attr">"linkId"</span>: <span class="val">"specimen"</span>,         <span class="attr">"type"</span>: <span class="val">"text"</span>, <span class="attr">"text"</span>: <span class="val">"Specimen"</span> },
+        { <span class="attr">"linkId"</span>: <span class="val">"clinical-history"</span>, <span class="attr">"type"</span>: <span class="val">"text"</span>, <span class="attr">"text"</span>: <span class="val">"Clinical history"</span> },
+        { <span class="attr">"linkId"</span>: <span class="val">"gross"</span>,            <span class="attr">"type"</span>: <span class="val">"text"</span>, <span class="attr">"text"</span>: <span class="val">"Gross description"</span> },
+        { <span class="attr">"linkId"</span>: <span class="val">"microscopic"</span>,      <span class="attr">"type"</span>: <span class="val">"text"</span>, <span class="attr">"text"</span>: <span class="val">"Microscopic description"</span> },
+        { <span class="attr">"linkId"</span>: <span class="val">"diagnosis"</span>,        <span class="attr">"type"</span>: <span class="val">"text"</span>, <span class="attr">"text"</span>: <span class="val">"Diagnosis"</span> }
+      ]
+    }]
+  }
+  <span class="tag">&lt;/script&gt;</span>
+<span class="tag">&lt;/tiro-form-filler&gt;</span></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="note">
+                <strong>How it works.</strong> Template-based extraction never touches the questionnaire's content &mdash; it
+                runs entirely off the answers. Each section's <code>templateExtractContext</code> FHIRPath
+                (<code>repeat(item).where(linkId='&hellip;')</code>) picks a slice of the QuestionnaireResponse, exposed to
+                the template as <code>%context</code>. Sections whose context resolves to nothing are dropped, and the
+                <code>templateExtractContext</code> extension is stripped from the output &mdash; while each section's
+                <code>code</code> (a LOINC document-section code, e.g. <code>22637-3</code> for the final diagnosis) is
+                carried straight through, so downstream systems can identify sections regardless of title or language. The
+                <code>questionnaire</code>
+                parameter is required (a minimal stub with an <code>id</code> is enough) &mdash; without it the server tries
+                to resolve the response's canonical URL and fails.
+            </div>
+        </div><!-- .container -->
+
+        <script>
+            var SDC_EXTRACT = "https://sdc.tiro.health/fhir/r5/QuestionnaireResponse/$extract";
+            var CONTEXT_URL = "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractContext";
+
+            // A LOINC document-section code (https://loinc.org).
+            function loinc(code, display) { return { system: "http://loinc.org", code: code, display: display }; }
+
+            // Build one templated Composition section. `code` is a LOINC section.code,
+            // `div` is the section's text.div (may contain {{%context...}} placeholders).
+            function section(linkId, title, code, div) {
+                return {
+                    id: linkId + "-section",
+                    title: title,
+                    code: { coding: [code] },
+                    extension: [{
+                        url: CONTEXT_URL,
+                        valueExpression: { language: "text/fhirpath", expression: "repeat(item).where(linkId='" + linkId + "')" }
+                    }],
+                    text: { status: "generated", div: div }
+                };
+            }
+
+            var P_OPEN = '<div xmlns="http://www.w3.org/1999/xhtml"><p>';
+            var P_CLOSE = "</p></div>";
+            var VALUE = "{{%context.answer.valueString}}";
+
+            // Per-example definitions. Each has a minimal questionnaire stub (content is
+            // ignored by extraction) and a Composition blueprint sent in the templateExtractBundle.
+            var EXAMPLES = {
+                radiology: {
+                    questionnaire: {
+                        resourceType: "Questionnaire", id: "radiology-note",
+                        url: "http://example.org/Questionnaire/radiology-note",
+                        version: "1.0.0", status: "active", item: []
+                    },
+                    template: {
+                        resourceType: "Composition", status: "final",
+                        type: { coding: [{ system: "http://loinc.org", code: "18748-4", display: "Diagnostic imaging study" }] },
+                        title: "Radiology Report",
+                        section: [
+                            section("findings", "Findings", loinc("18782-3", "Radiology Study observation (narrative)"), P_OPEN + "<strong>Finding:</strong> " + VALUE + P_CLOSE),
+                            section("impression", "Impression", loinc("19005-8", "Radiology Imaging study [Impression] (narrative)"), P_OPEN + "<em>" + VALUE + "</em>" + P_CLOSE)
+                        ]
+                    }
+                },
+                pathology: {
+                    questionnaire: {
+                        resourceType: "Questionnaire", id: "pathology-report",
+                        url: "http://example.org/Questionnaire/pathology-report",
+                        version: "1.0.0", status: "active", item: []
+                    },
+                    template: {
+                        resourceType: "Composition", status: "final",
+                        type: { coding: [{ system: "http://loinc.org", code: "11529-5", display: "Surgical pathology study" }] },
+                        title: "Surgical Pathology Report",
+                        section: [
+                            section("specimen", "Specimen", loinc("22633-2", "Pathology report site of origin Narrative"), P_OPEN + VALUE + P_CLOSE),
+                            section("clinical-history", "Clinical History", loinc("22636-5", "Pathology report relevant history Narrative"), P_OPEN + VALUE + P_CLOSE),
+                            section("gross", "Gross Description", loinc("22634-0", "Pathology report gross observation Narrative"), P_OPEN + VALUE + P_CLOSE),
+                            section("microscopic", "Microscopic Description", loinc("22635-7", "Pathology report microscopic observation Narrative"), P_OPEN + VALUE + P_CLOSE),
+                            section("diagnosis", "Diagnosis", loinc("22637-3", "Pathology report final diagnosis Narrative"), P_OPEN + "<strong>" + VALUE + "</strong>" + P_CLOSE)
+                        ]
+                    }
+                }
+            };
+
+            function canonicalOf(ex) {
+                return ex.questionnaire.url + "|" + ex.questionnaire.version;
+            }
+
+            function runExtract(key) {
+                var ex = EXAMPLES[key];
+                var form = document.getElementById(key + "-form");
+                var btn = document.getElementById(key + "-run");
+                var doc = document.getElementById(key + "-doc");
+
+                var response = form.getResponse();
+                if (!response) {
+                    doc.innerHTML = '<span class="placeholder">The form has no response yet &mdash; fill it in first.</span>';
+                    return;
+                }
+                // Point the response at the stub questionnaire we send alongside it
+                response.questionnaire = canonicalOf(ex);
+
+                var body = {
+                    resourceType: "Parameters",
+                    parameter: [
+                        { name: "questionnaire-response", resource: response },
+                        { name: "templateExtractBundle", resource: { resourceType: "Bundle", type: "collection", entry: [{ resource: ex.template }] } },
+                        { name: "questionnaire", resource: ex.questionnaire }
+                    ]
+                };
+
+                btn.disabled = true;
+                btn.textContent = "Running…";
+                doc.innerHTML = '<span class="placeholder">Extracting…</span>';
+
+                fetch(SDC_EXTRACT, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/fhir+json", "Accept": "application/fhir+json" },
+                    body: JSON.stringify(body)
+                })
+                    .then(function (res) { return res.json(); })
+                    .then(function (bundle) {
+                        if (bundle.resourceType === "OperationOutcome") {
+                            throw new Error((bundle.issue && bundle.issue[0] && bundle.issue[0].details && bundle.issue[0].details.text) || "Extraction failed");
+                        }
+                        var entry = (bundle.entry || []).filter(function (e) { return e.resource && e.resource.resourceType === "Composition"; })[0];
+                        if (!entry) throw new Error("No Composition in the response Bundle");
+                        renderComposition(entry.resource, key);
+                    })
+                    .catch(function (err) {
+                        doc.innerHTML = '<span class="placeholder">Error: ' + escapeHtml(err.message) + '</span>';
+                        document.getElementById(key + "-json-toggle").hidden = true;
+                    })
+                    .finally(function () {
+                        btn.disabled = false;
+                        btn.textContent = "Submit";
+                    });
+            }
+
+            function renderComposition(composition, key) {
+                var doc = document.getElementById(key + "-doc");
+                var typeText = "";
+                if (composition.type && composition.type.coding && composition.type.coding[0]) {
+                    typeText = composition.type.coding[0].display || composition.type.coding[0].code || "";
+                }
+                var html = '<div class="doc-title">' + escapeHtml(composition.title || "Composition") + "</div>";
+                if (typeText) html += '<div class="doc-type">' + escapeHtml(typeText) + " &middot; status: " + escapeHtml(composition.status || "") + "</div>";
+
+                (composition.section || []).forEach(function (s) {
+                    var badge = "";
+                    if (s.code && s.code.coding && s.code.coding[0]) {
+                        var cd = s.code.coding[0];
+                        badge = ' <span class="section-code" title="' + escapeHtml(cd.display || "") + '">LOINC ' + escapeHtml(cd.code || "") + "</span>";
+                    }
+                    html += '<div class="section-title">' + escapeHtml(s.title || "") + badge + "</div>";
+                    html += '<div class="section-body">' + ((s.text && s.text.div) || "") + "</div>";
+                });
+                doc.innerHTML = html;
+
+                document.getElementById(key + "-json-toggle").hidden = false;
+                document.getElementById(key + "-json").innerHTML = syntaxHighlight(JSON.stringify(composition, null, 2));
+            }
+
+            function toggleJson(key) {
+                var el = document.getElementById(key + "-json");
+                var open = el.classList.toggle("open");
+                document.getElementById(key + "-json-toggle").textContent = open ? "Hide Composition JSON" : "View Composition JSON";
+            }
+
+            function escapeHtml(s) {
+                return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            }
+
+            function syntaxHighlight(json) {
+                return escapeHtml(json)
+                    .replace(/("(\\u[\da-fA-F]{4}|\\[^u]|[^\\"])*")\s*:/g, '<span class="json-key">$1</span>:')
+                    .replace(/:\s*("(\\u[\da-fA-F]{4}|\\[^u]|[^\\"])*")/g, ': <span class="json-string">$1</span>')
+                    .replace(/[{}\[\]]/g, '<span class="json-bracket">$&</span>');
+            }
+
+            // Copy reads the rendered source text directly, so it always matches what's shown.
+            function copySource(btn) {
+                var pre = btn.parentElement.querySelector(".source-code");
+                navigator.clipboard.writeText(pre.textContent).then(function () {
+                    btn.textContent = "Copied!";
+                    setTimeout(function () { btn.textContent = "Copy"; }, 1500);
+                });
+            }
+        </script>
+
+        <script
+            crossorigin
+            src="https://unpkg.com/react@18/umd/react.production.min.js"
+        ></script>
+        <script
+            crossorigin
+            src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+        ></script>
+        <script src="https://cdn.tiro.health/sdk/v0.2.1/tiro-web-sdk.iife.js"></script>
+    </body>
+</html>
