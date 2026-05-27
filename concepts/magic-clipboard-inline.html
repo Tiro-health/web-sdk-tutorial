@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Magic Clipboard — Inline</title>
+
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: system-ui, -apple-system, sans-serif;
+            }
+
+            .container {
+                margin: 2rem;
+            }
+
+            .title {
+                font-size: 1.125rem;
+                font-weight: bold;
+                margin-bottom: 1rem;
+            }
+
+            .intro {
+                font-size: 0.85rem;
+                line-height: 1.6;
+                color: #52525b;
+                margin-bottom: 1.5rem;
+                max-width: 46rem;
+            }
+
+            .example-title {
+                font-size: 0.95rem;
+                font-weight: 600;
+                margin-top: 2rem;
+                margin-bottom: 0.75rem;
+                color: #18181b;
+            }
+
+            .example-title:first-of-type {
+                margin-top: 0;
+            }
+
+            .example-desc {
+                font-size: 0.85rem;
+                line-height: 1.6;
+                color: #52525b;
+                margin-bottom: 1rem;
+            }
+
+            .columns {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1.5rem;
+            }
+
+            .column-header {
+                font-size: 0.75rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: #71717a;
+                margin-bottom: 0.75rem;
+            }
+
+            .source-wrapper {
+                position: relative;
+            }
+
+            .copy-btn {
+                position: absolute;
+                top: 0.5rem;
+                right: 0.5rem;
+                background: #313244;
+                border: 1px solid #45475a;
+                color: #cdd6f4;
+                border-radius: 6px;
+                padding: 4px 8px;
+                font-size: 0.7rem;
+                font-family: inherit;
+                cursor: pointer;
+                transition: all 0.15s ease;
+            }
+
+            .copy-btn:hover {
+                background: #45475a;
+            }
+
+            .source-code {
+                background: #1e1e2e;
+                color: #cdd6f4;
+                border-radius: 8px;
+                padding: 1rem 1.25rem;
+                font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+                font-size: 0.8rem;
+                line-height: 1.7;
+                overflow-x: auto;
+                white-space: pre-wrap;
+                word-break: break-all;
+                margin: 0;
+            }
+
+            .source-code .tag { color: #89b4fa; }
+            .source-code .attr { color: #f9e2af; }
+            .source-code .val { color: #a6e3a1; }
+            .source-code .comment { color: #6c7086; font-style: italic; }
+
+            .autofill-btn {
+                margin-top: 0.5rem;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.4rem;
+                padding: 0.4rem 0.85rem;
+                font: inherit;
+                font-size: 0.8rem;
+                font-weight: 500;
+                color: #fff;
+                background: #232d5b;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+            }
+            .autofill-btn:hover { background: #1a2245; }
+
+            @media (max-width: 700px) {
+                .columns {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1 class="title">Magic Clipboard</h1>
+            <p class="intro">
+                The magic clipboard adds AI-assisted dictation and paste-to-fill on top of any form. Bind it to a
+                <code>&lt;tiro-form-filler&gt;</code> with the <code>for</code> attribute — dictate or paste free text,
+                and it writes structured answers straight into the form's fields.
+            </p>
+
+            <h2 class="example-title">Inline embed</h2>
+            <p class="example-desc">
+                Place <code>&lt;tiro-magic-clipboard&gt;</code> next to the form it should fill and point its
+                <code>for</code> attribute at the form-filler's <code>id</code>. That's the whole integration.
+            </p>
+            <div class="columns">
+                <div>
+                    <div class="column-header">Preview</div>
+                    <tiro-form-filler id="report">
+                        <script type="application/fhir+json" slot="questionnaire">
+{
+    "resourceType": "Questionnaire",
+    "status": "active",
+    "item": [
+        {
+            "linkId": "report-group",
+            "type": "group",
+            "text": "Radiology report",
+            "extension": [
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+                    "valueCodeableConcept": {
+                        "text": "block",
+                        "coding": [{ "system": "http://fhir.tiro.health/CodeSystem/tiro-questionnaire-item-control", "code": "block" }]
+                    }
+                }
+            ],
+            "item": [
+                { "linkId": "findings", "type": "string", "text": "Findings" },
+                { "linkId": "conclusion", "type": "string", "text": "Conclusion" }
+            ]
+        }
+    ]
+}
+                        </script>
+                    </tiro-form-filler>
+                    <tiro-magic-clipboard for="report">
+                        <button type="submit" class="autofill-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>
+                            Autofill
+                        </button>
+                    </tiro-magic-clipboard>
+                </div>
+                <div>
+                    <div class="column-header">Source</div>
+                    <div class="source-wrapper">
+                        <button class="copy-btn" onclick="copySource(this)">Copy</button>
+                        <pre class="source-code"><span class="comment">&lt;!-- Load the Tiro Web SDK --&gt;</span>
+<span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="val" title="https://cdn.tiro.health/sdk/v0.2.1/tiro-web-sdk.iife.js">"https://cdn.tiro.health/.../tiro-web-sdk.iife.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
+
+<span class="comment">&lt;!-- The form to fill --&gt;</span>
+<span class="tag">&lt;tiro-form-filler</span> <span class="attr">id</span>=<span class="val">"report"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;script</span> <span class="attr">type</span>=<span class="val">"application/fhir+json"</span> <span class="attr">slot</span>=<span class="val">"questionnaire"</span><span class="tag">&gt;</span>
+  { <span class="comment">/* Questionnaire with Findings + Conclusion */</span> }
+  <span class="tag">&lt;/script&gt;</span>
+<span class="tag">&lt;/tiro-form-filler&gt;</span>
+
+<span class="comment">&lt;!-- Magic clipboard, bound to the form via `for` --&gt;</span>
+<span class="tag">&lt;tiro-magic-clipboard</span> <span class="attr">for</span>=<span class="val">"report"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;button</span> <span class="attr">type</span>=<span class="val">"submit"</span><span class="tag">&gt;</span>Autofill<span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;/tiro-magic-clipboard&gt;</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div><!-- .container -->
+
+        <script>
+            function copySource(btn) {
+                var text = '<script src="https://cdn.tiro.health/sdk/v0.2.1/tiro-web-sdk.iife.js"><\/script>\n'
+                    + '\n'
+                    + '<tiro-form-filler id="report">\n'
+                    + '  <script type="application/fhir+json" slot="questionnaire">\n'
+                    + '  { /* Questionnaire with Findings + Conclusion */ }\n'
+                    + '  <\/script>\n'
+                    + '<\/tiro-form-filler>\n'
+                    + '\n'
+                    + '<tiro-magic-clipboard for="report">\n'
+                    + '  <button type="submit">Autofill<\/button>\n'
+                    + '<\/tiro-magic-clipboard>';
+                navigator.clipboard.writeText(text).then(function() {
+                    btn.textContent = 'Copied!';
+                    setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+                });
+            }
+        </script>
+
+        <script
+            crossorigin
+            src="https://unpkg.com/react@18/umd/react.production.min.js"
+        ></script>
+        <script
+            crossorigin
+            src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+        ></script>
+        <script src="https://cdn.tiro.health/sdk/v0.2.1/tiro-web-sdk.iife.js"></script>
+    </body>
+</html>

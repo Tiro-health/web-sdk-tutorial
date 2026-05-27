@@ -387,6 +387,24 @@
         </div>
 
         <div class="nav-section">
+            <div class="nav-section-label">Magic Clipboard</div>
+            <ul class="nav-list" role="list">
+                <li class="nav-item">
+                    <button onclick="loadApp(this, 'concepts/magic-clipboard-inline.html', 'Magic Clipboard — Inline')" aria-label="Magic Clipboard Inline" title="Magic Clipboard — Inline">
+                        <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 1.5 1.5L14 12"/></svg></span>
+                        <span>Inline</span>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button onclick="loadApp(this, 'concepts/magic-clipboard-pip.html', 'Magic Clipboard — Picture-in-Picture')" aria-label="Magic Clipboard Picture-in-Picture" title="Magic Clipboard — Picture-in-Picture">
+                        <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><rect x="12" y="11" width="8" height="6" rx="1"/></svg></span>
+                        <span>Picture-in-Picture</span>
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
             <div class="nav-section-label">Frameworks</div>
             <ul class="nav-list" role="list">
                 <li class="nav-item">
@@ -466,7 +484,7 @@
             </div>
         </div>
 
-        <iframe class="content-frame" id="content-frame" style="display: none;" title="Tutorial content"></iframe>
+        <iframe class="content-frame" id="content-frame" style="display: none;" title="Tutorial content" allow="document-picture-in-picture; clipboard-write"></iframe>
     </main>
 
     <script>
