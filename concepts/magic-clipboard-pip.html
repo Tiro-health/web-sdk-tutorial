@@ -295,7 +295,27 @@
             // Link the fallback to this page's own URL so it opens top-level.
             document.getElementById("open-standalone").href = location.href;
 
-            if (!("documentPictureInPicture" in window)) {
+            // When embedded in the tutorial's same-origin iframe shell, delegate to the
+            // top frame: requestWindow() must run in a top-level browsing context, and the
+            // click's transient activation propagates up to the top window.
+            var embedded = window.self !== window.top;
+
+            function requestPip(options) {
+                if (embedded && window.top && typeof window.top.requestPipWindow === "function") {
+                    return window.top.requestPipWindow(options);
+                }
+                return documentPictureInPicture.requestWindow(options);
+            }
+
+            function pipAvailable() {
+                if (embedded) {
+                    try { return typeof window.top.requestPipWindow === "function"; }
+                    catch (e) { return false; } // cross-origin shell — can't delegate
+                }
+                return "documentPictureInPicture" in window;
+            }
+
+            if (!pipAvailable()) {
                 popBtn.disabled = true;
                 document.getElementById("unsupported").style.display = "block";
             }
@@ -325,7 +345,8 @@
             }
 
             function restore() {
-                if (widget.ownerDocument !== document) {
+                // Dock the widget back — guard against the iframe having navigated away.
+                if (widget.ownerDocument !== document && host.isConnected) {
                     host.insertBefore(widget, placeholder);
                 }
                 placeholder.style.display = "none";
@@ -339,7 +360,7 @@
                     return;
                 }
                 try {
-                    pipWindow = await documentPictureInPicture.requestWindow({ width: 420, height: 560 });
+                    pipWindow = await requestPip({ width: 420, height: 560 });
                     fallback.style.display = "none";
                     pipWindow.document.body.style.cssText = "margin:0;padding:16px;font-family:system-ui,-apple-system,sans-serif;";
                     copyStyles(pipWindow);

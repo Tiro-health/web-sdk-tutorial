@@ -484,11 +484,22 @@
             </div>
         </div>
 
-        <iframe class="content-frame" id="content-frame" style="display: none;" title="Tutorial content" allow="document-picture-in-picture; clipboard-write"></iframe>
+        <iframe class="content-frame" id="content-frame" style="display: none;" title="Tutorial content"></iframe>
     </main>
 
     <script>
         var buttons = document.querySelectorAll('.nav-item button');
+
+        // Let same-origin concept demos (loaded in the iframe) open a Picture-in-Picture
+        // window from this top-level context. requestWindow() is only allowed from a
+        // top-level browsing context; a user gesture inside a same-origin iframe
+        // propagates transient activation up to this window, so the call succeeds here.
+        window.requestPipWindow = function (options) {
+            if (!("documentPictureInPicture" in window)) {
+                return Promise.reject(new DOMException("Document Picture-in-Picture not supported", "NotSupportedError"));
+            }
+            return window.documentPictureInPicture.requestWindow(options);
+        };
 
         function loadApp(button, url, title, sourceUrl) {
             buttons.forEach(function(b) { b.classList.remove('active'); });
