@@ -1,0 +1,609 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Questionnaire Retrieval</title>
+
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: system-ui, -apple-system, sans-serif;
+            }
+
+            .container {
+                margin: 2rem;
+            }
+
+            .title {
+                font-size: 1.125rem;
+                font-weight: bold;
+                margin-bottom: 1rem;
+            }
+
+            .intro {
+                font-size: 0.85rem;
+                line-height: 1.6;
+                color: #52525b;
+                margin-bottom: 1.25rem;
+            }
+
+            .example-title {
+                font-size: 0.95rem;
+                font-weight: 600;
+                margin-top: 2.5rem;
+                margin-bottom: 0.75rem;
+                color: #18181b;
+            }
+
+            .example-desc {
+                font-size: 0.85rem;
+                line-height: 1.6;
+                color: #52525b;
+                margin-bottom: 1rem;
+            }
+
+            code {
+                font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+                font-size: 0.82em;
+                background: #f4f4f5;
+                padding: 0.05rem 0.3rem;
+                border-radius: 4px;
+                color: #18181b;
+            }
+
+            .columns {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1.5rem;
+                align-items: start;
+            }
+
+            .column-header {
+                font-size: 0.75rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: #71717a;
+                margin-bottom: 0.75rem;
+            }
+
+            /* ── Try-it controls ── */
+            .controls {
+                display: flex;
+                gap: 0.6rem;
+                align-items: flex-end;
+                flex-wrap: wrap;
+                margin-bottom: 1rem;
+            }
+
+            .field {
+                display: flex;
+                flex-direction: column;
+                gap: 0.3rem;
+                flex: 1 1 auto;
+                min-width: 220px;
+            }
+
+            .field label {
+                font-size: 0.7rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: #71717a;
+            }
+
+            .field input {
+                font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+                font-size: 0.8rem;
+                padding: 0.5rem 0.6rem;
+                border: 1px solid #e4e4e7;
+                border-radius: 6px;
+                color: #18181b;
+                background: #fff;
+            }
+
+            .field input:focus {
+                outline: none;
+                border-color: #232d5b;
+                box-shadow: 0 0 0 3px rgba(35, 45, 91, 0.1);
+            }
+
+            .run-btn {
+                background: #232d5b;
+                color: #fff;
+                border: none;
+                border-radius: 6px;
+                padding: 0.55rem 1.1rem;
+                font-size: 0.8rem;
+                font-weight: 600;
+                cursor: pointer;
+                font-family: inherit;
+                transition: background 0.15s ease;
+            }
+
+            .run-btn:hover {
+                background: #1a2147;
+            }
+
+            .run-btn:disabled {
+                opacity: 0.5;
+                cursor: default;
+            }
+
+            /* ── Result rendering ── */
+            .result {
+                min-height: 72px;
+            }
+
+            .result-meta {
+                font-size: 0.7rem;
+                color: #71717a;
+                font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+                margin-bottom: 0.75rem;
+                word-break: break-all;
+            }
+
+            .result-list {
+                display: flex;
+                flex-direction: column;
+                gap: 0.6rem;
+            }
+
+            .result-item {
+                border: 1px solid #e4e4e7;
+                border-radius: 8px;
+                padding: 0.7rem 0.85rem;
+            }
+
+            .ri-title {
+                font-size: 0.85rem;
+                font-weight: 600;
+                color: #18181b;
+                margin-bottom: 0.3rem;
+            }
+
+            .ri-url {
+                font-size: 0.72rem;
+                color: #52525b;
+                font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+                word-break: break-all;
+                margin-bottom: 0.45rem;
+            }
+
+            .tags {
+                display: flex;
+                gap: 0.4rem;
+                flex-wrap: wrap;
+            }
+
+            .chip {
+                font-size: 0.68rem;
+                padding: 0.12rem 0.5rem;
+                border-radius: 999px;
+                border: 1px solid #e4e4e7;
+                background: #fafafa;
+                color: #52525b;
+            }
+
+            .chip[data-kind="version"] {
+                font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+            }
+
+            .chip[data-kind="status-active"] {
+                color: #166534;
+                background: #f0fdf4;
+                border-color: #bbf7d0;
+            }
+            .chip[data-kind="status-retired"] {
+                color: #9a3412;
+                background: #fff7ed;
+                border-color: #fed7aa;
+            }
+            .chip[data-kind="status-draft"] {
+                color: #3730a3;
+                background: #eef2ff;
+                border-color: #c7d2fe;
+            }
+
+            .empty,
+            .error,
+            .loading {
+                font-size: 0.82rem;
+                padding: 0.8rem 0.9rem;
+                border-radius: 8px;
+                line-height: 1.5;
+            }
+
+            .empty,
+            .loading {
+                color: #71717a;
+                background: #fafafa;
+                border: 1px dashed #e4e4e7;
+            }
+
+            .error {
+                color: #991b1b;
+                background: #fef2f2;
+                border: 1px solid #fecaca;
+            }
+
+            .err-title {
+                font-weight: 600;
+                margin-bottom: 0.3rem;
+            }
+
+            details.raw {
+                margin-top: 0.75rem;
+            }
+
+            details.raw summary {
+                font-size: 0.72rem;
+                color: #71717a;
+                cursor: pointer;
+                user-select: none;
+            }
+
+            details.raw pre {
+                margin-top: 0.5rem;
+                max-height: 320px;
+                overflow: auto;
+            }
+
+            /* ── Source code blocks ── */
+            .source-wrapper {
+                position: relative;
+            }
+
+            .copy-btn {
+                position: absolute;
+                top: 0.5rem;
+                right: 0.5rem;
+                background: #313244;
+                border: 1px solid #45475a;
+                color: #cdd6f4;
+                border-radius: 6px;
+                padding: 4px 8px;
+                font-size: 0.7rem;
+                font-family: inherit;
+                cursor: pointer;
+                transition: all 0.15s ease;
+            }
+
+            .copy-btn:hover {
+                background: #45475a;
+            }
+
+            .source-code {
+                background: #1e1e2e;
+                color: #cdd6f4;
+                border-radius: 8px;
+                padding: 1rem 1.25rem;
+                font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+                font-size: 0.8rem;
+                line-height: 1.7;
+                overflow-x: auto;
+                white-space: pre-wrap;
+                word-break: break-word;
+                margin: 0;
+            }
+
+            .source-code .tag { color: #89b4fa; }
+            .source-code .attr { color: #f9e2af; }
+            .source-code .val { color: #a6e3a1; }
+            .source-code .comment { color: #6c7086; font-style: italic; }
+            .source-code .kw { color: #cba6f7; }
+            .source-code .fn { color: #89b4fa; }
+            .source-code .str { color: #a6e3a1; }
+            .source-code .num { color: #fab387; }
+
+            @media (max-width: 760px) {
+                .columns {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1 class="title">Questionnaire Retrieval</h1>
+
+            <p class="intro">
+                Before a form can be rendered, the right <code>Questionnaire</code> has to be found and loaded from the
+                SDC server. This page shows the two retrieval patterns the Tiro SDC server supports:
+                <strong>resolving</strong> a canonical reference and <strong>searching</strong> by clinical context. Both
+                are plain FHIR <code>GET</code> requests, so you can call them with <code>fetch</code>, <code>curl</code>,
+                or any HTTP client.
+            </p>
+
+            <p style="margin-bottom: 1.25rem; font-size: 0.85rem; color: #52525b;">
+                SDC server: <code>https://sdc-dev.tiro.health/fhir/r5</code>
+            </p>
+
+            <!-- ───────────────────────── Resolve a canonical reference ───────────────────────── -->
+            <h2 class="example-title">Resolve a canonical reference</h2>
+            <p class="example-desc">
+                <code>$resolve</code> turns a canonical reference into the concrete <code>Questionnaire</code> resource —
+                this is how the form-filler loads a questionnaire from its canonical URL. It implements the
+                <a href="https://build.fhir.org/ig/HL7/crmi-ig/OperationDefinition-crmi-resolve.html" target="_blank" rel="noopener noreferrer">CRMI <code>$resolve</code></a>
+                operation. The <code>canonical</code> parameter may be <strong>versioned</strong>
+                (<code>url|1.0.0</code>) or <strong>versionless</strong> (<code>url</code>, which resolves to the latest
+                active/retired version). A missing match returns a <code>404 OperationOutcome</code>.
+            </p>
+            <div class="columns">
+                <div>
+                    <div class="column-header">Try it</div>
+                    <div class="controls">
+                        <div class="field">
+                            <label for="canonical">canonical (url or url|version)</label>
+                            <input id="canonical" type="text" value="http://templates.tiro.health/templates/example|1.0.0" spellcheck="false" />
+                        </div>
+                        <button class="run-btn" id="resolve-btn" onclick="runResolve()">Resolve</button>
+                    </div>
+                    <div class="result" id="resolve-result">
+                        <div class="empty">Resolve a canonical reference to fetch the full Questionnaire.</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="column-header">Request</div>
+                    <div class="source-wrapper">
+                        <button class="copy-btn" onclick="copyResolve(this)">Copy</button>
+                        <pre class="source-code"><span class="comment"># Resolve a versioned canonical reference</span>
+<span class="kw">GET</span> <span class="val">/fhir/r5/Questionnaire/$resolve?canonical=http://templates.tiro.health/templates/example|1.0.0</span>
+<span class="attr">Accept</span>: <span class="val">application/fhir+json</span>
+
+<span class="comment"># Versionless — resolves to the latest active/retired version</span>
+<span class="kw">GET</span> <span class="val">/fhir/r5/Questionnaire/$resolve?canonical=http://templates.tiro.health/templates/example</span>
+
+<span class="comment"># Not found -> 404 OperationOutcome</span></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ───────────────────────── Search by clinical context ───────────────────────── -->
+            <h2 class="example-title">Search by clinical context</h2>
+            <p class="example-desc">
+                When you don't have an exact canonical reference up front, search for questionnaires by clinical context.
+                The <code>context</code> search parameter filters by the <strong>specialty usage context</strong> (the
+                <code>useContext</code> whose value is a specialty <code>CodeableConcept</code>). Pass a FHIR token
+                <code>system|code</code> — for example a SNOMED CT specialty code. Repeat the parameter to OR several
+                values. Add <code>_summary=true</code> to skip the heavy <code>item</code> payload,
+                <code>_elements=url,name,status</code> to cherry-pick fields, or <code>_summary=count</code> to get just
+                the total. The response is a searchset <code>Bundle</code>.
+            </p>
+            <div class="columns">
+                <div>
+                    <div class="column-header">Try it</div>
+                    <div class="controls">
+                        <div class="field">
+                            <label for="ctx">context (system|code)</label>
+                            <input id="ctx" type="text" value="http://snomed.info/sct|394821009" spellcheck="false" />
+                        </div>
+                        <button class="run-btn" id="search-btn" onclick="runSearch()">Search</button>
+                    </div>
+                    <div class="result" id="search-result">
+                        <div class="empty">Run a search to list matching questionnaires (metadata only).</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="column-header">Request</div>
+                    <div class="source-wrapper">
+                        <button class="copy-btn" onclick="copySearch(this)">Copy</button>
+                        <pre class="source-code"><span class="comment"># Search by specialty usage context</span>
+<span class="kw">GET</span> <span class="val">/fhir/r5/Questionnaire?context=http://snomed.info/sct|394821009</span>
+<span class="attr">Accept</span>: <span class="val">application/fhir+json</span>
+
+<span class="comment"># Metadata only — omits the item[] payload</span>
+<span class="kw">GET</span> <span class="val">/fhir/r5/Questionnaire?context=...&amp;_summary=true</span>
+
+<span class="comment"># Cherry-pick fields</span>
+<span class="kw">GET</span> <span class="val">/fhir/r5/Questionnaire?context=...&amp;_elements=url,name,status</span>
+
+<span class="comment"># Just the total count</span>
+<span class="kw">GET</span> <span class="val">/fhir/r5/Questionnaire?context=...&amp;_summary=count</span>
+
+<span class="comment"># OR multiple specialties — repeat the param</span>
+<span class="kw">GET</span> <span class="val">/fhir/r5/Questionnaire?context=...|394821009&amp;context=...|408443003</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div><!-- .container -->
+
+        <script>
+            var SDC = "https://sdc-dev.tiro.health/fhir/r5";
+            var FHIR_HEADERS = { Accept: "application/fhir+json" };
+
+            function clear(node) {
+                while (node.firstChild) node.removeChild(node.firstChild);
+            }
+
+            function elem(tag, className, text) {
+                var node = document.createElement(tag);
+                if (className) node.className = className;
+                if (text != null) node.textContent = text;
+                return node;
+            }
+
+            function statusChip(status) {
+                var chip = elem("span", "chip", status || "unknown");
+                chip.dataset.kind = "status-" + (status || "unknown");
+                return chip;
+            }
+
+            function rawDetails(data) {
+                var details = document.createElement("details");
+                details.className = "raw";
+                var summary = elem("summary", null, "Raw JSON");
+                var pre = elem("pre", "source-code", JSON.stringify(data, null, 2));
+                details.appendChild(summary);
+                details.appendChild(pre);
+                return details;
+            }
+
+            function showLoading(node) {
+                clear(node);
+                node.appendChild(elem("div", "loading", "Loading…"));
+            }
+
+            function showError(node, label, data) {
+                clear(node);
+                var box = elem("div", "error");
+                box.appendChild(elem("div", "err-title", label));
+                var detail = null;
+                if (data && data.resourceType === "OperationOutcome" && data.issue && data.issue.length) {
+                    var issue = data.issue[0];
+                    detail = (issue.details && issue.details.text) || issue.diagnostics || issue.code;
+                } else if (typeof data === "string") {
+                    detail = data;
+                }
+                if (detail) box.appendChild(elem("div", null, detail));
+                node.appendChild(box);
+                if (data && typeof data === "object") node.appendChild(rawDetails(data));
+            }
+
+            function runResolve() {
+                var canonical = document.getElementById("canonical").value.trim();
+                var out = document.getElementById("resolve-result");
+                var btn = document.getElementById("resolve-btn");
+                if (!canonical) {
+                    showError(out, "Enter a canonical reference (url or url|version).");
+                    return;
+                }
+                var url = SDC + "/Questionnaire/$resolve?canonical=" + encodeURIComponent(canonical);
+                btn.disabled = true;
+                showLoading(out);
+                fetch(url, { headers: FHIR_HEADERS })
+                    .then(function (res) {
+                        return res.json().then(function (data) {
+                            return { ok: res.ok, status: res.status, data: data };
+                        });
+                    })
+                    .then(function (r) {
+                        if (!r.ok) {
+                            showError(out, "Resolve failed (HTTP " + r.status + ")", r.data);
+                            return;
+                        }
+                        renderQuestionnaire(out, r.data, url);
+                    })
+                    .catch(function (e) {
+                        showError(out, "Network / CORS error", e.message);
+                    })
+                    .finally(function () {
+                        btn.disabled = false;
+                    });
+            }
+
+            function renderQuestionnaire(out, q, url) {
+                clear(out);
+                out.appendChild(elem("div", "result-meta", "GET " + url));
+                var item = elem("div", "result-item");
+                item.appendChild(elem("div", "ri-title", q.title || q.name || "(untitled)"));
+                if (q.url) item.appendChild(elem("div", "ri-url", q.url));
+                var tags = elem("div", "tags");
+                if (q.version) {
+                    var v = elem("span", "chip", "v" + q.version);
+                    v.dataset.kind = "version";
+                    tags.appendChild(v);
+                }
+                if (q.status) tags.appendChild(statusChip(q.status));
+                var topLevel = (q.item || []).length;
+                tags.appendChild(elem("span", "chip", topLevel + " top-level item" + (topLevel === 1 ? "" : "s")));
+                item.appendChild(tags);
+                out.appendChild(item);
+                out.appendChild(rawDetails(q));
+            }
+
+            function runSearch() {
+                var ctx = document.getElementById("ctx").value.trim();
+                var out = document.getElementById("search-result");
+                var btn = document.getElementById("search-btn");
+                if (!ctx) {
+                    showError(out, "Enter a context token (system|code).");
+                    return;
+                }
+                var url = SDC + "/Questionnaire?context=" + encodeURIComponent(ctx) + "&_summary=true&_count=10";
+                btn.disabled = true;
+                showLoading(out);
+                fetch(url, { headers: FHIR_HEADERS })
+                    .then(function (res) {
+                        return res.json().then(function (data) {
+                            return { ok: res.ok, status: res.status, data: data };
+                        });
+                    })
+                    .then(function (r) {
+                        if (!r.ok) {
+                            showError(out, "Search failed (HTTP " + r.status + ")", r.data);
+                            return;
+                        }
+                        renderBundle(out, r.data, url);
+                    })
+                    .catch(function (e) {
+                        showError(out, "Network / CORS error", e.message);
+                    })
+                    .finally(function () {
+                        btn.disabled = false;
+                    });
+            }
+
+            function renderBundle(out, bundle, url) {
+                clear(out);
+                var entries = bundle.entry || [];
+                var total = typeof bundle.total === "number" ? bundle.total : entries.length;
+                out.appendChild(
+                    elem("div", "result-meta", "GET " + url + "  →  " + total + " result" + (total === 1 ? "" : "s"))
+                );
+                if (!entries.length) {
+                    out.appendChild(elem("div", "empty", "No questionnaires matched this context."));
+                    out.appendChild(rawDetails(bundle));
+                    return;
+                }
+                var list = elem("div", "result-list");
+                entries.forEach(function (entry) {
+                    var q = entry.resource || {};
+                    var item = elem("div", "result-item");
+                    item.appendChild(elem("div", "ri-title", q.title || q.name || "(untitled)"));
+                    if (q.url) item.appendChild(elem("div", "ri-url", q.url));
+                    var tags = elem("div", "tags");
+                    if (q.version) {
+                        var v = elem("span", "chip", "v" + q.version);
+                        v.dataset.kind = "version";
+                        tags.appendChild(v);
+                    }
+                    if (q.status) tags.appendChild(statusChip(q.status));
+                    item.appendChild(tags);
+                    list.appendChild(item);
+                });
+                out.appendChild(list);
+                out.appendChild(rawDetails(bundle));
+            }
+
+            /* ── Copy helpers (curl) ── */
+            function copyCurl(btn, path) {
+                var cmd =
+                    "curl -H 'Accept: application/fhir+json' \\\n" +
+                    "  '" + SDC + path + "'";
+                navigator.clipboard.writeText(cmd).then(function () {
+                    btn.textContent = "Copied!";
+                    setTimeout(function () { btn.textContent = "Copy"; }, 1500);
+                });
+            }
+
+            function copyResolve(btn) {
+                copyCurl(btn, "/Questionnaire/$resolve?canonical=http://templates.tiro.health/templates/example|1.0.0");
+            }
+
+            function copySearch(btn) {
+                copyCurl(btn, "/Questionnaire?context=http://snomed.info/sct|394821009&_summary=true");
+            }
+
+            /* ── Submit on Enter ── */
+            document.getElementById("canonical").addEventListener("keydown", function (e) {
+                if (e.key === "Enter") runResolve();
+            });
+            document.getElementById("ctx").addEventListener("keydown", function (e) {
+                if (e.key === "Enter") runSearch();
+            });
+        </script>
+    </body>
+</html>
