@@ -152,10 +152,11 @@
             }
             .docked-placeholder {
                 display: none;
-                padding: 2rem 1rem;
+                margin-top: 0.75rem;
+                padding: 1.5rem 1rem;
                 text-align: center;
                 font-size: 0.8rem;
-                color: #a1a1aa;
+                color: #71717a;
                 border: 1px dashed #e4e4e7;
                 border-radius: 8px;
             }
@@ -192,15 +193,17 @@
         <div class="container">
             <h1 class="title">Magic Clipboard</h1>
             <p class="intro">
-                Pop the <em>live</em> magic clipboard into an always-on-top
+                Clicking <em>Pop out</em> moves the <em>real</em> clipboard node into an always-on-top
                 <a href="https://developer.mozilla.org/docs/Web/API/Document_Picture-in-Picture_API" target="_blank" rel="noopener">Document Picture-in-Picture</a>
-                window so it floats above a separate PACS or viewer. The real component node is <strong>moved</strong> into the PiP window — same JS
-                context, so it keeps working — and moved back when the window closes. <strong>No browser extension required.</strong>
+                window that floats above a separate PACS or viewer. It stays bound to the report form on this page, so
+                dictation in the floating window <strong>autofills the form here</strong> — then docks back on close.
+                <strong>No browser extension required.</strong>
             </p>
 
             <h2 class="example-title">Picture-in-Picture (always-on-top)</h2>
             <p class="example-desc">
-                Request a PiP window on a click, clone the page styles into it, then <code>append()</code> the existing widget node.
+                Request a PiP window on a click and <code>append()</code> the existing clipboard node into it.
+                Since the SDK re-styles its shadow DOM for the new document, the moved node renders correctly.
                 Listen for <code>pagehide</code> to dock it back.
             </p>
 
@@ -215,9 +218,8 @@
                         <span id="pop-out-label">Pop out</span>
                     </button>
                     <div id="mc-host">
-                        <div id="mc-widget">
-                            <tiro-form-filler id="report">
-                                <script type="application/fhir+json" slot="questionnaire">
+                        <tiro-form-filler id="report">
+                            <script type="application/fhir+json" slot="questionnaire">
 {
     "resourceType": "Questionnaire",
     "status": "active",
@@ -242,8 +244,9 @@
         }
     ]
 }
-                                </script>
-                            </tiro-form-filler>
+                            </script>
+                        </tiro-form-filler>
+                        <div id="mc-widget">
                             <tiro-magic-clipboard for="report">
                                 <button type="submit" class="autofill-btn">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>
@@ -251,30 +254,28 @@
                                 </button>
                             </tiro-magic-clipboard>
                         </div>
-                        <p class="docked-placeholder" id="docked-placeholder">↗ The widget is in the floating window.<br>Close it to dock it back here.</p>
+                        <p class="docked-placeholder" id="docked-placeholder">↗ The clipboard is floating — dictation still autofills the form above.<br>Close the window to dock it back here.</p>
                     </div>
                 </div>
                 <div>
                     <div class="column-header">Source</div>
                     <div class="source-wrapper">
                         <button class="copy-btn" onclick="copySource(this)">Copy</button>
-                        <pre class="source-code"><span class="comment">// The widget = form-filler + magic-clipboard, bound by `for`.</span>
-<span class="kw">const</span> widget = <span class="prop">document</span>.<span class="fn">getElementById</span>(<span class="str">'mc-widget'</span>);
-<span class="kw">const</span> host   = widget.<span class="prop">parentElement</span>;
+                        <pre class="source-code"><span class="comment">// The clipboard stays bound to its form via `for` (resolved against</span>
+<span class="comment">// the opener document), so it keeps autofilling after it floats.</span>
+<span class="kw">const</span> clip = <span class="prop">document</span>.<span class="fn">getElementById</span>(<span class="str">'mc-widget'</span>);
+<span class="kw">const</span> host = clip.<span class="prop">parentElement</span>;
 
 <span class="prop">popOutButton</span>.<span class="prop">onclick</span> = <span class="kw">async</span> () =&gt; {
-  <span class="comment">// 1. Open an always-on-top PiP window (needs a user gesture)</span>
   <span class="kw">const</span> pip = <span class="kw">await</span> <span class="prop">documentPictureInPicture</span>
     .<span class="fn">requestWindow</span>({ <span class="prop">width</span>: <span class="val">420</span>, <span class="prop">height</span>: <span class="val">560</span> });
 
-  <span class="comment">// 2. Clone the page's styles into the PiP document</span>
-  <span class="fn">copyStyles</span>(pip);
+  <span class="comment">// SDK v0.3.0+ re-styles its shadow DOM for the new document, so the</span>
+  <span class="comment">// real node can simply be moved in — no iframe, no re-instantiation.</span>
+  pip.<span class="prop">document</span>.<span class="prop">body</span>.<span class="fn">append</span>(clip);
 
-  <span class="comment">// 3. Move the *real* node in — same JS context, keeps working</span>
-  pip.<span class="prop">document</span>.<span class="prop">body</span>.<span class="fn">append</span>(widget);
-
-  <span class="comment">// 4. Dock it back when the window closes</span>
-  pip.<span class="fn">addEventListener</span>(<span class="str">'pagehide'</span>, () =&gt; host.<span class="fn">append</span>(widget));
+  <span class="comment">// Dock it back when the window closes</span>
+  pip.<span class="fn">addEventListener</span>(<span class="str">'pagehide'</span>, () =&gt; host.<span class="fn">append</span>(clip));
 };</pre>
                     </div>
                 </div>
@@ -320,9 +321,10 @@
                 document.getElementById("unsupported").style.display = "block";
             }
 
-            // Clone the page's stylesheets into the PiP document so the
-            // surrounding layout matches. The SDK components carry their own
-            // shadow-DOM styles, so they render correctly regardless.
+            // Clone this page's <style>/<link> into the PiP document so the slotted
+            // Autofill button + layout match. The SDK (v0.3.0+) re-styles its own
+            // shadow DOM for the new document via adoptedCallback, so the moved
+            // clipboard renders correctly.
             function copyStyles(win) {
                 var sheets = Array.prototype.slice.call(document.styleSheets);
                 sheets.forEach(function (sheet) {
@@ -345,7 +347,7 @@
             }
 
             function restore() {
-                // Dock the widget back — guard against the iframe having navigated away.
+                // Dock the clipboard back — guard against the host iframe navigating away.
                 if (widget.ownerDocument !== document && host.isConnected) {
                     host.insertBefore(widget, placeholder);
                 }
@@ -356,7 +358,7 @@
 
             popBtn.addEventListener("click", async function () {
                 if (pipWindow) {
-                    pipWindow.close(); // 'pagehide' restores the widget
+                    pipWindow.close(); // 'pagehide' docks the clipboard back
                     return;
                 }
                 try {
@@ -364,7 +366,12 @@
                     fallback.style.display = "none";
                     pipWindow.document.body.style.cssText = "margin:0;padding:16px;font-family:system-ui,-apple-system,sans-serif;";
                     copyStyles(pipWindow);
-                    pipWindow.document.body.append(widget); // move the real node
+
+                    // Move the REAL clipboard node into the PiP window. It stays bound to
+                    // <tiro-form-filler id="report"> on this page (the `for` lookup resolves
+                    // against the opener document), so dictation still autofills the form here.
+                    pipWindow.document.body.append(widget);
+
                     placeholder.style.display = "block";
                     popLabel.textContent = "Close window";
                     pipWindow.addEventListener("pagehide", restore, { once: true });
@@ -381,14 +388,18 @@
             });
 
             function copySource(btn) {
-                var text = "const widget = document.getElementById('mc-widget');\n"
-                    + "const host   = widget.parentElement;\n\n"
+                var text = "// The clipboard stays bound to its form via `for` (resolved against\n"
+                    + "// the opener document), so it keeps autofilling after it floats.\n"
+                    + "const clip = document.getElementById('mc-widget');\n"
+                    + "const host = clip.parentElement;\n\n"
                     + "popOutButton.onclick = async () => {\n"
                     + "  const pip = await documentPictureInPicture\n"
-                    + "    .requestWindow({ width: 420, height: 560 });\n"
-                    + "  copyStyles(pip);                    // clone <style>/<link>\n"
-                    + "  pip.document.body.append(widget);   // move the real node\n"
-                    + "  pip.addEventListener('pagehide', () => host.append(widget));\n"
+                    + "    .requestWindow({ width: 420, height: 560 });\n\n"
+                    + "  // SDK v0.3.0+ re-styles its shadow DOM for the new document, so the\n"
+                    + "  // real node can simply be moved in — no iframe, no re-instantiation.\n"
+                    + "  pip.document.body.append(clip);\n\n"
+                    + "  // Dock it back when the window closes\n"
+                    + "  pip.addEventListener('pagehide', () => host.append(clip));\n"
                     + "};";
                 navigator.clipboard.writeText(text).then(function () {
                     btn.textContent = "Copied!";
@@ -405,6 +416,6 @@
             crossorigin
             src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
         ></script>
-        <script src="https://cdn.tiro.health/sdk/v0.2.1/tiro-web-sdk.iife.js"></script>
+        <script src="https://cdn.tiro.health/sdk/v0.3.0-rc.1/tiro-web-sdk.iife.js"></script>
     </body>
 </html>
