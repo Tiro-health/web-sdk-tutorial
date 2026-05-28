@@ -49,6 +49,16 @@
                 margin-bottom: 1rem;
             }
 
+            .intro code,
+            .example-desc code,
+            .note code {
+                background: #f4f4f5;
+                border-radius: 4px;
+                padding: 0.05rem 0.3rem;
+                font-size: 0.85em;
+                font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+            }
+
             .columns {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
@@ -100,6 +110,12 @@
                 word-break: break-all;
                 margin: 0;
             }
+
+            /* The Tiro Magic Clipboard SDK injects a Tailwind reset into
+               document.adoptedStyleSheets that explicitly sets font-family
+               on every <span>, beating inheritance from .source-code. */
+            .source-code span,
+            .source-code code { font-family: inherit; }
 
             .source-code .tag { color: #89b4fa; }
             .source-code .attr { color: #f9e2af; }

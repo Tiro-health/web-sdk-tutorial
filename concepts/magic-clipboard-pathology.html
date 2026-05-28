@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Magic Clipboard — Pathology</title>
+
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: system-ui, -apple-system, sans-serif;
+            }
+
+            .container {
+                margin: 2rem;
+            }
+
+            .title {
+                font-size: 1.125rem;
+                font-weight: bold;
+                margin-bottom: 1rem;
+            }
+
+            .intro {
+                font-size: 0.85rem;
+                line-height: 1.6;
+                color: #52525b;
+                margin-bottom: 1.5rem;
+                max-width: 46rem;
+            }
+
+            .example-title {
+                font-size: 0.95rem;
+                font-weight: 600;
+                margin-top: 2rem;
+                margin-bottom: 0.75rem;
+                color: #18181b;
+            }
+
+            .example-title:first-of-type {
+                margin-top: 0;
+            }
+
+            .example-desc {
+                font-size: 0.85rem;
+                line-height: 1.6;
+                color: #52525b;
+                margin-bottom: 1rem;
+            }
+
+            .intro code,
+            .example-desc code {
+                background: #f4f4f5;
+                border-radius: 4px;
+                padding: 0.05rem 0.3rem;
+                font-size: 0.85em;
+                font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+            }
+
+            .columns {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1.5rem;
+            }
+
+            .column-header {
+                font-size: 0.75rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: #71717a;
+                margin-bottom: 0.75rem;
+            }
+
+            .source-wrapper {
+                position: relative;
+            }
+
+            .copy-btn {
+                position: absolute;
+                top: 0.5rem;
+                right: 0.5rem;
+                background: #313244;
+                border: 1px solid #45475a;
+                color: #cdd6f4;
+                border-radius: 6px;
+                padding: 4px 8px;
+                font-size: 0.7rem;
+                font-family: inherit;
+                cursor: pointer;
+                transition: all 0.15s ease;
+            }
+
+            .copy-btn:hover {
+                background: #45475a;
+            }
+
+            .source-code {
+                background: #1e1e2e;
+                color: #cdd6f4;
+                border-radius: 8px;
+                padding: 1rem 1.25rem;
+                font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+                font-size: 0.8rem;
+                line-height: 1.7;
+                overflow-x: auto;
+                white-space: pre-wrap;
+                word-break: break-all;
+                margin: 0;
+            }
+
+            /* The Tiro Magic Clipboard SDK injects a Tailwind reset into
+               document.adoptedStyleSheets that explicitly sets font-family
+               on every <span>, beating inheritance from .source-code. */
+            .source-code span,
+            .source-code code { font-family: inherit; }
+
+            .source-code .tag { color: #89b4fa; }
+            .source-code .attr { color: #f9e2af; }
+            .source-code .val { color: #a6e3a1; }
+            .source-code .comment { color: #6c7086; font-style: italic; }
+
+            .autofill-btn {
+                margin-top: 0.5rem;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.4rem;
+                padding: 0.4rem 0.85rem;
+                font: inherit;
+                font-size: 0.8rem;
+                font-weight: 500;
+                color: #fff;
+                background: #232d5b;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+            }
+            .autofill-btn:hover { background: #1a2245; }
+
+            .transcript {
+                background: #f5f7fb;
+                border: 1px solid #d8e0ec;
+                border-radius: 10px;
+                overflow: hidden;
+                margin: 0.5rem 0 0.75rem;
+                max-width: 46rem;
+            }
+
+            .transcript-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0.45rem 0.85rem;
+                background: #e8eef7;
+                border-bottom: 1px solid #d8e0ec;
+                font-size: 0.7rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: #475569;
+            }
+
+            .transcript-header .meta {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.45rem;
+            }
+
+            .transcript-header .duration {
+                font-weight: 500;
+                text-transform: none;
+                letter-spacing: 0;
+                font-variant-numeric: tabular-nums;
+                color: #64748b;
+            }
+
+            .transcript-body {
+                padding: 0.85rem 1rem;
+                font-size: 0.82rem;
+                line-height: 1.65;
+                color: #334155;
+                font-style: italic;
+            }
+
+            .sample-actions {
+                display: flex;
+                gap: 0.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .sample-btn {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.35rem;
+                padding: 0.35rem 0.7rem;
+                font: inherit;
+                font-size: 0.75rem;
+                font-weight: 500;
+                color: #18181b;
+                background: #fff;
+                border: 1px solid #d4d4d8;
+                border-radius: 6px;
+                cursor: pointer;
+            }
+            .sample-btn:hover { background: #fafafa; border-color: #a1a1aa; }
+
+            @media (max-width: 700px) {
+                .columns {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1 class="title">Magic Clipboard</h1>
+            <p class="intro">
+                Pathology reports often arrive as a single block of dictated free text. The magic clipboard reads that
+                block and writes each finding into the right structured field &mdash; specimen, clinical history, gross
+                description, microscopic description and diagnosis &mdash; on a multi-section
+                <code>&lt;tiro-form-filler&gt;</code>. Same integration as the inline example: bind via
+                <code>for</code>, then paste or dictate.
+            </p>
+
+            <h2 class="example-title">Surgical pathology report</h2>
+            <p class="example-desc">
+                A real dictation arrives as one unstructured stream &mdash; no section labels, no punctuation hints.
+                Copy the transcript below, then click <em>Autofill</em> on the form. The clipboard splits the stream
+                into the five fields. The questionnaire shape mirrors the Composition example, so the same response
+                drives both downstream text generation and structured storage.
+            </p>
+
+            <div class="transcript">
+                <div class="transcript-header">
+                    <span class="meta">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                        Dictation transcript
+                    </span>
+                    <span class="duration">0:47</span>
+                </div>
+                <div class="transcript-body" id="sample-report">okay this is doctor smith pathology accession four eight two three biopsy from the left forearm fifty-five year old patient with a changing pigmented lesion over several months family history positive for melanoma sent to rule out melanoma um received fresh in formalin specimen is an ellipse of skin twelve by six by four millimeters with a central pigmented lesion about five millimeters in greatest dimension margins inked black serially sectioned and entirely submitted in blocks a one through a three uh sections show an asymmetric melanocytic proliferation nests of atypical melanocytes at the dermo-epidermal junction with pagetoid upward scatter into the epidermis no dermal invasion identified mitoses absent final diagnosis melanoma in situ lentiginous type peripheral and deep margins are clear closest margin approximately one point five millimeters end of report</div>
+            </div>
+            <div class="sample-actions">
+                <button class="sample-btn" type="button" onclick="copySample(this)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    Copy transcript
+                </button>
+            </div>
+
+            <div class="columns">
+                <div>
+                    <div class="column-header">Preview</div>
+                    <tiro-form-filler id="path-report">
+                        <script type="application/fhir+json" slot="questionnaire">
+{
+    "resourceType": "Questionnaire",
+    "status": "active",
+    "item": [
+        {
+            "linkId": "report",
+            "type": "group",
+            "text": "Surgical Pathology Report",
+            "extension": [
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+                    "valueCodeableConcept": {
+                        "text": "block",
+                        "coding": [{ "system": "http://fhir.tiro.health/CodeSystem/tiro-questionnaire-item-control", "code": "block" }]
+                    }
+                }
+            ],
+            "item": [
+                { "linkId": "specimen", "type": "text", "text": "Specimen" },
+                { "linkId": "clinical-history", "type": "text", "text": "Clinical history" },
+                { "linkId": "gross", "type": "text", "text": "Gross description" },
+                { "linkId": "microscopic", "type": "text", "text": "Microscopic description" },
+                { "linkId": "diagnosis", "type": "text", "text": "Diagnosis" }
+            ]
+        }
+    ]
+}
+                        </script>
+                    </tiro-form-filler>
+                    <tiro-magic-clipboard for="path-report">
+                        <button type="submit" class="autofill-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>
+                            Autofill
+                        </button>
+                    </tiro-magic-clipboard>
+                </div>
+                <div>
+                    <div class="column-header">Source</div>
+                    <div class="source-wrapper">
+                        <button class="copy-btn" onclick="copySource(this)">Copy</button>
+                        <pre class="source-code"><span class="comment">&lt;!-- Load the Tiro Web SDK --&gt;</span>
+<span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="val" title="https://cdn.tiro.health/sdk/v0.3.0-rc.1/tiro-web-sdk.iife.js">"https://cdn.tiro.health/.../tiro-web-sdk.iife.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
+
+<span class="comment">&lt;!-- A multi-section pathology questionnaire --&gt;</span>
+<span class="tag">&lt;tiro-form-filler</span> <span class="attr">id</span>=<span class="val">"path-report"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;script</span> <span class="attr">type</span>=<span class="val">"application/fhir+json"</span> <span class="attr">slot</span>=<span class="val">"questionnaire"</span><span class="tag">&gt;</span>
+  {
+    <span class="attr">"resourceType"</span>: <span class="val">"Questionnaire"</span>,
+    <span class="attr">"status"</span>: <span class="val">"active"</span>,
+    <span class="attr">"item"</span>: [{
+      <span class="attr">"linkId"</span>: <span class="val">"report"</span>, <span class="attr">"type"</span>: <span class="val">"group"</span>,
+      <span class="attr">"text"</span>: <span class="val">"Surgical Pathology Report"</span>,
+      <span class="attr">"item"</span>: [
+        { <span class="attr">"linkId"</span>: <span class="val">"specimen"</span>,         <span class="attr">"type"</span>: <span class="val">"text"</span>, <span class="attr">"text"</span>: <span class="val">"Specimen"</span> },
+        { <span class="attr">"linkId"</span>: <span class="val">"clinical-history"</span>, <span class="attr">"type"</span>: <span class="val">"text"</span>, <span class="attr">"text"</span>: <span class="val">"Clinical history"</span> },
+        { <span class="attr">"linkId"</span>: <span class="val">"gross"</span>,            <span class="attr">"type"</span>: <span class="val">"text"</span>, <span class="attr">"text"</span>: <span class="val">"Gross description"</span> },
+        { <span class="attr">"linkId"</span>: <span class="val">"microscopic"</span>,      <span class="attr">"type"</span>: <span class="val">"text"</span>, <span class="attr">"text"</span>: <span class="val">"Microscopic description"</span> },
+        { <span class="attr">"linkId"</span>: <span class="val">"diagnosis"</span>,        <span class="attr">"type"</span>: <span class="val">"text"</span>, <span class="attr">"text"</span>: <span class="val">"Diagnosis"</span> }
+      ]
+    }]
+  }
+  <span class="tag">&lt;/script&gt;</span>
+<span class="tag">&lt;/tiro-form-filler&gt;</span>
+
+<span class="comment">&lt;!-- Magic clipboard, bound to the form via `for` --&gt;</span>
+<span class="tag">&lt;tiro-magic-clipboard</span> <span class="attr">for</span>=<span class="val">"path-report"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;button</span> <span class="attr">type</span>=<span class="val">"submit"</span><span class="tag">&gt;</span>Autofill<span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;/tiro-magic-clipboard&gt;</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div><!-- .container -->
+
+        <script>
+            function copySample(btn) {
+                var text = document.getElementById('sample-report').textContent;
+                navigator.clipboard.writeText(text).then(function () {
+                    var orig = btn.innerHTML;
+                    btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copied — now click Autofill';
+                    setTimeout(function () { btn.innerHTML = orig; }, 2500);
+                });
+            }
+
+            function copySource(btn) {
+                var text = '<script src="https://cdn.tiro.health/sdk/v0.3.0-rc.1/tiro-web-sdk.iife.js"><\/script>\n'
+                    + '\n'
+                    + '<tiro-form-filler id="path-report">\n'
+                    + '  <script type="application/fhir+json" slot="questionnaire">\n'
+                    + '  {\n'
+                    + '    "resourceType": "Questionnaire",\n'
+                    + '    "status": "active",\n'
+                    + '    "item": [{\n'
+                    + '      "linkId": "report", "type": "group", "text": "Surgical Pathology Report",\n'
+                    + '      "item": [\n'
+                    + '        { "linkId": "specimen",         "type": "text", "text": "Specimen" },\n'
+                    + '        { "linkId": "clinical-history", "type": "text", "text": "Clinical history" },\n'
+                    + '        { "linkId": "gross",            "type": "text", "text": "Gross description" },\n'
+                    + '        { "linkId": "microscopic",      "type": "text", "text": "Microscopic description" },\n'
+                    + '        { "linkId": "diagnosis",        "type": "text", "text": "Diagnosis" }\n'
+                    + '      ]\n'
+                    + '    }]\n'
+                    + '  }\n'
+                    + '  <\/script>\n'
+                    + '<\/tiro-form-filler>\n'
+                    + '\n'
+                    + '<tiro-magic-clipboard for="path-report">\n'
+                    + '  <button type="submit">Autofill<\/button>\n'
+                    + '<\/tiro-magic-clipboard>';
+                navigator.clipboard.writeText(text).then(function () {
+                    btn.textContent = 'Copied!';
+                    setTimeout(function () { btn.textContent = 'Copy'; }, 1500);
+                });
+            }
+        </script>
+
+        <script
+            crossorigin
+            src="https://unpkg.com/react@18/umd/react.production.min.js"
+        ></script>
+        <script
+            crossorigin
+            src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+        ></script>
+        <script src="https://cdn.tiro.health/sdk/v0.3.0-rc.1/tiro-web-sdk.iife.js"></script>
+    </body>
+</html>
