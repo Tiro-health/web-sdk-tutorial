@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Magic Clipboard — Picture-in-Picture</title>
+
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: system-ui, -apple-system, sans-serif;
+            }
+
+            .container {
+                margin: 2rem;
+            }
+
+            .title {
+                font-size: 1.125rem;
+                font-weight: bold;
+                margin-bottom: 1rem;
+            }
+
+            .intro {
+                font-size: 0.85rem;
+                line-height: 1.6;
+                color: #52525b;
+                margin-bottom: 1.5rem;
+                max-width: 46rem;
+            }
+
+            .example-title {
+                font-size: 0.95rem;
+                font-weight: 600;
+                margin-top: 2rem;
+                margin-bottom: 0.75rem;
+                color: #18181b;
+            }
+
+            .example-title:first-of-type {
+                margin-top: 0;
+            }
+
+            .example-desc {
+                font-size: 0.85rem;
+                line-height: 1.6;
+                color: #52525b;
+                margin-bottom: 1rem;
+            }
+
+            .columns {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1.5rem;
+            }
+
+            .column-header {
+                font-size: 0.75rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: #71717a;
+                margin-bottom: 0.75rem;
+            }
+
+            .source-wrapper {
+                position: relative;
+            }
+
+            .copy-btn {
+                position: absolute;
+                top: 0.5rem;
+                right: 0.5rem;
+                background: #313244;
+                border: 1px solid #45475a;
+                color: #cdd6f4;
+                border-radius: 6px;
+                padding: 4px 8px;
+                font-size: 0.7rem;
+                font-family: inherit;
+                cursor: pointer;
+                transition: all 0.15s ease;
+            }
+
+            .copy-btn:hover {
+                background: #45475a;
+            }
+
+            .source-code {
+                background: #1e1e2e;
+                color: #cdd6f4;
+                border-radius: 8px;
+                padding: 1rem 1.25rem;
+                font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+                font-size: 0.8rem;
+                line-height: 1.7;
+                overflow-x: auto;
+                white-space: pre-wrap;
+                word-break: break-all;
+                margin: 0;
+            }
+
+            .source-code .tag { color: #89b4fa; }
+            .source-code .attr { color: #f9e2af; }
+            .source-code .val { color: #a6e3a1; }
+            .source-code .comment { color: #6c7086; font-style: italic; }
+            .source-code .kw { color: #cba6f7; }
+            .source-code .fn { color: #89b4fa; }
+            .source-code .str { color: #a6e3a1; }
+            .source-code .prop { color: #f9e2af; }
+
+            .pop-btn {
+                margin-bottom: 1rem;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.45rem;
+                padding: 0.45rem 0.9rem;
+                font: inherit;
+                font-size: 0.8rem;
+                font-weight: 500;
+                color: #fff;
+                background: #232d5b;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+            }
+            .pop-btn:hover { background: #1a2245; }
+            .pop-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+            .autofill-btn {
+                margin-top: 0.5rem;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.4rem;
+                padding: 0.4rem 0.85rem;
+                font: inherit;
+                font-size: 0.8rem;
+                font-weight: 500;
+                color: #fff;
+                background: #232d5b;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+            }
+            .autofill-btn:hover { background: #1a2245; }
+
+            .note {
+                font-size: 0.75rem;
+                color: #71717a;
+                margin-top: 0.5rem;
+            }
+            .docked-placeholder {
+                display: none;
+                margin-top: 0.75rem;
+                padding: 1.5rem 1rem;
+                text-align: center;
+                font-size: 0.8rem;
+                color: #71717a;
+                border: 1px dashed #e4e4e7;
+                border-radius: 8px;
+            }
+            .unsupported {
+                display: none;
+                font-size: 0.8rem;
+                color: #b45309;
+                background: #fffbeb;
+                border: 1px solid #fde68a;
+                border-radius: 6px;
+                padding: 0.5rem 0.75rem;
+                margin-bottom: 1rem;
+            }
+            .fallback {
+                display: none;
+                font-size: 0.8rem;
+                color: #1e40af;
+                background: #eff6ff;
+                border: 1px solid #bfdbfe;
+                border-radius: 6px;
+                padding: 0.5rem 0.75rem;
+                margin-bottom: 1rem;
+            }
+            .fallback a { color: #1d4ed8; font-weight: 500; }
+
+            @media (max-width: 700px) {
+                .columns {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1 class="title">Magic Clipboard</h1>
+            <p class="intro">
+                Clicking <em>Pop out</em> moves the <em>real</em> clipboard node into an always-on-top
+                <a href="https://developer.mozilla.org/docs/Web/API/Document_Picture-in-Picture_API" target="_blank" rel="noopener">Document Picture-in-Picture</a>
+                window that floats above a separate PACS or viewer. It stays bound to the report form on this page, so
+                dictation in the floating window <strong>autofills the form here</strong> — then docks back on close.
+                <strong>No browser extension required.</strong>
+            </p>
+
+            <h2 class="example-title">Picture-in-Picture (always-on-top)</h2>
+            <p class="example-desc">
+                Request a PiP window on a click and <code>append()</code> the existing clipboard node into it.
+                Since the SDK re-styles its shadow DOM for the new document, the moved node renders correctly.
+                Listen for <code>pagehide</code> to dock it back.
+            </p>
+
+            <p class="unsupported" id="unsupported">Document Picture-in-Picture isn't available in this browser. Use Chrome or Edge 116+.</p>
+            <p class="fallback" id="fallback">Picture-in-Picture can only be launched from a top-level page. <a id="open-standalone" href="#" target="_blank" rel="noopener">Open this example in its own tab ↗</a></p>
+
+            <div class="columns">
+                <div>
+                    <div class="column-header">Preview</div>
+                    <button class="pop-btn" id="pop-out" type="button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><rect x="12" y="9" width="8" height="6" rx="1" fill="currentColor"/></svg>
+                        <span id="pop-out-label">Pop out</span>
+                    </button>
+                    <div id="mc-host">
+                        <tiro-form-filler id="report">
+                            <script type="application/fhir+json" slot="questionnaire">
+{
+    "resourceType": "Questionnaire",
+    "status": "active",
+    "item": [
+        {
+            "linkId": "report-group",
+            "type": "group",
+            "text": "Radiology report",
+            "extension": [
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+                    "valueCodeableConcept": {
+                        "text": "block",
+                        "coding": [{ "system": "http://fhir.tiro.health/CodeSystem/tiro-questionnaire-item-control", "code": "block" }]
+                    }
+                }
+            ],
+            "item": [
+                { "linkId": "findings", "type": "string", "text": "Findings" },
+                { "linkId": "conclusion", "type": "string", "text": "Conclusion" }
+            ]
+        }
+    ]
+}
+                            </script>
+                        </tiro-form-filler>
+                        <div id="mc-widget">
+                            <tiro-magic-clipboard for="report">
+                                <button type="submit" class="autofill-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>
+                                    Autofill
+                                </button>
+                            </tiro-magic-clipboard>
+                        </div>
+                        <p class="docked-placeholder" id="docked-placeholder">↗ The clipboard is floating — dictation still autofills the form above.<br>Close the window to dock it back here.</p>
+                    </div>
+                </div>
+                <div>
+                    <div class="column-header">Source</div>
+                    <div class="source-wrapper">
+                        <button class="copy-btn" onclick="copySource(this)">Copy</button>
+                        <pre class="source-code"><span class="comment">// The clipboard stays bound to its form via `for` (resolved against</span>
+<span class="comment">// the opener document), so it keeps autofilling after it floats.</span>
+<span class="kw">const</span> clip = <span class="prop">document</span>.<span class="fn">getElementById</span>(<span class="str">'mc-widget'</span>);
+<span class="kw">const</span> host = clip.<span class="prop">parentElement</span>;
+
+<span class="prop">popOutButton</span>.<span class="prop">onclick</span> = <span class="kw">async</span> () =&gt; {
+  <span class="kw">const</span> pip = <span class="kw">await</span> <span class="prop">documentPictureInPicture</span>
+    .<span class="fn">requestWindow</span>({ <span class="prop">width</span>: <span class="val">420</span>, <span class="prop">height</span>: <span class="val">560</span> });
+
+  <span class="comment">// SDK v0.3.0+ re-styles its shadow DOM for the new document, so the</span>
+  <span class="comment">// real node can simply be moved in — no iframe, no re-instantiation.</span>
+  pip.<span class="prop">document</span>.<span class="prop">body</span>.<span class="fn">append</span>(clip);
+
+  <span class="comment">// Dock it back when the window closes</span>
+  pip.<span class="fn">addEventListener</span>(<span class="str">'pagehide'</span>, () =&gt; host.<span class="fn">append</span>(clip));
+};</pre>
+                    </div>
+                </div>
+            </div>
+            <p class="note">Document Picture-in-Picture requires Chrome / Edge 116+. The window floats above other apps natively — no extension.</p>
+        </div><!-- .container -->
+
+        <script>
+            // ── Document Picture-in-Picture: move-node pattern ──────────
+            var popBtn      = document.getElementById("pop-out");
+            var popLabel    = document.getElementById("pop-out-label");
+            var widget      = document.getElementById("mc-widget");
+            var host        = document.getElementById("mc-host");
+            var placeholder = document.getElementById("docked-placeholder");
+            var fallback    = document.getElementById("fallback");
+            var pipWindow   = null;
+
+            // Link the fallback to this page's own URL so it opens top-level.
+            document.getElementById("open-standalone").href = location.href;
+
+            // When embedded in the tutorial's same-origin iframe shell, delegate to the
+            // top frame: requestWindow() must run in a top-level browsing context, and the
+            // click's transient activation propagates up to the top window.
+            var embedded = window.self !== window.top;
+
+            function requestPip(options) {
+                if (embedded && window.top && typeof window.top.requestPipWindow === "function") {
+                    return window.top.requestPipWindow(options);
+                }
+                return documentPictureInPicture.requestWindow(options);
+            }
+
+            function pipAvailable() {
+                if (embedded) {
+                    try { return typeof window.top.requestPipWindow === "function"; }
+                    catch (e) { return false; } // cross-origin shell — can't delegate
+                }
+                return "documentPictureInPicture" in window;
+            }
+
+            if (!pipAvailable()) {
+                popBtn.disabled = true;
+                document.getElementById("unsupported").style.display = "block";
+            }
+
+            // Clone this page's <style>/<link> into the PiP document so the slotted
+            // Autofill button + layout match. The SDK (v0.3.0+) re-styles its own
+            // shadow DOM for the new document via adoptedCallback, so the moved
+            // clipboard renders correctly.
+            function copyStyles(win) {
+                var sheets = Array.prototype.slice.call(document.styleSheets);
+                sheets.forEach(function (sheet) {
+                    try {
+                        var css = Array.prototype.map
+                            .call(sheet.cssRules, function (r) { return r.cssText; })
+                            .join("");
+                        var style = win.document.createElement("style");
+                        style.textContent = css;
+                        win.document.head.appendChild(style);
+                    } catch (e) {
+                        if (sheet.href) {
+                            var link = win.document.createElement("link");
+                            link.rel = "stylesheet";
+                            link.href = sheet.href;
+                            win.document.head.appendChild(link);
+                        }
+                    }
+                });
+            }
+
+            function restore() {
+                // Dock the clipboard back — guard against the host iframe navigating away.
+                if (widget.ownerDocument !== document && host.isConnected) {
+                    host.insertBefore(widget, placeholder);
+                }
+                placeholder.style.display = "none";
+                popLabel.textContent = "Pop out";
+                pipWindow = null;
+            }
+
+            popBtn.addEventListener("click", async function () {
+                if (pipWindow) {
+                    pipWindow.close(); // 'pagehide' docks the clipboard back
+                    return;
+                }
+                try {
+                    pipWindow = await requestPip({ width: 420, height: 560 });
+                    fallback.style.display = "none";
+                    pipWindow.document.body.style.cssText = "margin:0;padding:16px;font-family:system-ui,-apple-system,sans-serif;";
+                    copyStyles(pipWindow);
+
+                    // Move the REAL clipboard node into the PiP window. It stays bound to
+                    // <tiro-form-filler id="report"> on this page (the `for` lookup resolves
+                    // against the opener document), so dictation still autofills the form here.
+                    pipWindow.document.body.append(widget);
+
+                    placeholder.style.display = "block";
+                    popLabel.textContent = "Close window";
+                    pipWindow.addEventListener("pagehide", restore, { once: true });
+                } catch (err) {
+                    // PiP is only allowed from a top-level page — when this concept
+                    // runs inside the tutorial's iframe, offer to open it standalone.
+                    if (err && (err.name === "NotAllowedError" || err.name === "SecurityError")) {
+                        fallback.style.display = "block";
+                    } else if (err) {
+                        console.warn("PiP error:", err);
+                    }
+                    restore();
+                }
+            });
+
+            function copySource(btn) {
+                var text = "// The clipboard stays bound to its form via `for` (resolved against\n"
+                    + "// the opener document), so it keeps autofilling after it floats.\n"
+                    + "const clip = document.getElementById('mc-widget');\n"
+                    + "const host = clip.parentElement;\n\n"
+                    + "popOutButton.onclick = async () => {\n"
+                    + "  const pip = await documentPictureInPicture\n"
+                    + "    .requestWindow({ width: 420, height: 560 });\n\n"
+                    + "  // SDK v0.3.0+ re-styles its shadow DOM for the new document, so the\n"
+                    + "  // real node can simply be moved in — no iframe, no re-instantiation.\n"
+                    + "  pip.document.body.append(clip);\n\n"
+                    + "  // Dock it back when the window closes\n"
+                    + "  pip.addEventListener('pagehide', () => host.append(clip));\n"
+                    + "};";
+                navigator.clipboard.writeText(text).then(function () {
+                    btn.textContent = "Copied!";
+                    setTimeout(function () { btn.textContent = "Copy"; }, 1500);
+                });
+            }
+        </script>
+
+        <script
+            crossorigin
+            src="https://unpkg.com/react@18/umd/react.production.min.js"
+        ></script>
+        <script
+            crossorigin
+            src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+        ></script>
+        <script src="https://cdn.tiro.health/sdk/v0.3.0-rc.1/tiro-web-sdk.iife.js"></script>
+    </body>
+</html>
