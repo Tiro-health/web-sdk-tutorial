@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Bundle View</title>
+
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: system-ui, -apple-system, sans-serif;
+            }
+
+            .container {
+                margin: 2rem;
+            }
+
+            .title {
+                font-size: 1.125rem;
+                font-weight: bold;
+                margin-bottom: 1rem;
+            }
+
+            .intro {
+                font-size: 0.85rem;
+                line-height: 1.6;
+                color: #52525b;
+                margin-bottom: 1.5rem;
+                max-width: 65ch;
+            }
+
+            .example-title {
+                font-size: 0.95rem;
+                font-weight: 600;
+                margin-top: 2.5rem;
+                margin-bottom: 0.75rem;
+                color: #18181b;
+                padding-top: 1.5rem;
+                border-top: 1px solid #f0f0f1;
+            }
+
+            .example-title:first-of-type {
+                margin-top: 0;
+                padding-top: 0;
+                border-top: none;
+            }
+
+            .example-desc {
+                font-size: 0.85rem;
+                line-height: 1.6;
+                color: #52525b;
+                margin-bottom: 1rem;
+                max-width: 70ch;
+            }
+
+            .columns {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1.5rem;
+            }
+
+            .column-header {
+                font-size: 0.75rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: #71717a;
+                margin-bottom: 0.75rem;
+            }
+
+            .source-wrapper {
+                position: relative;
+            }
+
+            .copy-btn {
+                position: absolute;
+                top: 0.5rem;
+                right: 0.5rem;
+                background: #313244;
+                border: 1px solid #45475a;
+                color: #cdd6f4;
+                border-radius: 6px;
+                padding: 4px 8px;
+                font-size: 0.7rem;
+                font-family: inherit;
+                cursor: pointer;
+                transition: all 0.15s ease;
+            }
+
+            .copy-btn:hover {
+                background: #45475a;
+            }
+
+            .source-code {
+                background: #1e1e2e;
+                color: #cdd6f4;
+                border-radius: 8px;
+                padding: 1rem 1.25rem;
+                font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+                font-size: 0.8rem;
+                line-height: 1.7;
+                overflow-x: auto;
+                white-space: pre-wrap;
+                word-break: break-all;
+                margin: 0;
+            }
+
+            .source-code .tag { color: #89b4fa; }
+            .source-code .attr { color: #f9e2af; }
+            .source-code .val { color: #a6e3a1; }
+            .source-code .comment { color: #6c7086; font-style: italic; }
+            .source-code .kw { color: #cba6f7; }
+            .source-code .fn { color: #89b4fa; }
+            .source-code .str { color: #a6e3a1; }
+            .source-code .prop { color: #f9e2af; }
+            .source-code .num { color: #fab387; }
+
+            .run-btn {
+                margin-top: 0.75rem;
+                padding: 0.5rem 1.25rem;
+                background: #18181b;
+                color: #fff;
+                border: none;
+                border-radius: 6px;
+                font-size: 0.85rem;
+                font-family: inherit;
+                cursor: pointer;
+                transition: background 0.15s ease;
+            }
+
+            .run-btn:hover {
+                background: #3f3f46;
+            }
+
+            .run-btn:disabled {
+                opacity: 0.6;
+                cursor: default;
+            }
+
+            .doc-label {
+                font-size: 0.75rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: #71717a;
+                margin-top: 1.25rem;
+                margin-bottom: 0.5rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .pill {
+                font-size: 0.65rem;
+                font-weight: 600;
+                letter-spacing: 0.03em;
+                color: #3730a3;
+                background: #eef2ff;
+                border: 1px solid #c7d2fe;
+                border-radius: 999px;
+                padding: 1px 7px;
+                text-transform: none;
+            }
+
+            /* Host wrapper for <tiro-bundle-view>. The component brings its own
+               styling (it renders inside its shadow root), so we only need a
+               minimum height and a placeholder for the empty state. */
+            .bundle-host {
+                min-height: 90px;
+            }
+
+            .placeholder {
+                color: #a1a1aa;
+                font-style: italic;
+                font-size: 0.85rem;
+                line-height: 1.6;
+                display: block;
+                padding: 0.5rem 0;
+            }
+
+            .note {
+                margin-top: 2.5rem;
+                padding: 1rem 1.25rem;
+                background: #fafafa;
+                border: 1px solid #e4e4e7;
+                border-radius: 8px;
+                font-size: 0.82rem;
+                line-height: 1.65;
+                color: #52525b;
+                max-width: 72ch;
+            }
+
+            .note strong { color: #18181b; }
+
+            .note code,
+            .intro code,
+            .example-desc code {
+                background: #f4f4f5;
+                border-radius: 4px;
+                padding: 0.05rem 0.3rem;
+                font-size: 0.85em;
+                font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+            }
+
+            @media (max-width: 700px) {
+                .columns {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1 class="title">Bundle View</h1>
+
+            <p class="intro">
+                The <a href="composition.html" style="color:#6366f1">Composition</a> page showed how
+                <code>$extract</code> turns answers into a clinical document &mdash; but it left you writing your own
+                <code>renderComposition()</code> function to display it. <strong>&lt;tiro-bundle-view&gt;</strong> does that
+                rendering for you. Hand it the whole <code>$extract</code> response Bundle and it lays out the
+                <strong>Composition</strong> as a readable document: section titles with their LOINC codes, the generated
+                narrative, and any extracted <strong>Condition</strong>, <strong>Observation</strong>,
+                <strong>Procedure</strong> or <strong>DiagnosticReport</strong> attached inline under the section that
+                references them &mdash; each with a collapsible detail panel and a raw-JSON toggle.
+            </p>
+
+            <!-- ============================ Example 1: Static bundle ============================ -->
+            <h2 class="example-title">Example 1 &mdash; Rendering an extracted Bundle</h2>
+            <p class="example-desc">
+                Here is a finished <code>$extract</code> response &mdash; a colorectal resection report &mdash; passed
+                straight to the component. The Composition has three coded sections; each references a discrete resource that
+                renders as an inline, collapsible card. Click a card to expand its details, or use the JSON toggles below the
+                document to inspect the raw resources.
+            </p>
+            <div class="columns">
+                <div>
+                    <div class="column-header">Preview</div>
+                    <div class="doc-label">
+                        Rendered document
+                        <span class="pill">&lt;tiro-bundle-view&gt;</span>
+                    </div>
+                    <div class="bundle-host">
+                        <tiro-bundle-view id="static-view"></tiro-bundle-view>
+                    </div>
+                </div>
+                <div>
+                    <div class="column-header">Source</div>
+                    <div class="source-wrapper">
+                        <button class="copy-btn" onclick="copySource(this)">Copy</button>
+                        <pre class="source-code"><span class="comment">&lt;!-- Load React + the SDK first --&gt;</span>
+<span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="val">"https://unpkg.com/react@18/umd/react.production.min.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
+<span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="val">"https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
+<span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="val">"https://cdn.tiro.health/sdk/v0.3.0-rc.5/tiro-web-sdk.iife.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
+
+<span class="comment">&lt;!-- Drop the element on the page --&gt;</span>
+<span class="tag">&lt;tiro-bundle-view</span> <span class="attr">id</span>=<span class="val">"report-view"</span><span class="tag">&gt;&lt;/tiro-bundle-view&gt;</span>
+
+<span class="tag">&lt;script&gt;</span>
+  <span class="comment">// `bundle` is the FHIR Bundle returned by SDC $extract.</span>
+  <span class="comment">// Set it as a property — the component renders itself.</span>
+  <span class="fn">document</span>.<span class="fn">querySelector</span>(<span class="str">"#report-view"</span>).bundle = extractResponse;
+<span class="tag">&lt;/script&gt;</span></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================ Example 2: Live extract ============================ -->
+            <h2 class="example-title">Example 2 &mdash; Straight from <code>$extract</code></h2>
+            <p class="example-desc">
+                The real workflow: fill a form, send the answers to <code>$extract</code>, and pipe the response Bundle
+                directly into the view. This is the same call as the Composition page &mdash; but instead of a hand-written
+                renderer, one assignment (<code>view.bundle = bundle</code>) draws the document. Edit a field and re-submit to
+                watch it regenerate. (This template extracts only a Composition, so there are no inline resource cards &mdash;
+                the view renders whatever the Bundle contains.)
+            </p>
+            <div class="columns">
+                <div>
+                    <div class="column-header">Preview</div>
+                    <tiro-form-filler id="note-form"
+                        initial-response='{"resourceType":"QuestionnaireResponse","status":"in-progress","item":[{"linkId":"report","item":[{"linkId":"findings","answer":[{"valueString":"Normal chest X-ray. No acute abnormality."}]},{"linkId":"impression","answer":[{"valueString":"No evidence of acute disease."}]}]}]}'>
+                        <script type="application/fhir+json" slot="questionnaire">
+{
+    "resourceType": "Questionnaire",
+    "id": "radiology-note",
+    "url": "http://example.org/Questionnaire/radiology-note",
+    "version": "1.0.0",
+    "status": "active",
+    "item": [
+        {
+            "linkId": "report",
+            "type": "group",
+            "text": "Radiology Report",
+            "extension": [
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+                    "valueCodeableConcept": {
+                        "text": "block",
+                        "coding": [{ "system": "http://fhir.tiro.health/CodeSystem/tiro-questionnaire-item-control", "code": "block" }]
+                    }
+                }
+            ],
+            "item": [
+                { "linkId": "findings", "type": "text", "text": "Findings" },
+                { "linkId": "impression", "type": "text", "text": "Impression" }
+            ]
+        }
+    ]
+}
+                        </script>
+                    </tiro-form-filler>
+                    <button class="run-btn" id="note-run" onclick="submitNote()">Submit</button>
+
+                    <div class="doc-label">
+                        Rendered document
+                        <span class="pill">$extract &rarr; &lt;tiro-bundle-view&gt;</span>
+                    </div>
+                    <div class="bundle-host">
+                        <span class="placeholder" id="note-placeholder">Click &ldquo;Submit&rdquo; to extract and render the document&hellip;</span>
+                        <tiro-bundle-view id="note-view"></tiro-bundle-view>
+                    </div>
+                </div>
+                <div>
+                    <div class="column-header">Source</div>
+                    <div class="source-wrapper">
+                        <button class="copy-btn" onclick="copySource(this)">Copy</button>
+                        <pre class="source-code"><span class="tag">&lt;tiro-form-filler</span> <span class="attr">id</span>=<span class="val">"note-form"</span><span class="tag">&gt;</span> &hellip; <span class="tag">&lt;/tiro-form-filler&gt;</span>
+<span class="tag">&lt;tiro-bundle-view</span> <span class="attr">id</span>=<span class="val">"note-view"</span><span class="tag">&gt;&lt;/tiro-bundle-view&gt;</span>
+
+<span class="tag">&lt;script&gt;</span>
+  <span class="kw">async function</span> <span class="fn">submitNote</span>() {
+    <span class="kw">const</span> response = <span class="fn">document</span>.<span class="fn">querySelector</span>(<span class="str">"#note-form"</span>).<span class="fn">getResponse</span>();
+
+    <span class="comment">// POST QuestionnaireResponse/$extract with a Composition template</span>
+    <span class="kw">const</span> bundle = <span class="kw">await</span> <span class="fn">runExtract</span>(response);
+
+    <span class="comment">// One line replaces the renderComposition() from the Composition page:</span>
+    <span class="fn">document</span>.<span class="fn">querySelector</span>(<span class="str">"#note-view"</span>).bundle = bundle;
+  }
+<span class="tag">&lt;/script&gt;</span></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="note">
+                <strong>How it works.</strong> The component finds the <code>Composition</code> in the Bundle and renders its
+                <code>section[]</code> &mdash; title, the section's <code>code</code> (shown as a LOINC badge), and the
+                generated <code>text.div</code> narrative. Every other resource is matched against the
+                <code>section.entry[].reference</code> values (by <code>ResourceType/id</code> or bare <code>id</code>): a
+                match renders as a collapsible card inline under that section, and anything left over trails the document.
+                Supply the Bundle either as a JSON-stringified <code>bundle</code> attribute or, as shown here, as the
+                <code>.bundle</code> <strong>property</strong> &mdash; set the property after the SDK script has loaded (the
+                element must be upgraded first) and the view re-renders reactively whenever it changes.
+            </div>
+        </div><!-- .container -->
+
+        <script>
+            var SDC_EXTRACT = "https://sdc.tiro.health/fhir/r5/QuestionnaireResponse/$extract";
+            var CONTEXT_URL = "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractContext";
+
+            // ── Example 1: a finished $extract response, rendered as-is. ──
+            // A document Bundle whose Composition sections each reference a
+            // discrete resource (Condition / Observation / Procedure); the view
+            // attaches each one inline under its section.
+            var EXAMPLE_BUNDLE = {
+                resourceType: "Bundle",
+                type: "document",
+                entry: [
+                    {
+                        resource: {
+                            resourceType: "Composition",
+                            id: "report",
+                            status: "final",
+                            type: { coding: [{ system: "http://loinc.org", code: "11529-5", display: "Surgical pathology study" }] },
+                            title: "Colorectal Resection — Surgical Pathology Report",
+                            section: [
+                                {
+                                    id: "diagnosis-section",
+                                    title: "Diagnosis",
+                                    code: { coding: [{ system: "http://loinc.org", code: "22637-3", display: "Pathology report final diagnosis Narrative" }] },
+                                    text: { status: "generated", div: '<div xmlns="http://www.w3.org/1999/xhtml"><p>Moderately differentiated <strong>adenocarcinoma</strong> of the sigmoid colon, invading through the muscularis propria into pericolic fat (pT3). All resection margins are clear.</p></div>' },
+                                    entry: [{ reference: "Condition/primary-dx" }]
+                                },
+                                {
+                                    id: "measurements-section",
+                                    title: "Tumour Measurements",
+                                    code: { coding: [{ system: "http://loinc.org", code: "21889-1", display: "Size Tumor" }] },
+                                    text: { status: "generated", div: '<div xmlns="http://www.w3.org/1999/xhtml"><p>Maximum tumour dimension 42 mm.</p></div>' },
+                                    entry: [{ reference: "Observation/tumour-size" }]
+                                },
+                                {
+                                    id: "procedure-section",
+                                    title: "Procedure",
+                                    code: { coding: [{ system: "http://loinc.org", code: "29554-3", display: "Procedure Narrative" }] },
+                                    text: { status: "generated", div: '<div xmlns="http://www.w3.org/1999/xhtml"><p>Laparoscopic sigmoid colectomy, performed 18 May 2026.</p></div>' },
+                                    entry: [{ reference: "Procedure/resection" }]
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        resource: {
+                            resourceType: "Condition",
+                            id: "primary-dx",
+                            clinicalStatus: { coding: [{ system: "http://terminology.hl7.org/CodeSystem/condition-clinical", code: "active" }] },
+                            code: {
+                                coding: [{ system: "http://snomed.info/sct", code: "363406005", display: "Malignant tumor of colon" }],
+                                text: "Adenocarcinoma of sigmoid colon"
+                            },
+                            subject: { reference: "Patient/example" }
+                        }
+                    },
+                    {
+                        resource: {
+                            resourceType: "Observation",
+                            id: "tumour-size",
+                            status: "final",
+                            code: { coding: [{ system: "http://loinc.org", code: "21889-1", display: "Size Tumor" }] },
+                            valueQuantity: { value: 42, unit: "mm", system: "http://unitsofmeasure.org", code: "mm" },
+                            effectiveDateTime: "2026-05-18",
+                            subject: { reference: "Patient/example" }
+                        }
+                    },
+                    {
+                        resource: {
+                            resourceType: "Procedure",
+                            id: "resection",
+                            status: "completed",
+                            code: { coding: [{ system: "http://snomed.info/sct", code: "265414003", display: "Sigmoid colectomy" }] },
+                            performedDateTime: "2026-05-18",
+                            subject: { reference: "Patient/example" }
+                        }
+                    }
+                ]
+            };
+
+            // Populate the static example once the custom element is defined.
+            // Setting .bundle before the element upgrades would shadow Lit's
+            // reactive accessor, so we wait for whenDefined() first.
+            customElements.whenDefined("tiro-bundle-view").then(function () {
+                document.getElementById("static-view").bundle = EXAMPLE_BUNDLE;
+            });
+
+            // ── Example 2: a live extract piped into the view. ──
+            // Same $extract call as the Composition page; a minimal two-section
+            // radiology template lives alongside the response.
+            var LIVE = {
+                questionnaire: {
+                    resourceType: "Questionnaire", id: "radiology-note",
+                    url: "http://example.org/Questionnaire/radiology-note",
+                    version: "1.0.0", status: "active", item: []
+                },
+                template: {
+                    resourceType: "Composition", status: "final",
+                    type: { coding: [{ system: "http://loinc.org", code: "18748-4", display: "Diagnostic imaging study" }] },
+                    title: "Radiology Report",
+                    section: [
+                        templateSection("findings", "Findings", "18782-3", "Radiology Study observation (narrative)", "<strong>Finding:</strong> {{%context.answer.valueString}}"),
+                        templateSection("impression", "Impression", "19005-8", "Radiology Imaging study [Impression] (narrative)", "<em>{{%context.answer.valueString}}</em>")
+                    ]
+                }
+            };
+
+            function templateSection(linkId, title, loincCode, loincDisplay, inner) {
+                return {
+                    id: linkId + "-section",
+                    title: title,
+                    code: { coding: [{ system: "http://loinc.org", code: loincCode, display: loincDisplay }] },
+                    extension: [{
+                        url: CONTEXT_URL,
+                        valueExpression: { language: "text/fhirpath", expression: "repeat(item).where(linkId='" + linkId + "')" }
+                    }],
+                    text: { status: "generated", div: '<div xmlns="http://www.w3.org/1999/xhtml"><p>' + inner + "</p></div>" }
+                };
+            }
+
+            function submitNote() {
+                var form = document.getElementById("note-form");
+                var btn = document.getElementById("note-run");
+                var view = document.getElementById("note-view");
+                var placeholder = document.getElementById("note-placeholder");
+
+                var response = form.getResponse();
+                if (!response) {
+                    placeholder.textContent = "The form has no response yet — fill it in first.";
+                    placeholder.style.display = "block";
+                    return;
+                }
+                response.questionnaire = LIVE.questionnaire.url + "|" + LIVE.questionnaire.version;
+
+                var body = {
+                    resourceType: "Parameters",
+                    parameter: [
+                        { name: "questionnaire-response", resource: response },
+                        { name: "templateExtractBundle", resource: { resourceType: "Bundle", type: "collection", entry: [{ resource: LIVE.template }] } },
+                        { name: "questionnaire", resource: LIVE.questionnaire }
+                    ]
+                };
+
+                btn.disabled = true;
+                btn.textContent = "Running…";
+                placeholder.textContent = "Extracting…";
+                placeholder.style.display = "block";
+                view.bundle = undefined;
+
+                fetch(SDC_EXTRACT, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/fhir+json", "Accept": "application/fhir+json" },
+                    body: JSON.stringify(body)
+                })
+                    .then(function (res) { return res.json(); })
+                    .then(function (bundle) {
+                        if (bundle.resourceType === "OperationOutcome") {
+                            throw new Error((bundle.issue && bundle.issue[0] && bundle.issue[0].details && bundle.issue[0].details.text) || "Extraction failed");
+                        }
+                        // Hand the whole $extract Bundle to the view — no rendering code needed.
+                        placeholder.style.display = "none";
+                        view.bundle = bundle;
+                    })
+                    .catch(function (err) {
+                        placeholder.textContent = "Error: " + err.message;
+                        placeholder.style.display = "block";
+                    })
+                    .finally(function () {
+                        btn.disabled = false;
+                        btn.textContent = "Submit";
+                    });
+            }
+
+            // Copy reads the rendered source text directly, so it always matches what's shown.
+            function copySource(btn) {
+                var pre = btn.parentElement.querySelector(".source-code");
+                navigator.clipboard.writeText(pre.textContent).then(function () {
+                    btn.textContent = "Copied!";
+                    setTimeout(function () { btn.textContent = "Copy"; }, 1500);
+                });
+            }
+        </script>
+
+        <script
+            crossorigin
+            src="https://unpkg.com/react@18/umd/react.production.min.js"
+        ></script>
+        <script
+            crossorigin
+            src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+        ></script>
+        <script src="https://cdn.tiro.health/sdk/v0.3.0-rc.5/tiro-web-sdk.iife.js"></script>
+    </body>
+</html>
